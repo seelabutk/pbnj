@@ -1,3 +1,6 @@
+#ifndef PBNJ_TRANSFERFUNCTION_H
+#define PBNJ_TRANSFERFUNCTION_H
+
 #include <pbnj.h>
 
 #include <ospray/ospray.h>
@@ -16,6 +19,8 @@ namespace pbnj {
             // enum for known color maps
 
             void setRange(float minimum, float maximum);
+
+            OSPTransferFunction asOSPObject();
             
         private:
 
@@ -29,3 +34,5 @@ namespace pbnj {
             OSPData oOpacityData;
     };
 }
+
+#endif

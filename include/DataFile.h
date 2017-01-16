@@ -1,3 +1,6 @@
+#ifndef PBNJ_DATAFILE_H
+#define PBNJ_DATAFILE_H
+
 #include <string>
 
 #include <pbnj.h>
@@ -22,6 +25,7 @@ namespace pbnj {
             int xDim;
             int yDim;
             int zDim;
+            int numValues;
 
             float minVal; // these should 
             float maxVal; //
@@ -36,3 +40,5 @@ namespace pbnj {
     };
 
 }
+
+#endif

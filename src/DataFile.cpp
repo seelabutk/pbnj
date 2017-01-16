@@ -12,7 +12,7 @@
 namespace pbnj {
 
 DataFile::DataFile(int x, int y, int z) :
-    xDim(x), yDim(y), zDim(z), statsCalculated(false)
+    xDim(x), yDim(y), zDim(z), numValues(x*y*z), statsCalculated(false)
 {
 }
 
@@ -33,15 +33,15 @@ void DataFile::loadFromFile(std::string filename)
         std::cerr << "Unknown filetype!" << std::endl;
     }
 
-    int numValues = this->xDim * this->yDim * this->zDim;
+    //int numValues = this->xDim * this->yDim * this->zDim;
     FILE *dataFile = fopen(filename.c_str(), "r");
 
     if(dataFile == NULL) {
         std::cerr << "Could not open file!" << std::endl;
     }
     else {
-        this->data = (float *)malloc(numValues * sizeof(float));
-        fread(this->data, sizeof(float), numValues, dataFile);
+        this->data = (float *)malloc(this->numValues * sizeof(float));
+        fread(this->data, sizeof(float), this->numValues, dataFile);
         fclose(dataFile);
     }
 }
@@ -70,11 +70,11 @@ FILETYPE DataFile::getFiletype()
 void DataFile::calculateStatistics()
 {
     //calculate min, max, avg, stdev
-    int numValues = this->xDim * this->yDim * this->zDim;
+    //int numValues = this->xDim * this->yDim * this->zDim;
     this->minVal = data[0];
     this->maxVal = data[0];
     double total = 0, totalSquares = 0;
-    for(int i = 1; i < numValues; i++) {
+    for(int i = 1; i < this->numValues; i++) {
         if(data[i] < this->minVal)
             this->minVal = data[i];
         if(data[i] > this->maxVal)
@@ -82,8 +82,9 @@ void DataFile::calculateStatistics()
         total += data[i];
         totalSquares += data[i]*data[i];
     }
-    this->avgVal = total / numValues;
-    this->stdDev = std::sqrt(totalSquares/numValues-this->avgVal*this->avgVal);
+    this->avgVal = total / this->numValues;
+    this->stdDev = std::sqrt(totalSquares/this->numValues -
+                             this->avgVal*this->avgVal);
     this->statsCalculated = true;
 }
 

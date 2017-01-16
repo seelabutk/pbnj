@@ -1,4 +1,5 @@
-//#include <ospray.h>
+#ifndef PBNJ_H
+#define PBNJ_H
 
 namespace pbnj {
     /* contains metadata about the data being requested
@@ -28,3 +29,5 @@ namespace pbnj {
      */
     class Camera;
 }
+
+#endif

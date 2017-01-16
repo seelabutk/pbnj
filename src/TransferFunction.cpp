@@ -35,4 +35,8 @@ void TransferFunction::setRange(float minimum, float maximum)
     ospCommit(this->oTF);
 }
 
+OSPTransferFunction TransferFunction::asOSPObject()
+{
+    return this->oTF;
+}
 }
