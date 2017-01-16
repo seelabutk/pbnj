@@ -1,0 +1,10 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+PROJECT(PeanutButterNJelly)
+
+INCLUDE_DIRECTORIES(include)
+
+FILE(GLOB SOURCES "src/*.cpp")
+
+ADD_LIBRARY(pbnj SHARED ${SOURCES})
+ADD_EXECUTABLE(pbnjTest ${SOURCES} "src/test/pbnjTest.cpp")
