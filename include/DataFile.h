@@ -13,6 +13,7 @@ namespace pbnj {
             ~DataFile();
 
             void loadFromFile(std::string filename);
+            void printStatistics();
 
             std::string filename;
             FILETYPE filetype;
@@ -22,7 +23,9 @@ namespace pbnj {
             int zDim;
 
             float minVal; // these should 
-            float maxVal; // eventually be 
+            float maxVal; //
+            float avgVal; // eventually be 
+            float stdDev; //
             float *data;  // template types
 
         private:
