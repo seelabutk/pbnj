@@ -10,6 +10,7 @@ int main(int argc, char **argv) {
 
     pbnj::DataFile *datafile = new pbnj::DataFile(512, 512, 512);
     datafile->loadFromFile(filename);
+
     datafile->printStatistics();
     datafile->calculateStatistics();
     datafile->printStatistics();
