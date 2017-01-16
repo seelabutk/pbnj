@@ -13,6 +13,7 @@ namespace pbnj {
             ~DataFile();
 
             void loadFromFile(std::string filename);
+            void calculateStatistics();
             void printStatistics();
 
             std::string filename;
@@ -27,6 +28,8 @@ namespace pbnj {
             float avgVal; // eventually be 
             float stdDev; //
             float *data;  // template types
+
+            bool statsCalculated;
 
         private:
             FILETYPE getFiletype();

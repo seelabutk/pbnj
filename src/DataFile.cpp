@@ -12,7 +12,7 @@
 namespace pbnj {
 
 DataFile::DataFile(int x, int y, int z) :
-    xDim(x), yDim(y), zDim(z)
+    xDim(x), yDim(y), zDim(z), statsCalculated(false)
 {
 }
 
@@ -44,21 +44,6 @@ void DataFile::loadFromFile(std::string filename)
         fread(this->data, sizeof(float), numValues, dataFile);
         fclose(dataFile);
     }
-
-    //calculate min, max, avg, stdev
-    this->minVal = data[0];
-    this->maxVal = data[0];
-    double total = 0, totalSquares = 0;
-    for(int i = 1; i < numValues; i++) {
-        if(data[i] < this->minVal)
-            this->minVal = data[i];
-        if(data[i] > this->maxVal)
-            this->maxVal = data[i];
-        total += data[i];
-        totalSquares += data[i]*data[i];
-    }
-    this->avgVal = total / numValues;
-    this->stdDev = std::sqrt(totalSquares/numValues-this->avgVal*this->avgVal);
 }
 
 FILETYPE DataFile::getFiletype()
@@ -82,8 +67,33 @@ FILETYPE DataFile::getFiletype()
     }
 }
 
+void DataFile::calculateStatistics()
+{
+    //calculate min, max, avg, stdev
+    int numValues = this->xDim * this->yDim * this->zDim;
+    this->minVal = data[0];
+    this->maxVal = data[0];
+    double total = 0, totalSquares = 0;
+    for(int i = 1; i < numValues; i++) {
+        if(data[i] < this->minVal)
+            this->minVal = data[i];
+        if(data[i] > this->maxVal)
+            this->maxVal = data[i];
+        total += data[i];
+        totalSquares += data[i]*data[i];
+    }
+    this->avgVal = total / numValues;
+    this->stdDev = std::sqrt(totalSquares/numValues-this->avgVal*this->avgVal);
+    this->statsCalculated = true;
+}
+
 void DataFile::printStatistics()
 {
+    if(!this->statsCalculated) {
+        std::cerr << "Statistics not calculated for this data!" << std::endl;
+        return;
+    }
+
     std::cout << this->filename << std::endl;
     std::cout << "dimensions: " << this->xDim << ", "
                                 << this->yDim << ", "
