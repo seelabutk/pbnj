@@ -48,4 +48,9 @@ void Camera::updateOSPRayPosition()
     ospCommit(this->oCamera);
 }
 
+OSPCamera Camera::asOSPRayObject()
+{
+    return this->oCamera;
+}
+
 }

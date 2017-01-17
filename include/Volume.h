@@ -13,6 +13,8 @@ namespace pbnj {
         public:
             Volume(DataFile *df);
 
+            OSPVolume asOSPRayObject();
+
         private:
             DataFile *dataFile;
             TransferFunction *transferFunction;

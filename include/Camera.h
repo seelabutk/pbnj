@@ -14,6 +14,8 @@ namespace pbnj {
             void setPosition(float x, float y, float z);
             void setOrbitRadius(float radius);
 
+            OSPCamera asOSPRayObject();
+
             //some sort of setPath function that takes an enum type for the path
             //and a ... for path parameters
 

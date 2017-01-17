@@ -27,4 +27,9 @@ Volume::Volume(DataFile *df) :
     ospCommit(this->oVolume);
 }
 
+OSPVolume Volume::asOSPRayObject()
+{
+    return this->oVolume;
+}
+
 }
