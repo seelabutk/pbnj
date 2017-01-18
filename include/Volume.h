@@ -4,6 +4,8 @@
 #include <pbnj.h>
 #include <DataFile.h>
 
+#include <string>
+
 #include <ospray/ospray.h>
 
 namespace pbnj {
@@ -11,7 +13,8 @@ namespace pbnj {
     class Volume {
 
         public:
-            Volume(DataFile *df);
+            //Volume(DataFile *df);
+            Volume(std::string filename, int x, int y, int z);
 
             OSPVolume asOSPRayObject();
 
@@ -21,6 +24,8 @@ namespace pbnj {
 
             OSPVolume oVolume;
             OSPData oData;
+
+            void loadFromFile(std::string filename);
     };
 }
 

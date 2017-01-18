@@ -4,9 +4,11 @@
 
 namespace pbnj {
 
-Volume::Volume(DataFile *df) :
-    dataFile(df)
+Volume::Volume(std::string filename, int x, int y, int z)
 {
+    this->dataFile = new DataFile(x, y, z);
+    this->loadFromFile(filename);
+
     this->transferFunction = new TransferFunction();
     this->transferFunction->setRange(this->dataFile->minVal,
                                      this->dataFile->maxVal);
@@ -30,6 +32,12 @@ Volume::Volume(DataFile *df) :
 OSPVolume Volume::asOSPRayObject()
 {
     return this->oVolume;
+}
+
+void Volume::loadFromFile(std::string filename)
+{
+    this->dataFile->loadFromFile(filename);
+    this->dataFile->calculateStatistics();
 }
 
 }
