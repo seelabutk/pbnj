@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Configuration.h"
 #include "DataFile.h"
 #include "Renderer.h"
 #include "Volume.h"
@@ -10,6 +11,19 @@
 int main(int argc, const char **argv) {
     std::cout << "Hello world!" << std::endl;
 
+    pbnj::Configuration *config = new pbnj::Configuration(
+            "../configs/turbulence.json");
+
+    std::cout << "CONFIG FILE: " << "dataFilename " << config->dataFilename << std::endl;
+    std::cout << "CONFIG FILE: " << "x " << config->dataXDim << std::endl;
+    std::cout << "CONFIG FILE: " << "y " << config->dataYDim << std::endl;
+    std::cout << "CONFIG FILE: " << "z " << config->dataZDim << std::endl;
+    std::cout << "CONFIG FILE: " << "width " << config->imageWidth << std::endl;
+    std::cout << "CONFIG FILE: " << "height " << config->imageHeight << std::endl;
+    std::cout << "CONFIG FILE: " << "imageFilename " << config->imageFilename << std::endl;
+
+    // initialization has to go after configuration!
+    // otherwise it causes a segfault in OSPRay
     pbnj::pbnjInit(&argc, argv);
 
     std::string filename(

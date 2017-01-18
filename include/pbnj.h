@@ -31,6 +31,13 @@ namespace pbnj {
      */
     class Camera;
 
+    /* configuration class, uses rapidjson to parse JSON
+     * config files
+     */
+    class ConfigReader;
+
+    class Configuration;
+
     void pbnjInit(int *argc, const char **argv);
 }
 
