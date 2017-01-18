@@ -31,7 +31,7 @@ void Renderer::setBackgroundColor(char r, char g, char b)
     ospCommit(this->oRenderer);
 }
 
-void Renderer::setVolume(Volume v)
+void Renderer::setVolume(Volume *v)
 {
     if(this->oModel != NULL) {
         std::cerr << "Volume already set!" << std::endl;
@@ -39,20 +39,20 @@ void Renderer::setVolume(Volume v)
     }
 
     this->oModel = ospNewModel();
-    ospAddVolume(this->oModel, v.asOSPRayObject());
+    ospAddVolume(this->oModel, v->asOSPRayObject());
     ospCommit(this->oModel);
 }
 
-void Renderer::setCamera(Camera c)
+void Renderer::setCamera(Camera *c)
 {
     if(this->oCamera != NULL) {
         std::cerr << "Camera already set!" << std::endl;
         return;
     }
 
-    this->cameraWidth = c.imageWidth;
-    this->cameraHeight = c.imageHeight;
-    this->oCamera = c.asOSPRayObject();
+    this->cameraWidth = c->imageWidth;
+    this->cameraHeight = c->imageHeight;
+    this->oCamera = c->asOSPRayObject();
 }
 
 void Renderer::renderImage(std::string imageFilename)
@@ -86,6 +86,8 @@ void Renderer::renderImage(std::string imageFilename)
                                            OSP_FB_COLOR | OSP_FB_ACCUM);
     ospRenderFrame(this->oFrameBuffer, this->oRenderer,
             OSP_FB_COLOR | OSP_FB_ACCUM);
+
+    this->saveImage(imageFilename, imageType);
 }
 
 IMAGETYPE Renderer::getFiletype(std::string filename)
@@ -116,6 +118,8 @@ void Renderer::saveImage(std::string filename, IMAGETYPE imageType)
 void Renderer::saveAsPPM(std::string filename)
 {
     int width = this->cameraWidth, height = this->cameraHeight;
+    std::cerr << "DEBUG: image dimensions are " << width << "x" << height;
+    std::cerr << std::endl;
     uint32_t *colorBuffer = (uint32_t *)ospMapFrameBuffer(this->oFrameBuffer,
             OSP_FB_COLOR);
     FILE *file = fopen(filename.c_str(), "wb");
@@ -123,7 +127,7 @@ void Renderer::saveAsPPM(std::string filename)
     fprintf(file, "P6\n%i %i\n255\n", width, height);
 
     for(int j = 0; j < height; j++) {
-        unsigned char *rowIn = (unsigned char *)colorBuffer[(height-1-j)*width];
+        unsigned char *rowIn = (unsigned char*)&colorBuffer[(height-1-j)*width];
         for(int i = 0; i < width; i++) {
             rowOut[3*i + 0] = rowIn[4*i + 0];
             rowOut[3*i + 1] = rowIn[4*i + 1];

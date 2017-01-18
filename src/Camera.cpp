@@ -43,8 +43,9 @@ void Camera::updateOSPRayPosition()
 
     ospSet3fv(this->oCamera, "pos",
             (float[]){this->xPos, this->yPos, this->zPos});
-    ospSet3fv(this->oCamera, "dir",
-            (float[]){this->viewX, this->viewY, this->viewZ});
+    //ospSet3fv(this->oCamera, "dir",
+    //        (float[]){this->viewX, this->viewY, this->viewZ});
+    ospSet3fv(this->oCamera, "dir", (float[]){0.0, 0.0, -1.0});
     ospCommit(this->oCamera);
 }
 

@@ -1,6 +1,8 @@
 #ifndef PBNJ_H
 #define PBNJ_H
 
+#include <ospray/ospray.h>
+
 namespace pbnj {
     /* contains metadata about the data being requested
      * This includes things like:
@@ -28,6 +30,8 @@ namespace pbnj {
      * Provides simplified camera movement
      */
     class Camera;
+
+    void pbnjInit(int *argc, const char **argv);
 }
 
 #endif

@@ -16,8 +16,8 @@ namespace pbnj {
             Renderer();
 
             void setBackgroundColor(char r, char g, char b);
-            void setVolume(Volume v);
-            void setCamera(Camera c);
+            void setVolume(Volume *v);
+            void setCamera(Camera *c);
 
             void renderImage(std::string imageFilename);
 
