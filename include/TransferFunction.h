@@ -7,6 +7,9 @@
 
 namespace pbnj {
 
+    extern float coolToWarm[256*3];
+    extern float spectralReverse[256*3];
+
     class TransferFunction {
         public:
             //creates ramp opacity and black to white color
@@ -19,13 +22,15 @@ namespace pbnj {
             // enum for known color maps
 
             void setRange(float minimum, float maximum);
+            void attenuateOpacity(float amount);
+            void setColorMap(float (&map)[256*3]);
 
             OSPTransferFunction asOSPObject();
             
         private:
 
-            char colorMap[256*3];
-            char opacityMap[256];
+            float colorMap[256*3];
+            float opacityMap[256];
             float minVal;
             float maxVal;
 

@@ -17,9 +17,11 @@ Renderer::Renderer() :
     backgroundColor()
 {
     this->oRenderer = ospNewRenderer("scivis");
-    //ospSet1i(this->oRenderer, "spp", 8);
+    ospSet1i(this->oRenderer, "spp", 8);
     //ospSet1i(this->oRenderer, "maxDepth", 5);
     this->setBackgroundColor(0, 0, 0);
+    this->oCamera = NULL;
+    this->oModel = NULL;
 }
 
 void Renderer::setBackgroundColor(char r, char g, char b)

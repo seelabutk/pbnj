@@ -2,6 +2,7 @@
 #include "Configuration.h"
 #include "DataFile.h"
 #include "Renderer.h"
+#include "TransferFunction.h"
 #include "Volume.h"
 
 #include "pbnj.h"
@@ -11,34 +12,48 @@
 int main(int argc, const char **argv) {
     std::cout << "Hello world!" << std::endl;
 
-    pbnj::Configuration *config = new pbnj::Configuration(
-            "../configs/turbulence.json");
+#if 1
 
-    std::cout << "CONFIG FILE: " << "dataFilename " << config->dataFilename << std::endl;
-    std::cout << "CONFIG FILE: " << "x " << config->dataXDim << std::endl;
-    std::cout << "CONFIG FILE: " << "y " << config->dataYDim << std::endl;
-    std::cout << "CONFIG FILE: " << "z " << config->dataZDim << std::endl;
-    std::cout << "CONFIG FILE: " << "width " << config->imageWidth << std::endl;
-    std::cout << "CONFIG FILE: " << "height " << config->imageHeight << std::endl;
-    std::cout << "CONFIG FILE: " << "imageFilename " << config->imageFilename << std::endl;
+    pbnj::Configuration *config = new pbnj::Configuration(
+            "../configs/magnetic.json");
 
     // initialization has to go after configuration!
     // otherwise it causes a segfault in OSPRay
     pbnj::pbnjInit(&argc, argv);
 
-    std::string filename(
-    "/export/share/data/turbulence/tacc-turbulence-256-volume/tacc-turbulence-256-volume.raw");
+    pbnj::Volume *volume = new pbnj::Volume(config->dataFilename,
+            config->dataXDim, config->dataYDim, config->dataZDim);
+    volume->attenuateOpacity(0.1);
+    volume->setColorMap(pbnj::spectralReverse);
 
-    pbnj::Volume *volume = new pbnj::Volume(filename, 256, 256, 256);
-
-    pbnj::Camera *camera = new pbnj::Camera(800, 800);
-    camera->setPosition(127.5, 127.5, 512.0);
+    pbnj::Camera *camera = new pbnj::Camera(config->imageWidth, 
+            config->imageHeight);
+    camera->setPosition((config->dataXDim-1)/2.0, (config->dataYDim-1)/2.0,
+            config->dataZDim*2);
 
     pbnj::Renderer *renderer = new pbnj::Renderer();
     renderer->setVolume(volume);
     renderer->setCamera(camera);
+    renderer->renderImage(config->imageFilename);
 
-    renderer->renderImage("/export/share/data/turbulence/test.ppm");
+#else
+
+    pbnj::pbnjInit(&argc, argv);
+
+    std::string basename("/export/share/data/turbulence/");
+    std::string filename( basename + 
+            "tacc-turbulence-256-volume/tacc-turbulence-256-volume.raw");
+    std::string imageFilename(basename + "turbulence_hardcode.ppm");
+
+    pbnj::Volume *volume = new pbnj::Volume(filename, 256, 256, 256);
+    pbnj::Camera *camera = new pbnj::Camera(800, 800);
+    camera->setPosition(127.5, 127.5, 512.0);
+    pbnj::Renderer *renderer = new pbnj::Renderer();
+    renderer->setVolume(volume);
+    renderer->setCamera(camera);
+    renderer->renderImage(imageFilename);
+
+#endif
 
     return 0;
 }

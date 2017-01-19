@@ -16,6 +16,8 @@ namespace pbnj {
             //Volume(DataFile *df);
             Volume(std::string filename, int x, int y, int z);
 
+            void attenuateOpacity(float amount);
+            void setColorMap(float (&map)[256*3]);
             OSPVolume asOSPRayObject();
 
         private:

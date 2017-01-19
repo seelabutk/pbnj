@@ -29,6 +29,16 @@ Volume::Volume(std::string filename, int x, int y, int z)
     ospCommit(this->oVolume);
 }
 
+void Volume::attenuateOpacity(float amount)
+{
+    this->transferFunction->attenuateOpacity(amount);
+}
+
+void Volume::setColorMap(float (&map)[256*3])
+{
+    this->transferFunction->setColorMap(map);
+}
+
 OSPVolume Volume::asOSPRayObject()
 {
     return this->oVolume;
