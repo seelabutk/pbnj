@@ -15,7 +15,7 @@ int main(int argc, const char **argv) {
 #if 1
 
     pbnj::Configuration *config = new pbnj::Configuration(
-            "../configs/magnetic.json");
+            "../configs/turbulence.json");
 
     // initialization has to go after configuration!
     // otherwise it causes a segfault in OSPRay
@@ -23,7 +23,7 @@ int main(int argc, const char **argv) {
 
     pbnj::Volume *volume = new pbnj::Volume(config->dataFilename,
             config->dataXDim, config->dataYDim, config->dataZDim);
-    volume->attenuateOpacity(0.1);
+    //volume->attenuateOpacity(0.1);
     volume->setColorMap(pbnj::spectralReverse);
 
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth, 

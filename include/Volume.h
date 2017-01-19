@@ -5,6 +5,7 @@
 #include <DataFile.h>
 
 #include <string>
+#include <vector>
 
 #include <ospray/ospray.h>
 
@@ -17,7 +18,7 @@ namespace pbnj {
             Volume(std::string filename, int x, int y, int z);
 
             void attenuateOpacity(float amount);
-            void setColorMap(float (&map)[256*3]);
+            void setColorMap(std::vector<float> &map);
             OSPVolume asOSPRayObject();
 
         private:

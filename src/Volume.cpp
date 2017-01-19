@@ -2,6 +2,8 @@
 #include "DataFile.h"
 #include "TransferFunction.h"
 
+#include <vector>
+
 namespace pbnj {
 
 Volume::Volume(std::string filename, int x, int y, int z)
@@ -34,7 +36,7 @@ void Volume::attenuateOpacity(float amount)
     this->transferFunction->attenuateOpacity(amount);
 }
 
-void Volume::setColorMap(float (&map)[256*3])
+void Volume::setColorMap(std::vector<float> &map)
 {
     this->transferFunction->setColorMap(map);
 }

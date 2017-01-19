@@ -29,7 +29,8 @@ void Renderer::setBackgroundColor(char r, char g, char b)
     this->backgroundColor[0] = r;
     this->backgroundColor[1] = g;
     this->backgroundColor[2] = b;
-    ospSet3fv(this->oRenderer, "bgColor", (float[]){r/255.0,g/255.0,b/255.0});
+    float asVec[] = {r/(float)255.0, g/(float)255.0, b/(float)255.0};
+    ospSet3fv(this->oRenderer, "bgColor", asVec);
     ospCommit(this->oRenderer);
 }
 

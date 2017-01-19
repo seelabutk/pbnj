@@ -5,10 +5,12 @@
 
 #include <ospray/ospray.h>
 
+#include <vector>
+
 namespace pbnj {
 
-    extern float coolToWarm[256*3];
-    extern float spectralReverse[256*3];
+    extern std::vector<float> coolToWarm;
+    extern std::vector<float> spectralReverse;
 
     class TransferFunction {
         public:
@@ -23,14 +25,14 @@ namespace pbnj {
 
             void setRange(float minimum, float maximum);
             void attenuateOpacity(float amount);
-            void setColorMap(float (&map)[256*3]);
+            void setColorMap(std::vector<float> &map);
 
             OSPTransferFunction asOSPObject();
             
         private:
 
-            float colorMap[256*3];
-            float opacityMap[256];
+            std::vector<float> colorMap;
+            std::vector<float> opacityMap;
             float minVal;
             float maxVal;
 

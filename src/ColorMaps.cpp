@@ -1,8 +1,10 @@
 #include "TransferFunction.h"
 
+#include <vector>
+
 namespace pbnj {
 
-float coolToWarm[256*3] = {
+std::vector<float> coolToWarm = {
     0.2298057, 0.2987180, 0.7536832,
     0.2342999, 0.3055592, 0.7598748,
     0.2388101, 0.3123884, 0.7660059,
@@ -260,7 +262,7 @@ float coolToWarm[256*3] = {
     0.7177218, 0.0673440, 0.1584576
 };
 
-float spectralReverse[256*3] = {
+std::vector<float> spectralReverse = {
     0.368627458811, 0.309803932905, 0.635294139385,  
     0.36186083041, 0.318569792836, 0.639446388273, 
     0.355094202009, 0.327335652767, 0.64359863716, 
