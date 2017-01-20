@@ -4,6 +4,7 @@
 #include <ConfigReader.h>
 
 #include <string>
+#include <vector>
 
 namespace pbnj {
 
@@ -23,8 +24,14 @@ namespace pbnj {
             int imageHeight;
             std::string imageFilename;
 
+            std::vector<float> colorMap;
+            std::vector<float> opacityMap;
+            float opacityAttenuation;
+
         private:
             ConfigReader *reader;
+
+            void selectColorMap(std::string userInput);
     };
 
 }

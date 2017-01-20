@@ -60,6 +60,9 @@ OSPTransferFunction TransferFunction::asOSPObject()
 
 void TransferFunction::setColorMap(std::vector<float> &map)
 {
+    if(map.empty())
+        return;
+
     this->colorMap.clear();
     this->colorMap.reserve(map.size());
 
