@@ -1,6 +1,7 @@
 #include "Camera.h"
 
 #include <cmath>
+#include <iostream>
 
 #include <ospray/ospray.h>
 
@@ -31,21 +32,23 @@ void Camera::setPosition(float x, float y, float z)
     this->updateOSPRayPosition();
 }
 
+void Camera::centerView(Volume *v)
+{
+    std::vector<int> bounds = v->getBounds();
+    this->viewX = (float)(bounds[0])/2.0;
+    this->viewY = (float)(bounds[1])/2.0;
+    this->viewZ = (float)(bounds[2])/2.0;
+}
+
 void Camera::updateOSPRayPosition()
 {
-    float deltaX = (this->xPos-this->viewX);
-    float deltaY = (this->yPos-this->viewY);
-    float deltaZ = (this->zPos-this->viewZ);
-    float mag = std::sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ);
-    this->viewX = -deltaX/mag;
-    this->viewY = -deltaY/mag;
-    this->viewZ = -deltaZ/mag;
+    float deltaX = (this->viewX-this->xPos);
+    float deltaY = (this->viewY-this->yPos);
+    float deltaZ = (this->viewZ-this->zPos);
 
     ospSet3fv(this->oCamera, "pos",
             (float[]){this->xPos, this->yPos, this->zPos});
-    //ospSet3fv(this->oCamera, "dir",
-    //        (float[]){this->viewX, this->viewY, this->viewZ});
-    ospSet3fv(this->oCamera, "dir", (float[]){0.0, 0.0, -1.0});
+    ospSet3fv(this->oCamera, "dir", (float[]){deltaX, deltaY, deltaZ});
     ospCommit(this->oCamera);
 }
 

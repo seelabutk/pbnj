@@ -2,6 +2,7 @@
 #define PBNJ_CAMERA_H
 
 #include <pbnj.h>
+#include <Volume.h>
 
 #include <ospray/ospray.h>
 
@@ -13,6 +14,7 @@ namespace pbnj {
 
             void setPosition(float x, float y, float z);
             void setOrbitRadius(float radius);
+            void centerView(Volume *v);
 
             OSPCamera asOSPRayObject();
 

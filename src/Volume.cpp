@@ -41,6 +41,13 @@ void Volume::setColorMap(std::vector<float> &map)
     this->transferFunction->setColorMap(map);
 }
 
+std::vector<int> Volume::getBounds()
+{
+    std::vector<int> bounds = {this->dataFile->xDim, this->dataFile->yDim,
+        this->dataFile->zDim};
+    return bounds;
+}
+
 OSPVolume Volume::asOSPRayObject()
 {
     return this->oVolume;
