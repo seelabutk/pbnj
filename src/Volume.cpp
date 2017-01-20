@@ -8,13 +8,17 @@ namespace pbnj {
 
 Volume::Volume(std::string filename, int x, int y, int z)
 {
+    //volumes contain a datafile
+    //one datafile per volume, one volume per renderer/camera
     this->dataFile = new DataFile(x, y, z);
     this->loadFromFile(filename);
 
+    //set up default transfer function
     this->transferFunction = new TransferFunction();
     this->transferFunction->setRange(this->dataFile->minVal,
                                      this->dataFile->maxVal);
 
+    //setup OSPRay objects
     this->oVolume = ospNewVolume("shared_structured_volume");
     this->oData = ospNewData(this->dataFile->numValues, OSP_FLOAT, 
             this->dataFile->data, OSP_DATA_SHARED_BUFFER);
@@ -56,6 +60,7 @@ OSPVolume Volume::asOSPRayObject()
 void Volume::loadFromFile(std::string filename)
 {
     this->dataFile->loadFromFile(filename);
+    //this is slooooow :(
     this->dataFile->calculateStatistics();
 }
 

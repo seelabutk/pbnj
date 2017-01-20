@@ -10,6 +10,8 @@ TransferFunction::TransferFunction()
     this->colorMap.reserve(256*3);
     this->opacityMap.reserve(256);
 
+    //default black to white color map
+    //and ramp opacity map
     for(int i = 0; i < 256; i++) {
         this->colorMap.push_back(i/255.0);
         this->colorMap.push_back(i/255.0);
@@ -17,6 +19,7 @@ TransferFunction::TransferFunction()
         this->opacityMap.push_back(i/255.0);
     }
 
+    // setup OSPRay object(s)
     this->oTF = ospNewTransferFunction("piecewise_linear");
     this->oColorData = ospNewData(this->colorMap.size()/3, OSP_FLOAT3,
             this->colorMap.data());
@@ -60,16 +63,21 @@ OSPTransferFunction TransferFunction::asOSPObject()
 
 void TransferFunction::setColorMap(std::vector<float> &map)
 {
+    //map may be empty if the config file is used
     if(map.empty())
         return;
 
+    //clear in case the new map is shorter than the previous, in which case
+    //reserve won't do anything
+    //reserve in case the new map is longer than the previous
     this->colorMap.clear();
     this->colorMap.reserve(map.size());
 
     for(int i = 0; i < map.size(); i++)
         this->colorMap[i] = map[i];
 
-    this->oColorData = ospNewData(256, OSP_FLOAT3, this->colorMap.data());
+    this->oColorData = ospNewData(this->colorMap.size()/3, OSP_FLOAT3,
+            this->colorMap.data());
     ospSetData(this->oTF, "colors", this->oColorData);
     ospCommit(this->oTF);
 }

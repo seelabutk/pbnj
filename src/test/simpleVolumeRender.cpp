@@ -26,10 +26,6 @@ int main(int argc, const char **argv)
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth, 
             config->imageHeight);
     camera->centerView(volume);
-    /*
-    camera->setPosition((config->dataXDim-1)/2.0, (config->dataYDim-1)/2.0,
-            config->dataZDim*2);
-    */
     camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
 
     pbnj::Renderer *renderer = new pbnj::Renderer();

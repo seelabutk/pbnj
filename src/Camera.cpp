@@ -11,6 +11,7 @@ Camera::Camera(int width, int height) :
     imageWidth(width), imageHeight(height), xPos(0.0), yPos(0.0), zPos(0.0),
     viewX(0.0), viewY(0.0), viewZ(0.0), orbitRadius(0.0)
 {
+    //setup OSPRay camera with basic parameters
     this->oCamera = ospNewCamera("perspective");
     this->updateOSPRayPosition();
     ospSet3fv(this->oCamera, "up",  (float[]){0.0, 1.0, 0.0});
@@ -20,6 +21,7 @@ Camera::Camera(int width, int height) :
 
 void Camera::setOrbitRadius(float radius)
 {
+    //for use with paths
     this->orbitRadius = radius;
     this->updateOSPRayPosition();
 }
@@ -34,6 +36,7 @@ void Camera::setPosition(float x, float y, float z)
 
 void Camera::centerView(Volume *v)
 {
+    //center the camera's viewpoint on the center of a volume
     std::vector<int> bounds = v->getBounds();
     this->viewX = (float)(bounds[0])/2.0;
     this->viewY = (float)(bounds[1])/2.0;
@@ -42,10 +45,12 @@ void Camera::centerView(Volume *v)
 
 void Camera::updateOSPRayPosition()
 {
+    //calculate the components for the view vector
     float deltaX = (this->viewX-this->xPos);
     float deltaY = (this->viewY-this->yPos);
     float deltaZ = (this->viewZ-this->zPos);
 
+    //update OSPRay camera
     ospSet3fv(this->oCamera, "pos",
             (float[]){this->xPos, this->yPos, this->zPos});
     ospSet3fv(this->oCamera, "dir", (float[]){deltaX, deltaY, deltaZ});

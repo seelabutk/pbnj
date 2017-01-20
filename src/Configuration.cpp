@@ -11,9 +11,18 @@ namespace pbnj {
 Configuration::Configuration(std::string filename) :
     configFilename(filename)
 {
+    //get a parsed json document from the file
     this->reader = new ConfigReader();
     rapidjson::Document json;
     this->reader->parseConfigFile(filename, json);
+
+    /* the following are required:
+     *  - data filename
+     *  - data dimensions
+     *  - image size/dimensions (ie width and height)
+     *  - image filename
+     * everything else is optional
+     */
 
     if(!json.HasMember("filename"))
         std::cerr << "Data filename is required!" << std::endl;
@@ -42,14 +51,18 @@ Configuration::Configuration(std::string filename) :
     else
         this->imageFilename = json["outputImageFilename"].GetString();
 
+    // if no color map is requested, the transfer function will just
+    // use a black to white default
     if(json.HasMember("colorMap"))
         this->selectColorMap(json["colorMap"].GetString());
 
+    // opacity attenuation >= 1.0 doesn't do anything
     if(json.HasMember("opacityAttenuation"))
         this->opacityAttenuation = json["opacityAttenuation"].GetFloat();
     else
         this->opacityAttenuation = 1.0;
 
+    // allow a camera position, else use the camera's default of 0,0,0
     if(json.HasMember("cameraPosition")) {
         const rapidjson::Value& cameraPos = json["cameraPosition"];
         this->cameraX = cameraPos[0].GetFloat();
@@ -65,6 +78,7 @@ Configuration::Configuration(std::string filename) :
 
 void Configuration::selectColorMap(std::string userInput)
 {
+    // some simple alternatives to color map names are allowed
     if(userInput.compare("coolToWarm") == 0 ||
        userInput.compare("cool to warm") == 0) {
         this->colorMap = coolToWarm;
@@ -81,6 +95,7 @@ void Configuration::selectColorMap(std::string userInput)
         this->colorMap = viridis;
     }
     else {
+        // will default to black to white
         std::cerr << "Unrecognized color map " << userInput << "!" << std::endl;
     }
 }

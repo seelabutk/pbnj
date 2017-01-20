@@ -18,7 +18,7 @@ Renderer::Renderer() :
 {
     this->oRenderer = ospNewRenderer("scivis");
     ospSet1i(this->oRenderer, "spp", 8);
-    //ospSet1i(this->oRenderer, "maxDepth", 5);
+    //ospSet1i(this->oRenderer, "maxDepth", 5); // maybe later
     this->setBackgroundColor(0, 0, 0);
     this->oCamera = NULL;
     this->oModel = NULL;
@@ -60,6 +60,7 @@ void Renderer::setCamera(Camera *c)
 
 void Renderer::renderImage(std::string imageFilename)
 {
+    //check if everything is ready for rendering
     bool exit = false;
     IMAGETYPE imageType = this->getFiletype(imageFilename);
     if(imageType == INVALID) {
@@ -77,6 +78,7 @@ void Renderer::renderImage(std::string imageFilename)
     if(exit)
         return;
 
+    //finalize the OSPRay renderer
     ospSetObject(this->oRenderer, "model", this->oModel);
     ospSetObject(this->oRenderer, "camera", this->oCamera);
     ospCommit(this->oRenderer);
@@ -85,6 +87,7 @@ void Renderer::renderImage(std::string imageFilename)
     osp::vec2i imageSize;
     imageSize.x = this->cameraWidth;
     imageSize.y = this->cameraHeight;
+    //this framebuffer will be released after a single frame
     this->oFrameBuffer = ospNewFrameBuffer(imageSize, OSP_FB_SRGBA,
                                            OSP_FB_COLOR | OSP_FB_ACCUM);
     ospRenderFrame(this->oFrameBuffer, this->oRenderer,
@@ -102,8 +105,8 @@ IMAGETYPE Renderer::getFiletype(std::string filename)
     while(std::getline(ss, token, delim)) {
     }
 
-    std::cerr << "DEBUG: image extension is "  << token << std::endl;
-
+    //only supporting PPM for now because
+    //good god using libpng looks annoying
     if(token.compare("ppm") == 0) {
         return PIXMAP;
     }
@@ -121,14 +124,14 @@ void Renderer::saveImage(std::string filename, IMAGETYPE imageType)
 void Renderer::saveAsPPM(std::string filename)
 {
     int width = this->cameraWidth, height = this->cameraHeight;
-    std::cerr << "DEBUG: image dimensions are " << width << "x" << height;
-    std::cerr << std::endl;
     uint32_t *colorBuffer = (uint32_t *)ospMapFrameBuffer(this->oFrameBuffer,
             OSP_FB_COLOR);
+    //do a binary file so the PPM isn't quite so large
     FILE *file = fopen(filename.c_str(), "wb");
     unsigned char *rowOut = (unsigned char *)malloc(3*width);
     fprintf(file, "P6\n%i %i\n255\n", width, height);
 
+    //the OSPRay framebuffer uses RGBA, but PPM only supports RGB
     for(int j = 0; j < height; j++) {
         unsigned char *rowIn = (unsigned char*)&colorBuffer[(height-1-j)*width];
         for(int i = 0; i < width; i++) {
@@ -142,6 +145,8 @@ void Renderer::saveAsPPM(std::string filename)
     fprintf(file, "\n");
     fclose(file);
 
+    //unmap and release so OSPRay will deallocate the memory
+    //used by the framebuffer
     ospUnmapFrameBuffer(colorBuffer, this->oFrameBuffer);
     ospRelease(this->oFrameBuffer);
 }

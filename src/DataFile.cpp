@@ -33,7 +33,6 @@ void DataFile::loadFromFile(std::string filename)
         std::cerr << "Unknown filetype!" << std::endl;
     }
 
-    //int numValues = this->xDim * this->yDim * this->zDim;
     FILE *dataFile = fopen(filename.c_str(), "r");
 
     if(dataFile == NULL) {
@@ -52,10 +51,9 @@ FILETYPE DataFile::getFiletype()
     ss.str(this->filename);
     std::string token;
     char delim = '.';
+    // keep the last token after splitting on dots
     while(std::getline(ss, token, delim)) {
     }
-
-    std::cerr << "DEBUG: extension is "  << token << std::endl;
 
     if(token.compare("bin") == 0 ||
        token.compare("dat") == 0 ||
@@ -69,8 +67,8 @@ FILETYPE DataFile::getFiletype()
 
 void DataFile::calculateStatistics()
 {
-    //calculate min, max, avg, stdev
-    //int numValues = this->xDim * this->yDim * this->zDim;
+    // calculate min, max, avg, stddev
+    // stddev and avg may be useful for automatic diverging color maps
     this->minVal = data[0];
     this->maxVal = data[0];
     double total = 0, totalSquares = 0;
@@ -90,6 +88,7 @@ void DataFile::calculateStatistics()
 
 void DataFile::printStatistics()
 {
+    // debugging purposes
     if(!this->statsCalculated) {
         std::cerr << "Statistics not calculated for this data!" << std::endl;
         return;
