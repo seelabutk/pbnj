@@ -49,6 +49,18 @@ Configuration::Configuration(std::string filename) :
         this->opacityAttenuation = json["opacityAttenuation"].GetFloat();
     else
         this->opacityAttenuation = 1.0;
+
+    if(json.HasMember("cameraPosition")) {
+        const rapidjson::Value& cameraPos = json["cameraPosition"];
+        this->cameraX = cameraPos[0].GetFloat();
+        this->cameraY = cameraPos[1].GetFloat();
+        this->cameraZ = cameraPos[2].GetFloat();
+    }
+    else {
+        this->cameraX = 0.0;
+        this->cameraY = 0.0;
+        this->cameraZ = 0.0;
+    }
 }
 
 void Configuration::selectColorMap(std::string userInput)

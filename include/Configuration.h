@@ -28,6 +28,10 @@ namespace pbnj {
             std::vector<float> opacityMap;
             float opacityAttenuation;
 
+            float cameraX;
+            float cameraY;
+            float cameraZ;
+
         private:
             ConfigReader *reader;
 

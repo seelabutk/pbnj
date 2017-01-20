@@ -30,7 +30,7 @@ int main(int argc, const char **argv)
     camera->setPosition((config->dataXDim-1)/2.0, (config->dataYDim-1)/2.0,
             config->dataZDim*2);
     */
-    camera->setPosition((config->dataXDim-1)/2.0, -(config->dataYDim-1)/2.0 - 1, config->dataZDim);
+    camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
 
     pbnj::Renderer *renderer = new pbnj::Renderer();
     renderer->setVolume(volume);
