@@ -11,6 +11,8 @@ namespace pbnj {
 
     extern std::vector<float> coolToWarm;
     extern std::vector<float> spectralReverse;
+    extern std::vector<float> magma;
+    extern std::vector<float> viridis;
 
     class TransferFunction {
         public:
