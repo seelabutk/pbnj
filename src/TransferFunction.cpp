@@ -40,7 +40,8 @@ void TransferFunction::setRange(float minimum, float maximum)
     this->minVal = minimum;
     this->maxVal = maximum;
 
-    ospSet2fv(this->oTF, "valueRange", (float[]){this->minVal, this->maxVal});
+    float temp[] = {this->minVal, this->maxVal};
+    ospSet2fv(this->oTF, "valueRange", temp);
     ospCommit(this->oTF);
 }
 
@@ -74,11 +75,12 @@ void TransferFunction::setColorMap(std::vector<float> &map)
     this->colorMap.reserve(map.size());
 
     for(int i = 0; i < map.size(); i++)
-        this->colorMap[i] = map[i];
+        this->colorMap.push_back(map[i]);
 
-    this->oColorData = ospNewData(this->colorMap.size()/3, OSP_FLOAT3,
+    this->oColorData = ospNewData(this->colorMap.size(), OSP_FLOAT3,
             this->colorMap.data());
     ospSetData(this->oTF, "colors", this->oColorData);
+
     ospCommit(this->oTF);
 }
 

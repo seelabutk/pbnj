@@ -23,13 +23,16 @@ Volume::Volume(std::string filename, int x, int y, int z)
     this->oData = ospNewData(this->dataFile->numValues, OSP_FLOAT, 
             this->dataFile->data, OSP_DATA_SHARED_BUFFER);
 
+    int dimensions[] = {this->dataFile->xDim, 
+                        this->dataFile->yDim,
+                        this->dataFile->zDim};
+
+    float voxelRange[] = {this->dataFile->minVal, 
+                          this->dataFile->maxVal};
     ospSetData(this->oVolume, "voxelData", this->oData);
-    ospSet3iv(this->oVolume, "dimensions", (int[]){this->dataFile->xDim,
-                                                   this->dataFile->yDim,
-                                                   this->dataFile->zDim});
+    ospSet3iv(this->oVolume, "dimensions", dimensions);
     ospSetString(this->oVolume, "voxelType", "float");
-    ospSet2fv(this->oVolume, "voxelRange", (float[]){this->dataFile->minVal,
-                                                     this->dataFile->maxVal});
+    ospSet2fv(this->oVolume, "voxelRange", voxelRange);
     ospSetObject(this->oVolume, "transferFunction",
             this->transferFunction->asOSPObject());
     ospCommit(this->oVolume);

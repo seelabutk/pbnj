@@ -14,7 +14,8 @@ Camera::Camera(int width, int height) :
     //setup OSPRay camera with basic parameters
     this->oCamera = ospNewCamera("perspective");
     this->updateOSPRayPosition();
-    ospSet3fv(this->oCamera, "up",  (float[]){0.0, 1.0, 0.0});
+    float temp[] = {0.0, 1.0, 0.0};
+    ospSet3fv(this->oCamera, "up",  temp);
     ospSetf(this->oCamera, "aspect", (float)this->imageWidth/imageHeight);
     ospCommit(this->oCamera);
 }
@@ -51,9 +52,10 @@ void Camera::updateOSPRayPosition()
     float deltaZ = (this->viewZ-this->zPos);
 
     //update OSPRay camera
-    ospSet3fv(this->oCamera, "pos",
-            (float[]){this->xPos, this->yPos, this->zPos});
-    ospSet3fv(this->oCamera, "dir", (float[]){deltaX, deltaY, deltaZ});
+    float temp[] = {this->xPos, this->yPos, this->zPos};
+    ospSet3fv(this->oCamera, "pos", temp);
+    float temp2[] = {deltaX, deltaY, deltaZ};
+    ospSet3fv(this->oCamera, "dir", temp2);
     ospCommit(this->oCamera);
 }
 
