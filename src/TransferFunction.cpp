@@ -77,7 +77,7 @@ void TransferFunction::setColorMap(std::vector<float> &map)
     for(int i = 0; i < map.size(); i++)
         this->colorMap.push_back(map[i]);
 
-    this->oColorData = ospNewData(this->colorMap.size(), OSP_FLOAT3,
+    this->oColorData = ospNewData(this->colorMap.size() / 3, OSP_FLOAT3,
             this->colorMap.data());
     ospSetData(this->oTF, "colors", this->oColorData);
 
