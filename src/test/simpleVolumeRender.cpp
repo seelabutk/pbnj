@@ -27,6 +27,7 @@ int main(int argc, const char **argv)
             config->imageHeight);
     camera->centerView(volume);
     camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
+    camera->setUpVector(config->cameraUpX, config->cameraUpY, config->cameraUpZ);
 
     pbnj::Renderer *renderer = new pbnj::Renderer();
     renderer->setVolume(volume);

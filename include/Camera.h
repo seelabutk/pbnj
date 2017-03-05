@@ -13,6 +13,7 @@ namespace pbnj {
             Camera(int width, int height);
 
             void setPosition(float x, float y, float z);
+            void setUpVector(float x, float y, float z);
             void setOrbitRadius(float radius);
             void centerView(Volume *v);
 
@@ -31,6 +32,9 @@ namespace pbnj {
             float viewX;
             float viewY;
             float viewZ;
+            float upX;
+            float upY;
+            float upZ;
             float orbitRadius;
 
             OSPCamera oCamera;

@@ -14,8 +14,6 @@ Camera::Camera(int width, int height) :
     //setup OSPRay camera with basic parameters
     this->oCamera = ospNewCamera("perspective");
     this->updateOSPRayPosition();
-    float temp[] = {0.0, 1.0, 0.0};
-    ospSet3fv(this->oCamera, "up",  temp);
     ospSetf(this->oCamera, "aspect", (float)this->imageWidth/imageHeight);
     ospCommit(this->oCamera);
 }
@@ -24,6 +22,14 @@ void Camera::setOrbitRadius(float radius)
 {
     //for use with paths
     this->orbitRadius = radius;
+    this->updateOSPRayPosition();
+}
+
+void Camera::setUpVector(float x, float y, float z)
+{
+    this->upX = x;
+    this->upY = y;
+    this->upZ = z;    
     this->updateOSPRayPosition();
 }
 
@@ -52,10 +58,14 @@ void Camera::updateOSPRayPosition()
     float deltaZ = (this->viewZ-this->zPos);
 
     //update OSPRay camera
-    float temp[] = {this->xPos, this->yPos, this->zPos};
-    ospSet3fv(this->oCamera, "pos", temp);
-    float temp2[] = {deltaX, deltaY, deltaZ};
-    ospSet3fv(this->oCamera, "dir", temp2);
+    float position[] = {this->xPos, this->yPos, this->zPos};
+    ospSet3fv(this->oCamera, "pos", position);
+
+    float direction[] = {deltaX, deltaY, deltaZ};
+    ospSet3fv(this->oCamera, "dir", direction);
+
+    float up[] = {this->upX, this->upY, this->upZ};
+    ospSet3fv(this->oCamera, "up",  up);
     ospCommit(this->oCamera);
 }
 
