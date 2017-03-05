@@ -74,6 +74,19 @@ Configuration::Configuration(std::string filename) :
         this->cameraY = 0.0;
         this->cameraZ = 0.0;
     }
+
+    // allow a camera up vector, else use the camera's default of 0, 1, 0
+    if(json.HasMember("cameraUpVector")) {
+        const rapidjson::Value& cameraUpVector = json["cameraUpVector"];
+        this->cameraUpX = cameraUpVector[0].GetFloat();
+        this->cameraUpY = cameraUpVector[1].GetFloat();
+        this->cameraUpZ = cameraUpVector[2].GetFloat();
+    }
+    else {
+        this->cameraUpX = 0.0;
+        this->cameraUpY = 1.0;
+        this->cameraUpZ = 0.0;
+    }
 }
 
 void Configuration::selectColorMap(std::string userInput)

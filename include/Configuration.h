@@ -32,6 +32,10 @@ namespace pbnj {
             float cameraY;
             float cameraZ;
 
+            float cameraUpX;
+            float cameraUpY;
+            float cameraUpZ;
+
         private:
             ConfigReader *reader;
 

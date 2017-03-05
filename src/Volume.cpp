@@ -65,6 +65,7 @@ void Volume::loadFromFile(std::string filename)
     this->dataFile->loadFromFile(filename);
     //this is slooooow :(
     this->dataFile->calculateStatistics();
+    this->dataFile->printStatistics();
 }
 
 }
