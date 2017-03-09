@@ -33,6 +33,7 @@ int main(int argc, const char **argv)
     pbnj::Renderer *renderer = new pbnj::Renderer();
     renderer->setVolume(volume);
     renderer->setCamera(camera);
+    renderer->setSamples(config->samples);
     renderer->renderImage(config->imageFilename);
 
     std::cout << "Rendered image to " << config->imageFilename << std::endl;
