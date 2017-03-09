@@ -21,6 +21,7 @@ int main(int argc, const char **argv)
     pbnj::Volume *volume = new pbnj::Volume(config->dataFilename,
             config->dataXDim, config->dataYDim, config->dataZDim);
     volume->setColorMap(config->colorMap);
+    volume->setOpacityMap(config->opacityMap);
     volume->attenuateOpacity(config->opacityAttenuation);
 
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth, 

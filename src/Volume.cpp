@@ -48,6 +48,11 @@ void Volume::setColorMap(std::vector<float> &map)
     this->transferFunction->setColorMap(map);
 }
 
+void Volume::setOpacityMap(std::vector<float> &map)
+{
+    this->transferFunction->setOpacityMap(map);
+}
+
 std::vector<int> Volume::getBounds()
 {
     std::vector<int> bounds = {this->dataFile->xDim, this->dataFile->yDim,
