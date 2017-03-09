@@ -18,7 +18,7 @@ Renderer::Renderer() :
     backgroundColor()
 {
     this->oRenderer = ospNewRenderer("scivis");
-    ospSet1i(this->oRenderer, "spp", 8);
+    //ospSet1i(this->oRenderer, "spp", 4);
     //ospSet1i(this->oRenderer, "maxDepth", 5); // maybe later
     this->setBackgroundColor(0, 0, 0);
     this->oCamera = NULL;
@@ -57,6 +57,12 @@ void Renderer::setCamera(Camera *c)
     this->cameraWidth = c->imageWidth;
     this->cameraHeight = c->imageHeight;
     this->oCamera = c->asOSPRayObject();
+}
+
+void Renderer::setSamples(unsigned int spp)
+{
+    ospSet1i(this->oRenderer, "spp", spp);
+    ospCommit(this->oRenderer);
 }
 
 void Renderer::renderImage(std::string imageFilename)

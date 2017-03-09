@@ -21,16 +21,19 @@ int main(int argc, const char **argv)
     pbnj::Volume *volume = new pbnj::Volume(config->dataFilename,
             config->dataXDim, config->dataYDim, config->dataZDim);
     volume->setColorMap(config->colorMap);
+    volume->setOpacityMap(config->opacityMap);
     volume->attenuateOpacity(config->opacityAttenuation);
 
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth, 
             config->imageHeight);
     camera->centerView(volume);
     camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
+    camera->setUpVector(config->cameraUpX, config->cameraUpY, config->cameraUpZ);
 
     pbnj::Renderer *renderer = new pbnj::Renderer();
     renderer->setVolume(volume);
     renderer->setCamera(camera);
+    renderer->setSamples(config->samples);
     renderer->renderImage(config->imageFilename);
 
     std::cout << "Rendered image to " << config->imageFilename << std::endl;

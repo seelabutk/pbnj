@@ -19,6 +19,7 @@ namespace pbnj {
 
             void attenuateOpacity(float amount);
             void setColorMap(std::vector<float> &map);
+            void setOpacityMap(std::vector<float> &map);
             std::vector<int> getBounds();
             OSPVolume asOSPRayObject();
 

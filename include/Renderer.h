@@ -18,6 +18,7 @@ namespace pbnj {
             void setBackgroundColor(char r, char g, char b);
             void setVolume(Volume *v);
             void setCamera(Camera *c);
+            void setSamples(unsigned int spp);
 
             void render();
             void renderToBuffer(unsigned char **buffer, int &width, int &height);
