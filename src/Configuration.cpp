@@ -56,11 +56,27 @@ Configuration::Configuration(std::string filename) :
     if(json.HasMember("colorMap"))
         this->selectColorMap(json["colorMap"].GetString());
 
+    // opacity map is a ramp by default, otherwise get a list from the user
+    if(json.HasMember("opacityMap")) {
+        const rapidjson::Value& omap = json["opacityMap"];
+        for(rapidjson::SizeType i = 0; i < omap.Size(); i++)
+            this->opacityMap.push_back(omap[i].GetFloat());
+    }
+
     // opacity attenuation >= 1.0 doesn't do anything
     if(json.HasMember("opacityAttenuation"))
         this->opacityAttenuation = json["opacityAttenuation"].GetFloat();
     else
         this->opacityAttenuation = 1.0;
+
+    // samples per pixel
+    if(json.HasMember("samplesPerPixel")) {
+        unsigned int val = json["samplesPerPixel"].GetUint();
+        std::cerr << "samples: " << val << std::endl;
+        this->samples = val;
+    }
+    else
+        this->samples = 4;
 
     // allow a camera position, else use the camera's default of 0,0,0
     if(json.HasMember("cameraPosition")) {
@@ -73,6 +89,19 @@ Configuration::Configuration(std::string filename) :
         this->cameraX = 0.0;
         this->cameraY = 0.0;
         this->cameraZ = 0.0;
+    }
+
+    // allow a camera up vector, else use the camera's default of 0, 1, 0
+    if(json.HasMember("cameraUpVector")) {
+        const rapidjson::Value& cameraUpVector = json["cameraUpVector"];
+        this->cameraUpX = cameraUpVector[0].GetFloat();
+        this->cameraUpY = cameraUpVector[1].GetFloat();
+        this->cameraUpZ = cameraUpVector[2].GetFloat();
+    }
+    else {
+        this->cameraUpX = 0.0;
+        this->cameraUpY = 1.0;
+        this->cameraUpZ = 0.0;
     }
 }
 

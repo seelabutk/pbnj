@@ -52,7 +52,8 @@ void TransferFunction::attenuateOpacity(float amount)
     for(int i = 0; i < this->opacityMap.size(); i++)
         this->opacityMap[i] = this->opacityMap[i] * amount;
 
-    this->oOpacityData = ospNewData(256, OSP_FLOAT, this->opacityMap.data());
+    this->oOpacityData = ospNewData(this->opacityMap.size(), OSP_FLOAT,
+            this->opacityMap.data());
     ospSetData(this->oTF, "opacities", this->oOpacityData);
     ospCommit(this->oTF);
 }
@@ -81,6 +82,26 @@ void TransferFunction::setColorMap(std::vector<float> &map)
             this->colorMap.data());
     ospSetData(this->oTF, "colors", this->oColorData);
 
+    ospCommit(this->oTF);
+}
+
+void TransferFunction::setOpacityMap(std::vector<float> &map)
+{
+    //map may be empty if the config file is used
+    if(map.empty())
+        return;
+
+    //clear in case the new map is shorter than the previous
+    //reserver in case the new map is longer than the previous
+    this->opacityMap.clear();
+    this->opacityMap.reserve(map.size());
+
+    for(int i = 0; i < map.size(); i++)
+        this->opacityMap.push_back(map[i]);
+
+    this->oOpacityData = ospNewData(this->opacityMap.size(), OSP_FLOAT,
+            this->opacityMap.data());
+    ospSetData(this->oTF, "opacities", this->oOpacityData);
     ospCommit(this->oTF);
 }
 
