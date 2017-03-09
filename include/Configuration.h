@@ -28,6 +28,8 @@ namespace pbnj {
             std::vector<float> opacityMap;
             float opacityAttenuation;
 
+            unsigned int samples;
+
             float cameraX;
             float cameraY;
             float cameraZ;

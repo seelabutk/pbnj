@@ -69,6 +69,15 @@ Configuration::Configuration(std::string filename) :
     else
         this->opacityAttenuation = 1.0;
 
+    // samples per pixel
+    if(json.HasMember("samplesPerPixel")) {
+        unsigned int val = json["samplesPerPixel"].GetUint();
+        std::cerr << "samples: " << val << std::endl;
+        this->samples = val;
+    }
+    else
+        this->samples = 4;
+
     // allow a camera position, else use the camera's default of 0,0,0
     if(json.HasMember("cameraPosition")) {
         const rapidjson::Value& cameraPos = json["cameraPosition"];
