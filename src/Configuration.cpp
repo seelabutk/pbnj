@@ -56,6 +56,13 @@ Configuration::Configuration(std::string filename) :
     if(json.HasMember("colorMap"))
         this->selectColorMap(json["colorMap"].GetString());
 
+    // opacity map is a ramp by default, otherwise get a list from the user
+    if(json.HasMember("opacityMap")) {
+        const rapidjson::Value& omap = json["opacityMap"];
+        for(rapidjson::SizeType i = 0; i < omap.Size(); i++)
+            this->opacityMap.push_back(omap[i].GetFloat());
+    }
+
     // opacity attenuation >= 1.0 doesn't do anything
     if(json.HasMember("opacityAttenuation"))
         this->opacityAttenuation = json["opacityAttenuation"].GetFloat();

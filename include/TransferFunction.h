@@ -28,6 +28,7 @@ namespace pbnj {
             void setRange(float minimum, float maximum);
             void attenuateOpacity(float amount);
             void setColorMap(std::vector<float> &map);
+            void setOpacityMap(std::vector<float> &map);
 
             OSPTransferFunction asOSPObject();
             
