@@ -19,13 +19,15 @@ namespace pbnj {
             void setVolume(Volume *v);
             void setCamera(Camera *c);
 
+            void render();
+            void renderToBuffer(unsigned char **buffer, int &width, int &height);
             void renderImage(std::string imageFilename);
-
-        private:
-            char backgroundColor[3];
 
             int cameraWidth;
             int cameraHeight;
+        private:
+            char backgroundColor[3];
+
 
             //these NEED to be pointers soon
             OSPRenderer oRenderer;
