@@ -15,7 +15,8 @@ namespace pbnj {
             void setPosition(float x, float y, float z);
             void setUpVector(float x, float y, float z);
             void setOrbitRadius(float radius);
-            void centerView(Volume *v);
+            // no longer needed as the volume is centered automatically
+            void centerView();
 
             OSPCamera asOSPRayObject();
 

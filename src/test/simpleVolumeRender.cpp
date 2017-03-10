@@ -26,7 +26,8 @@ int main(int argc, const char **argv)
 
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth, 
             config->imageHeight);
-    camera->centerView(volume);
+    // no longer needed as the volume is centered automatically
+    //camera->centerView();
     camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
     camera->setUpVector(config->cameraUpX, config->cameraUpY, config->cameraUpZ);
 

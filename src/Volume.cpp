@@ -26,6 +26,9 @@ Volume::Volume(std::string filename, int x, int y, int z)
     int dimensions[] = {this->dataFile->xDim, 
                         this->dataFile->yDim,
                         this->dataFile->zDim};
+    float center[] = {-dimensions[0]/(float)2.0,
+                      -dimensions[1]/(float)2.0,
+                      -dimensions[2]/(float)2.0};
 
     float voxelRange[] = {this->dataFile->minVal, 
                           this->dataFile->maxVal};
@@ -33,6 +36,7 @@ Volume::Volume(std::string filename, int x, int y, int z)
     ospSet3iv(this->oVolume, "dimensions", dimensions);
     ospSetString(this->oVolume, "voxelType", "float");
     ospSet2fv(this->oVolume, "voxelRange", voxelRange);
+    ospSet3fv(this->oVolume, "gridOrigin", center);
     ospSetObject(this->oVolume, "transferFunction",
             this->transferFunction->asOSPObject());
     ospCommit(this->oVolume);
