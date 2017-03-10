@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <algorithm>
+
 namespace pbnj {
 
 DataFile::DataFile(int x, int y, int z) :
@@ -102,6 +104,29 @@ void DataFile::printStatistics()
     std::cout << "maximum:    " << this->maxVal << std::endl;
     std::cout << "mean:       " << this->avgVal << std::endl;
     std::cout << "std. dev.:  " << this->stdDev << std::endl;
+}
+
+// experimental
+void DataFile::bin(unsigned int num_bins)
+{
+    if(!this->statsCalculated)
+        this->calculateStatistics();
+
+    float bin_width = (this->maxVal - this->minVal) / num_bins;
+    unsigned int *histogram = (unsigned int *) calloc(num_bins, 
+            sizeof(unsigned int));
+
+    for(int i = 0; i < this->numValues; i++) {
+        float bin = (this->data[i] - this->minVal) / bin_width;
+        unsigned int hist_index = std::min(num_bins - 1, (unsigned int) bin);
+        histogram[hist_index]++;
+    }
+
+    std::cout << "Calculated histogram:" << std::endl;
+    for(int i = 0; i < num_bins; i++)
+        std::cout << histogram[i] << std::endl;
+
+    free(histogram);
 }
 
 }
