@@ -19,6 +19,9 @@ namespace pbnj {
             void calculateStatistics();
             void printStatistics();
 
+            // experimental
+            void bin(unsigned int num_bins);
+
             std::string filename;
             FILETYPE filetype;
 
