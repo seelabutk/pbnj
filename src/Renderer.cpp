@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cstring>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -84,6 +85,43 @@ void Renderer::renderImage(std::string imageFilename)
     if(exit)
         return;
 
+    this->render();
+    this->saveImage(imageFilename, imageType);
+}
+
+/*
+ * Renders the OSPRay buffer to buffer and sets the width and height in 
+ * their respective variables.
+ */
+void Renderer::renderToBuffer(unsigned char **buffer, int &width, int &height)
+{
+    this->render();
+    width = this->cameraWidth;
+    height = this->cameraHeight;
+    uint32_t *colorBuffer = (uint32_t *)ospMapFrameBuffer(this->oFrameBuffer,
+            OSP_FB_COLOR);
+    
+    *buffer = (unsigned char *) malloc(4 * width * height);
+    //std::memcpy(buffer, colorBuffer, 4 * width * height);
+    
+    //the OSPRay framebuffer uses RGBA, but PPM only supports RGB
+    for(int j = 0; j < height; j++) {
+        unsigned char *rowIn = (unsigned char*)&colorBuffer[(height-1-j)*width];
+        for(int i = 0; i < width; i++) {
+            int index = j * width + i;
+            (*buffer)[4*index + 0] = rowIn[4*i + 0];
+            (*buffer)[4*index + 1] = rowIn[4*i + 1];
+            (*buffer)[4*index + 2] = rowIn[4*i + 2];
+            (*buffer)[4*index + 3] = 255;//rowIn[4*i + 3];
+        }
+    }
+
+    ospUnmapFrameBuffer(colorBuffer, this->oFrameBuffer);
+    ospRelease(this->oFrameBuffer);
+}
+
+void Renderer::render()
+{
     //finalize the OSPRay renderer
     ospSetObject(this->oRenderer, "model", this->oModel);
     ospSetObject(this->oRenderer, "camera", this->oCamera);
@@ -99,7 +137,6 @@ void Renderer::renderImage(std::string imageFilename)
     ospRenderFrame(this->oFrameBuffer, this->oRenderer,
             OSP_FB_COLOR | OSP_FB_ACCUM);
 
-    this->saveImage(imageFilename, imageType);
 }
 
 IMAGETYPE Renderer::getFiletype(std::string filename)
