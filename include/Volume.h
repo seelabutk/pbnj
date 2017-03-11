@@ -16,6 +16,7 @@ namespace pbnj {
         public:
             //Volume(DataFile *df);
             Volume(std::string filename, int x, int y, int z);
+            Volume(std::string filename, std::string var_name, int x, int y, int z);
 
             void attenuateOpacity(float amount);
             void setColorMap(std::vector<float> &map);
@@ -30,7 +31,8 @@ namespace pbnj {
             OSPVolume oVolume;
             OSPData oData;
 
-            void loadFromFile(std::string filename);
+            void init();
+            void loadFromFile(std::string filename, std::string var_name="");
     };
 }
 
