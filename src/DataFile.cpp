@@ -11,6 +11,11 @@
 
 #include <algorithm>
 
+#ifdef PBNJ_NETCDF
+#include <netcdf>
+#include <map>
+#endif
+
 namespace pbnj {
 
 DataFile::DataFile(int x, int y, int z) :
@@ -28,22 +33,47 @@ DataFile::~DataFile()
 void DataFile::loadFromFile(std::string filename)
 {
     //check if the filetype is known
-    //only binary is known for now
     this->filename = filename;
     this->filetype = getFiletype();
+
     if(this->filetype == UNKNOWN) {
         std::cerr << "Unknown filetype!" << std::endl;
     }
+    else if(this->filetype == NETCDF) {
+#ifdef PBNJ_NETCDF
+        // no explicit close needed, destructor calls it
+        netCDF::NcFile dataFile(filename.c_str(), netCDF::NcFile::read);
 
-    FILE *dataFile = fopen(filename.c_str(), "r");
+        // only get the first variable for now
+        const std::multimap<std::string, netCDF::NcVar> varmap = 
+            dataFile.getVars();
+        netCDF::NcVar variable = varmap.begin()->second;
 
-    if(dataFile == NULL) {
-        std::cerr << "Could not open file!" << std::endl;
+        // overwrite any configured values with the file's values
+        this->xDim = (int) variable.getDim(2).getSize();
+        this->yDim = (int) variable.getDim(1).getSize();
+        this->zDim = (int) variable.getDim(0).getSize();
+        this->numValues = this->xDim * this->yDim * this->zDim;
+
+        // load data
+        this->data = (float *)malloc(this->numValues * sizeof(float));
+        variable.getVar(this->data);
+#else
+        std::cerr << "PBNJ was not built with NetCDF support!" << std::endl;
+#endif
     }
     else {
-        this->data = (float *)malloc(this->numValues * sizeof(float));
-        fread(this->data, sizeof(float), this->numValues, dataFile);
-        fclose(dataFile);
+        FILE *dataFile = fopen(filename.c_str(), "r");
+
+        if(dataFile == NULL) {
+            std::cerr << "Could not open file!" << std::endl;
+        }
+        else {
+            this->data = (float *)malloc(this->numValues * sizeof(float));
+            size_t bytes = fread(this->data, sizeof(float), this->numValues,
+                    dataFile);
+            fclose(dataFile);
+        }
     }
 }
 
@@ -61,6 +91,9 @@ FILETYPE DataFile::getFiletype()
        token.compare("dat") == 0 ||
        token.compare("raw") == 0) {
         return BINARY;
+    }
+    else if(token.compare("nc") == 0) {
+        return NETCDF;
     }
     else {
         return UNKNOWN;
