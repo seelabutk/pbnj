@@ -13,6 +13,21 @@ Volume::Volume(std::string filename, int x, int y, int z)
     this->dataFile = new DataFile(x, y, z);
     this->loadFromFile(filename);
 
+    this->init();
+}
+
+Volume::Volume(std::string filename, std::string var_name, int x, int y, int z)
+{
+    //volumes contain a datafile
+    //one datafile per volume, one volume per renderer/camera
+    this->dataFile = new DataFile(x, y, z);
+    this->loadFromFile(filename, var_name);
+
+    this->init();
+}
+
+void Volume::init()
+{
     //set up default transfer function
     this->transferFunction = new TransferFunction();
     this->transferFunction->setRange(this->dataFile->minVal,
@@ -69,9 +84,9 @@ OSPVolume Volume::asOSPRayObject()
     return this->oVolume;
 }
 
-void Volume::loadFromFile(std::string filename)
+void Volume::loadFromFile(std::string filename, std::string var_name)
 {
-    this->dataFile->loadFromFile(filename);
+    this->dataFile->loadFromFile(filename, var_name);
     //this is slooooow :(
     this->dataFile->calculateStatistics();
     this->dataFile->printStatistics();

@@ -30,7 +30,7 @@ DataFile::~DataFile()
     }
 }
 
-void DataFile::loadFromFile(std::string filename)
+void DataFile::loadFromFile(std::string filename, std::string var_name)
 {
     //check if the filetype is known
     this->filename = filename;
@@ -44,10 +44,16 @@ void DataFile::loadFromFile(std::string filename)
         // no explicit close needed, destructor calls it
         netCDF::NcFile dataFile(filename.c_str(), netCDF::NcFile::read);
 
-        // only get the first variable for now
-        const std::multimap<std::string, netCDF::NcVar> varmap = 
-            dataFile.getVars();
-        netCDF::NcVar variable = varmap.begin()->second;
+        netCDF::NcVar variable;
+        if(var_name.compare("") == 0) {
+            // only get the first variable
+            const std::multimap<std::string, netCDF::NcVar> varmap = 
+                dataFile.getVars();
+            variable = varmap.begin()->second;
+        }
+        else {
+            variable = dataFile.getVar(var_name);
+        }
 
         // overwrite any configured values with the file's values
         this->xDim = (int) variable.getDim(2).getSize();

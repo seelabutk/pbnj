@@ -18,6 +18,10 @@ int main(int argc, const char **argv)
 
     pbnj::pbnjInit(&argc, argv);
 
+    /*
+    pbnj::Volume *volume = new pbnj::Volume(config->dataFilename, "mixfrac",
+            config->dataXDim, config->dataYDim, config->dataZDim);
+    */
     pbnj::Volume *volume = new pbnj::Volume(config->dataFilename,
             config->dataXDim, config->dataYDim, config->dataZDim);
     volume->setColorMap(config->colorMap);
@@ -26,8 +30,6 @@ int main(int argc, const char **argv)
 
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth, 
             config->imageHeight);
-    // no longer needed as the volume is centered automatically
-    //camera->centerView();
     camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
     camera->setUpVector(config->cameraUpX, config->cameraUpY, config->cameraUpZ);
 
