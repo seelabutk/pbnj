@@ -16,6 +16,7 @@ namespace pbnj {
             std::string configFilename;
 
             std::string dataFilename;
+            std::string dataVariable;
             int dataXDim;
             int dataYDim;
             int dataZDim;

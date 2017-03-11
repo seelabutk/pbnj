@@ -18,7 +18,7 @@ Configuration::Configuration(std::string filename) :
 
     /* the following are required:
      *  - data filename
-     *  - data dimensions
+     *  - data dimensions <- should be required only for raw
      *  - image size/dimensions (ie width and height)
      *  - image filename
      * everything else is optional
@@ -50,6 +50,10 @@ Configuration::Configuration(std::string filename) :
         std::cerr << "Image filename is required!" << std::endl;
     else
         this->imageFilename = json["outputImageFilename"].GetString();
+
+    // choice of variable for netcdf files
+    if(json.HasMember("dataVariable"))
+        this->dataVariable = json["dataVariable"].GetString();
 
     // if no color map is requested, the transfer function will just
     // use a black to white default
