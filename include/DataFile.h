@@ -7,7 +7,7 @@
 
 namespace pbnj {
 
-    enum FILETYPE {UNKNOWN, BINARY};
+    enum FILETYPE {UNKNOWN, BINARY, NETCDF};
 
     class DataFile {
 
@@ -28,7 +28,7 @@ namespace pbnj {
             int xDim;
             int yDim;
             int zDim;
-            int numValues;
+            long int numValues;
 
             float minVal; // these should 
             float maxVal; //
