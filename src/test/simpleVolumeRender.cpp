@@ -18,12 +18,15 @@ int main(int argc, const char **argv)
 
     pbnj::pbnjInit(&argc, argv);
 
-    /*
-    pbnj::Volume *volume = new pbnj::Volume(config->dataFilename, "mixfrac",
-            config->dataXDim, config->dataYDim, config->dataZDim);
-    */
-    pbnj::Volume *volume = new pbnj::Volume(config->dataFilename,
-            config->dataXDim, config->dataYDim, config->dataZDim);
+    pbnj::Volume *volume;
+    if(&(config->dataVariable) == NULL) {
+        volume = new pbnj::Volume(config->dataFilename, config->dataXDim,
+                config->dataYDim, config->dataZDim);
+    }
+    else {
+        volume = new pbnj::Volume(config->dataFilename, config->dataVariable,
+                config->dataXDim, config->dataYDim, config->dataZDim);
+    }
     volume->setColorMap(config->colorMap);
     volume->setOpacityMap(config->opacityMap);
     volume->attenuateOpacity(config->opacityAttenuation);

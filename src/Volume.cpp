@@ -89,7 +89,7 @@ void Volume::loadFromFile(std::string filename, std::string var_name)
     this->dataFile->loadFromFile(filename, var_name);
     //this is slooooow :(
     this->dataFile->calculateStatistics();
-    this->dataFile->printStatistics();
+    //this->dataFile->printStatistics();
 }
 
 }
