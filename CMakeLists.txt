@@ -36,7 +36,7 @@ ENDIF(USE_NETCDF)
 INCLUDE_DIRECTORIES(include ${OSPRAY_INCLUDE_DIRS})
 
 SET(PBNJ_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include" ${OSPRAY_INCLUDE_DIRS})
-FILE(GLOB SOURCES "src/*.cpp")
+FILE(GLOB SOURCES "src/*.cpp" "src/lodepng/*.cpp")
 
 IF(BUILD_EXAMPLES)
     ADD_EXECUTABLE(simpleVolumeRender ${SOURCES} "src/test/simpleVolumeRender.cpp")

@@ -12,6 +12,8 @@
 
 #include <ospray/ospray.h>
 
+#include "lodepng/lodepng.h"
+
 namespace pbnj {
 
 Renderer::Renderer() :
@@ -67,23 +69,11 @@ void Renderer::setSamples(unsigned int spp)
 
 void Renderer::renderImage(std::string imageFilename)
 {
-    //check if everything is ready for rendering
-    bool exit = false;
     IMAGETYPE imageType = this->getFiletype(imageFilename);
     if(imageType == INVALID) {
         std::cerr << "Invalid image filetype requested!" << std::endl;
-        exit = true;
-    }
-    if(this->oModel == NULL) {
-        std::cerr << "No volume set to render!" << std::endl;
-        exit = true;
-    }
-    if(this->oCamera == NULL) {
-        std::cerr << "No camera set to render with!" << std::endl;
-        exit = true;
-    }
-    if(exit)
         return;
+    }
 
     this->render();
     this->saveImage(imageFilename, imageType);
@@ -102,9 +92,7 @@ void Renderer::renderToBuffer(unsigned char **buffer, int &width, int &height)
             OSP_FB_COLOR);
     
     *buffer = (unsigned char *) malloc(4 * width * height);
-    //std::memcpy(buffer, colorBuffer, 4 * width * height);
     
-    //the OSPRay framebuffer uses RGBA, but PPM only supports RGB
     for(int j = 0; j < height; j++) {
         unsigned char *rowIn = (unsigned char*)&colorBuffer[(height-1-j)*width];
         for(int i = 0; i < width; i++) {
@@ -112,7 +100,7 @@ void Renderer::renderToBuffer(unsigned char **buffer, int &width, int &height)
             (*buffer)[4*index + 0] = rowIn[4*i + 0];
             (*buffer)[4*index + 1] = rowIn[4*i + 1];
             (*buffer)[4*index + 2] = rowIn[4*i + 2];
-            (*buffer)[4*index + 3] = 255;//rowIn[4*i + 3];
+            (*buffer)[4*index + 3] = 255;
         }
     }
 
@@ -122,6 +110,19 @@ void Renderer::renderToBuffer(unsigned char **buffer, int &width, int &height)
 
 void Renderer::render()
 {
+    //check if everything is ready for rendering
+    bool exit = false;
+    if(this->oModel == NULL) {
+        std::cerr << "No volume set to render!" << std::endl;
+        exit = true;
+    }
+    if(this->oCamera == NULL) {
+        std::cerr << "No camera set to render with!" << std::endl;
+        exit = true;
+    }
+    if(exit)
+        return;
+
     //finalize the OSPRay renderer
     ospSetObject(this->oRenderer, "model", this->oModel);
     ospSetObject(this->oRenderer, "camera", this->oCamera);
@@ -148,10 +149,11 @@ IMAGETYPE Renderer::getFiletype(std::string filename)
     while(std::getline(ss, token, delim)) {
     }
 
-    //only supporting PPM for now because
-    //good god using libpng looks annoying
     if(token.compare("ppm") == 0) {
         return PIXMAP;
+    }
+    else if(token.compare("png") == 0) {
+        return PNG;
     }
     else {
         return INVALID;
@@ -162,6 +164,8 @@ void Renderer::saveImage(std::string filename, IMAGETYPE imageType)
 {
     if(imageType == PIXMAP)
         this->saveAsPPM(filename);
+    else if(imageType == PNG)
+        this->saveAsPNG(filename);
 }
 
 void Renderer::saveAsPPM(std::string filename)
@@ -187,6 +191,40 @@ void Renderer::saveAsPPM(std::string filename)
 
     fprintf(file, "\n");
     fclose(file);
+
+    //unmap and release so OSPRay will deallocate the memory
+    //used by the framebuffer
+    ospUnmapFrameBuffer(colorBuffer, this->oFrameBuffer);
+    ospRelease(this->oFrameBuffer);
+}
+
+void Renderer::saveAsPNG(std::string filename)
+{
+    int width = this->cameraWidth, height = this->cameraHeight;
+    unsigned char *colorBuffer = (unsigned char *) ospMapFrameBuffer(
+            this->oFrameBuffer, OSP_FB_COLOR);
+
+    //set all alpha values to 255 to force the background
+    //this should eventually be set to the actual background
+    unsigned long int numPixels = width * height;
+    for(int i = 0; i < numPixels; i++)
+        colorBuffer[i * 4 + 3] = 255;
+
+    std::vector<unsigned char> image_vector(colorBuffer,
+            colorBuffer + 4 * width * height);
+
+    //convert to PNG object
+    std::vector<unsigned char> converted_image;
+    unsigned int error = lodepng::encode(converted_image, image_vector,
+            width, height);
+    if(error) {
+        std::cerr << "ERROR: could not encode PNG, error " << error << ": ";
+        std::cerr << lodepng_error_text(error) << std::endl;
+        return;
+    }
+
+    //write to file
+    lodepng::save_file(converted_image, filename.c_str());
 
     //unmap and release so OSPRay will deallocate the memory
     //used by the framebuffer

@@ -9,7 +9,7 @@
 
 namespace pbnj {
 
-    enum IMAGETYPE {INVALID, PIXMAP};
+    enum IMAGETYPE {INVALID, PIXMAP, PNG};
 
     class Renderer {
         public:
@@ -29,8 +29,6 @@ namespace pbnj {
         private:
             char backgroundColor[3];
 
-
-            //these NEED to be pointers soon
             OSPRenderer oRenderer;
             OSPFrameBuffer oFrameBuffer;
             OSPModel oModel;
@@ -40,6 +38,7 @@ namespace pbnj {
             void saveImage(std::string filename, IMAGETYPE imageType);
 
             void saveAsPPM(std::string filename);
+            void saveAsPNG(std::string filename);
     };
 }
 
