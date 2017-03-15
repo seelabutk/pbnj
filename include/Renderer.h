@@ -4,6 +4,7 @@
 #include <pbnj.h>
 
 #include <string>
+#include <vector>
 
 #include <ospray/ospray.h>
 
@@ -22,6 +23,7 @@ namespace pbnj {
 
             void render();
             void renderToBuffer(unsigned char **buffer, int &width, int &height);
+            void renderToPNGObject(std::vector<unsigned char> &png);
             void renderImage(std::string imageFilename);
 
             int cameraWidth;
@@ -39,6 +41,7 @@ namespace pbnj {
 
             void saveAsPPM(std::string filename);
             void saveAsPNG(std::string filename);
+            void bufferToPNG(std::vector<unsigned char> &png);
     };
 }
 

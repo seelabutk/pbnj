@@ -79,6 +79,12 @@ void Renderer::renderImage(std::string imageFilename)
     this->saveImage(imageFilename, imageType);
 }
 
+void Renderer::renderToPNGObject(std::vector<unsigned char> &png)
+{
+    this->render();
+    this->bufferToPNG(png);
+}
+
 /*
  * Renders the OSPRay buffer to buffer and sets the width and height in 
  * their respective variables.
@@ -198,7 +204,9 @@ void Renderer::saveAsPPM(std::string filename)
     ospRelease(this->oFrameBuffer);
 }
 
-void Renderer::saveAsPNG(std::string filename)
+// copy a rendered image into a PNG object
+//  - used for saveAsPNG() and renderToPNGObject()
+void Renderer::bufferToPNG(std::vector<unsigned char> &png)
 {
     int width = this->cameraWidth, height = this->cameraHeight;
     unsigned char *colorBuffer = (unsigned char *) ospMapFrameBuffer(
@@ -214,8 +222,7 @@ void Renderer::saveAsPNG(std::string filename)
             colorBuffer + 4 * width * height);
 
     //convert to PNG object
-    std::vector<unsigned char> converted_image;
-    unsigned int error = lodepng::encode(converted_image, image_vector,
+    unsigned int error = lodepng::encode(png, image_vector,
             width, height);
     if(error) {
         std::cerr << "ERROR: could not encode PNG, error " << error << ": ";
@@ -223,13 +230,18 @@ void Renderer::saveAsPNG(std::string filename)
         return;
     }
 
-    //write to file
-    lodepng::save_file(converted_image, filename.c_str());
-
     //unmap and release so OSPRay will deallocate the memory
     //used by the framebuffer
     ospUnmapFrameBuffer(colorBuffer, this->oFrameBuffer);
     ospRelease(this->oFrameBuffer);
+}
+
+void Renderer::saveAsPNG(std::string filename)
+{
+    std::vector<unsigned char> converted_image;
+    this->bufferToPNG(converted_image);
+    //write to file
+    lodepng::save_file(converted_image, filename.c_str());
 }
 
 }
