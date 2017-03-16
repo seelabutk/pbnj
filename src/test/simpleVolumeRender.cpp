@@ -18,8 +18,27 @@ int main(int argc, const char **argv)
 
     pbnj::pbnjInit(&argc, argv);
 
+    if(config->dataFilename.empty()) {
+        if(!config->globbedFilenames.empty()) {
+            std::cerr << "This example does not support time series data";
+            std::cerr << std::endl;
+            std::cerr << "But here are the filenames matched:" << std::endl;
+            for(std::string fname : config->globbedFilenames)
+                std::cerr << fname << std::endl;
+            return 1;
+        }
+        else {
+            std::cerr << "No filename given!" << std::endl;
+            return 1;
+        }
+    }
+    else {
+        std::cout << "DEBUG: dataFilename is not empty!" << std::endl;
+        std::cout << "DEBUG: " << config->dataFilename << std::endl;
+    }
+
     pbnj::Volume *volume;
-    if(&(config->dataVariable) == NULL) {
+    if(config->dataVariable.empty()) {
         volume = new pbnj::Volume(config->dataFilename, config->dataXDim,
                 config->dataYDim, config->dataZDim);
     }
