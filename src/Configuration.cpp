@@ -4,6 +4,7 @@
 
 #include "rapidjson/document.h"
 
+#include <glob.h>
 #include <iostream>
 
 namespace pbnj {
@@ -26,8 +27,51 @@ Configuration::Configuration(std::string filename) :
 
     if(!json.HasMember("filename"))
         std::cerr << "Data filename is required!" << std::endl;
-    else
-        this->dataFilename = json["filename"].GetString();
+    else {
+        std::string fname = json["filename"].GetString();
+
+        // check to see if the filename provided is actually a glob
+        glob_t globResult;
+        // GLOB_ERR - immediately return on error, don't continue
+        // GLOB_BRACE - allow brace expansion
+        //              e.g. /path/{one,two} => /path/one /path/two
+        // GLOB_NOMAGIC - return the word if there are no metacharacters
+        //                in the string, even if there is no match. This
+        //                is preferred over GLOB_NOCHECK because it limits
+        //                gl_pathv to containing only path(s) without
+        //                metacharacters
+        // GLOB_TILDE_CHECK - replace ~ or ~username with home directories
+        //                    and fail if not found
+        unsigned int globError = glob(fname.c_str(),
+                GLOB_ERR | GLOB_BRACE | GLOB_TILDE_CHECK | GLOB_NOMAGIC, NULL,
+                &globResult);
+
+        if(globError == GLOB_NOSPACE) {
+            std::cerr << "ERROR: Ran out of memory when globbing files with";
+            std::cerr << "pattern " << fname << std::endl;
+        }
+        else if(globError == GLOB_ABORTED) {
+            std::cerr << "ERROR: Read error when globbing files with";
+            std::cerr << "pattern " << fname << std::endl;
+        }
+        else if(globError == GLOB_NOMATCH) {
+            std::cerr << "ERROR: No matches found when globbing files with";
+            std::cerr << "pattern " << fname << std::endl;
+        }
+        else {
+            // either there was a glob that returned a single path, or there
+            // were no metacharacters to glob with, in which case the path may
+            // be valid or invalid
+            if(globResult.gl_pathc == 1) {
+                this->dataFilename = fname;
+            }
+            // there was a list of paths successfully globbed
+            else {
+                for(int i = 0; i < globResult.gl_pathc; i++)
+                    this->globbedFilenames.push_back(globResult.gl_pathv[i]);
+            }
+        }
+    }
 
     if(!json.HasMember("dimensions"))
         std::cerr << "Data dimensions are required!" << std::endl;
