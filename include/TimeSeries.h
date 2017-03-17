@@ -3,7 +3,9 @@
 
 #include "Volume.h"
 
+#include <list>
 #include <string>
+#include <sys/sysinfo.h>
 #include <vector>
 
 namespace pbnj {
@@ -23,10 +25,20 @@ namespace pbnj {
             int xDim;
             int yDim;
             int zDim;
+            unsigned int dataSize;
+            unsigned int maxVolumes;
+            unsigned int currentVolumes;
+            std::list<int> lruCache;
+            void encache(unsigned int index);
+            void setMaxMemory(unsigned int gigabytes);
+
             unsigned int length;
             std::vector<std::string> dataFilenames;
             std::string dataVariable;
             Volume **volumes;
+
+            struct sysinfo systemInfo;
+            void initSystemInfo();
     };
 
 }
