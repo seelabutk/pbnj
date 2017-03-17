@@ -18,6 +18,9 @@ namespace pbnj {
     /* abstraction wrapper around OSPRay volumes */
     class Volume;
 
+    /* abstraction around Volume to hold a series of data volumes */
+    class TimeSeries;
+
     /* abstraction wrapper around OSPRay transfer functions
      * combines color and opacity tfs into a single object
      */
