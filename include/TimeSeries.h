@@ -20,6 +20,7 @@ namespace pbnj {
 
             Volume *getVolume(unsigned int index);
             unsigned int getLength();
+            void setMaxMemory(unsigned int gigabytes);
 
         private:
             int xDim;
@@ -30,7 +31,6 @@ namespace pbnj {
             unsigned int currentVolumes;
             std::list<int> lruCache;
             void encache(unsigned int index);
-            void setMaxMemory(unsigned int gigabytes);
 
             unsigned int length;
             std::vector<std::string> dataFilenames;

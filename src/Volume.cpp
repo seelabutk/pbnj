@@ -4,6 +4,8 @@
 
 #include <vector>
 
+#include <ospray/ospray.h>
+
 namespace pbnj {
 
 Volume::Volume(std::string filename, int x, int y, int z)
@@ -38,15 +40,17 @@ void Volume::init()
     this->oData = ospNewData(this->dataFile->numValues, OSP_FLOAT, 
             this->dataFile->data, OSP_DATA_SHARED_BUFFER);
 
-    int dimensions[] = {this->dataFile->xDim, 
+    int dimensions[3] = {this->dataFile->xDim, 
                         this->dataFile->yDim,
                         this->dataFile->zDim};
-    float center[] = {-dimensions[0]/(float)2.0,
+    float center[3] = {-dimensions[0]/(float)2.0,
                       -dimensions[1]/(float)2.0,
                       -dimensions[2]/(float)2.0};
-
-    float voxelRange[] = {this->dataFile->minVal, 
+    float voxelRange[3] = {this->dataFile->minVal, 
                           this->dataFile->maxVal};
+
+    // There is a memory leak here caused by OSPRay
+    // more info in destructor
     ospSetData(this->oVolume, "voxelData", this->oData);
     ospSet3iv(this->oVolume, "dimensions", dimensions);
     ospSetString(this->oVolume, "voxelType", "float");
@@ -59,10 +63,22 @@ void Volume::init()
 
 Volume::~Volume()
 {
+    // Memory leak in OSPRay
+    // User-set parameters cannot be removed and deallocated
+    // As such, all calls to ospSet*() create copies of the objects
+    // passed in and never get deleted. This accumulates over time.
+    //
+    // FIX: call ospRemoveParam() here to undo all ospSet*() calls
+    //      This has to be done in ALL objects that have underlying
+    //      OSPRay objects, though Volume is the worst offender
+    // REQUIRES: upgrading to OSPRay 1.2.0+
+    //           this is when ospRemoveParam() was officially released
     delete this->dataFile;
     this->dataFile = NULL;
     delete this->transferFunction;
     this->transferFunction = NULL;
+    ospRelease(this->oVolume);
+    ospRelease(this->oData);
 }
 
 void Volume::attenuateOpacity(float amount)

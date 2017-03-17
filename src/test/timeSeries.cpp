@@ -44,9 +44,14 @@ int main(int argc, const char **argv)
         return 1;
     }
 
-    for(int i = 0; i < 1; i++) {
+    timeSeries->setMaxMemory(2);
+
+    for(int i = 0; i < 10; i++) {
         volume = timeSeries->getVolume(i);
     }
+
+    delete config;
+    delete timeSeries;
 
     return 0;
 }

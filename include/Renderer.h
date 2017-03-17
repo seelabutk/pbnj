@@ -15,6 +15,7 @@ namespace pbnj {
     class Renderer {
         public:
             Renderer();
+            ~Renderer();
 
             void setBackgroundColor(char r, char g, char b);
             void setVolume(Volume *v);

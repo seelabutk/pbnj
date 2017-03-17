@@ -71,6 +71,8 @@ Configuration::Configuration(std::string filename) :
                     this->globbedFilenames.push_back(globResult.gl_pathv[i]);
             }
         }
+
+        globfree(&globResult);
     }
 
     if(!json.HasMember("dimensions"))

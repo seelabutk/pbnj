@@ -18,6 +18,11 @@ Camera::Camera(int width, int height) :
     ospCommit(this->oCamera);
 }
 
+Camera::~Camera()
+{
+    ospRelease(this->oCamera);
+}
+
 void Camera::setOrbitRadius(float radius)
 {
     //for use with paths

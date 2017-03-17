@@ -11,6 +11,7 @@ namespace pbnj {
     class Camera {
         public:
             Camera(int width, int height);
+            ~Camera();
 
             void setPosition(float x, float y, float z);
             void setUpVector(float x, float y, float z);

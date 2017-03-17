@@ -18,6 +18,7 @@ namespace pbnj {
         public:
             //creates ramp opacity and black to white color
             TransferFunction();
+            ~TransferFunction();
             //other possibilities:
             // color only
             // opacity only
