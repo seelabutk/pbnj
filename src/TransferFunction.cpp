@@ -23,11 +23,18 @@ TransferFunction::TransferFunction()
     this->oTF = ospNewTransferFunction("piecewise_linear");
     this->oColorData = ospNewData(this->colorMap.size()/3, OSP_FLOAT3,
             this->colorMap.data());
-    this->oOpacityData = ospNewData(this->colorMap.size(), OSP_FLOAT,
+    this->oOpacityData = ospNewData(this->opacityMap.size(), OSP_FLOAT,
             this->opacityMap.data());
     ospSetData(this->oTF, "colors", this->oColorData);
     ospSetData(this->oTF, "opacities", this->oOpacityData);
     ospCommit(this->oTF);
+}
+
+TransferFunction::~TransferFunction()
+{
+    ospRelease(this->oTF);
+    ospRelease(this->oColorData);
+    ospRelease(this->oOpacityData);
 }
 
 void TransferFunction::setRange(float minimum, float maximum)

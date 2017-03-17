@@ -27,6 +27,7 @@ DataFile::~DataFile()
 {
     if(this->data != NULL) {
         free(this->data);
+        this->data = NULL;
     }
 }
 

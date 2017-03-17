@@ -27,6 +27,13 @@ Renderer::Renderer() :
     this->oModel = NULL;
 }
 
+Renderer::~Renderer()
+{
+    ospRelease(this->oRenderer);
+    ospRelease(this->oCamera);
+    ospRelease(this->oModel);
+}
+
 void Renderer::setBackgroundColor(char r, char g, char b)
 {
     this->backgroundColor[0] = r;

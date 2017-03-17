@@ -30,8 +30,10 @@ TimeSeries::TimeSeries(std::vector<std::string> filenames,
 
 TimeSeries::~TimeSeries()
 {
+    std::cout << "DEBUG: TimeSeries destructor" << std::endl;
     for(int i = 0; i < this->length; i++) {
         if(this->volumes[i] != NULL) {
+            std::cout << "DEBUG: TimeSeries destructor deleting " << i << std::endl;
             delete this->volumes[i];
             this->volumes[i] = NULL;
         }
@@ -52,7 +54,7 @@ void TimeSeries::initSystemInfo()
     std::cout << "DEBUG: Total memory: " << totalBytes << "GB" << std::endl;
     std::cout << "DEBUG: Free memory:  " << freeBytes << "GB" << std::endl;
     std::cout << "DEBUG: Max to use:   " << maxUsage/1073741824 << "GB" << std::endl;
-    std::cout << "DEBUG: Concurrent vols: " << maxVolumes << std::endl;
+    std::cout << "DEBUG: Concurrent vols: " << this->maxVolumes << std::endl;
 }
 
 void TimeSeries::setMaxMemory(unsigned int gigabytes)
@@ -63,7 +65,8 @@ void TimeSeries::setMaxMemory(unsigned int gigabytes)
         std::cerr << "available. Keeping limit at previous value" << std::endl;
         return;
     }
-    this->maxVolumes = gigabytes / this->dataSize;
+    this->maxVolumes = 1073741824 * gigabytes / this->dataSize;
+    std::cout << "DEBUG: New maxVolumes: " << this->maxVolumes << std::endl;
 }
 
 void TimeSeries::encache(unsigned int index)
