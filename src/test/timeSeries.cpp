@@ -46,7 +46,7 @@ int main(int argc, const char **argv)
 
     timeSeries->setMaxMemory(2);
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < 15; i++) {
         volume = timeSeries->getVolume(i);
     }
 
