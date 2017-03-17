@@ -8,10 +8,14 @@
 
 namespace pbnj {
 
+    enum CONFSTATE {ERROR_NODATA, ERROR_MULTISET, SINGLE_NOVAR, SINGLE_VAR,
+        MULTI_NOVAR, MULTI_VAR};
+
     class Configuration {
 
         public:
             Configuration(std::string filename);
+            CONFSTATE getConfigState();
 
             std::string configFilename;
 

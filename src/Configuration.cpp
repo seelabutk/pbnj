@@ -177,4 +177,33 @@ void Configuration::selectColorMap(std::string userInput)
     }
 }
 
+CONFSTATE Configuration::getConfigState()
+{
+    // six possible states for the config/data
+    if(this->dataFilename.empty() && this->globbedFilenames.empty()) {
+        // no filename(s) was given
+        return ERROR_NODATA;
+    }
+    if(!this->dataFilename.empty() && !this->globbedFilenames.empty()) {
+        // both a single and globbed set of filenames were given
+        return ERROR_MULTISET;
+    }
+
+    // if there is not a single filename
+    if(this->dataFilename.empty()) {
+        // this is either a globbed set with or without a variable
+        if(this->dataVariable.empty())
+            return MULTI_NOVAR;
+        else
+            return MULTI_VAR;
+    }
+    else {
+        // otherwise this is a single volume with or without a variable
+        if(this->dataVariable.empty())
+            return SINGLE_NOVAR;
+        else
+            return SINGLE_VAR;
+    }
+}
+
 }

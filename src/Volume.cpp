@@ -57,6 +57,14 @@ void Volume::init()
     ospCommit(this->oVolume);
 }
 
+Volume::~Volume()
+{
+    delete this->dataFile;
+    this->dataFile = NULL;
+    delete this->transferFunction;
+    this->transferFunction = NULL;
+}
+
 void Volume::attenuateOpacity(float amount)
 {
     this->transferFunction->attenuateOpacity(amount);

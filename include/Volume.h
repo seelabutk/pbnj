@@ -17,6 +17,7 @@ namespace pbnj {
             //Volume(DataFile *df);
             Volume(std::string filename, int x, int y, int z);
             Volume(std::string filename, std::string var_name, int x, int y, int z);
+            ~Volume();
 
             void attenuateOpacity(float amount);
             void setColorMap(std::vector<float> &map);
