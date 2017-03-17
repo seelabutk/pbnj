@@ -55,29 +55,26 @@ int main(int argc, const char **argv)
             break;
         case pbnj::SINGLE_NOVAR:
             std::cout << "Single volume, no variable" << std::endl;
-            volume = new pbnj::Volume(config->dataFilename,
-                                     config->dataXDim, config->dataYDim,
-                                     config->dataZDim);
+            volume = new pbnj::Volume(config->dataFilename, config->dataXDim,
+                    config->dataYDim, config->dataZDim);
             break;
         case pbnj::SINGLE_VAR:
             std::cout << "Single volume, variable" << std::endl;
             volume = new pbnj::Volume(config->dataFilename,
-                                     config->dataVariable, config->dataXDim,
-                                     config->dataYDim, config->dataZDim);
+                    config->dataVariable, config->dataXDim, config->dataYDim,
+                    config->dataZDim);
             break;
         case pbnj::MULTI_NOVAR:
             std::cout << "Multiple volumes, no variable" << std::endl;
-            timeSeries = new pbnj::TimeSeries(
-                                     config->globbedFilenames, config->dataXDim,
-                                     config->dataYDim, config->dataZDim);
+            timeSeries = new pbnj::TimeSeries(config->globbedFilenames,
+                    config->dataXDim, config->dataYDim, config->dataZDim);
             single = false;
             break;
         case pbnj::MULTI_VAR:
             std::cout << "Multiple volumes, variable" << std::endl;
-            timeSeries = new pbnj::TimeSeries(
-                                     config->globbedFilenames,
-                                     config->dataVariable, config->dataXDim,
-                                     config->dataYDim, config->dataZDim);
+            timeSeries = new pbnj::TimeSeries(config->globbedFilenames,
+                    config->dataVariable, config->dataXDim, config->dataYDim,
+                    config->dataZDim);
             single = false;
     }
 
@@ -85,7 +82,8 @@ int main(int argc, const char **argv)
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth, 
             config->imageHeight);
     camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
-    camera->setUpVector(config->cameraUpX, config->cameraUpY, config->cameraUpZ);
+    camera->setUpVector(config->cameraUpX, config->cameraUpY,
+            config->cameraUpZ);
 
     if(single) {
         // we have a single volume
