@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/mman.h>
 
 #include <algorithm>
 
@@ -31,7 +32,8 @@ DataFile::~DataFile()
     }
 }
 
-void DataFile::loadFromFile(std::string filename, std::string var_name)
+void DataFile::loadFromFile(std::string filename, std::string var_name,
+        bool memmap)
 {
     //check if the filetype is known
     this->filename = filename;
@@ -76,9 +78,16 @@ void DataFile::loadFromFile(std::string filename, std::string var_name)
             std::cerr << "Could not open file!" << std::endl;
         }
         else {
-            this->data = (float *)malloc(this->numValues * sizeof(float));
-            size_t bytes = fread(this->data, sizeof(float), this->numValues,
-                    dataFile);
+            if(memmap) {
+                int fd = fileno(dataFile);
+                this->data = (float *)mmap(NULL, this->numValues*sizeof(float),
+                        PROT_READ, MAP_SHARED, fd, 0);
+            }
+            else {
+                this->data = (float *)malloc(this->numValues * sizeof(float));
+                size_t bytes = fread(this->data, sizeof(float), this->numValues,
+                        dataFile);
+            }
             fclose(dataFile);
         }
     }
