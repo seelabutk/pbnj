@@ -15,8 +15,10 @@ namespace pbnj {
 
         public:
             //Volume(DataFile *df);
-            Volume(std::string filename, int x, int y, int z);
-            Volume(std::string filename, std::string var_name, int x, int y, int z);
+            Volume(std::string filename, int x, int y, int z,
+                    bool memmap=false);
+            Volume(std::string filename, std::string var_name, int x, int y,
+                    int z, bool memmap=false);
             ~Volume();
 
             void attenuateOpacity(float amount);
@@ -33,7 +35,8 @@ namespace pbnj {
             OSPData oData;
 
             void init();
-            void loadFromFile(std::string filename, std::string var_name="");
+            void loadFromFile(std::string filename, std::string var_name="",
+                    bool memmap=false);
     };
 }
 

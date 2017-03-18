@@ -15,7 +15,8 @@ namespace pbnj {
             DataFile(int x, int y, int z);
             ~DataFile();
 
-            void loadFromFile(std::string filename, std::string variable="");
+            void loadFromFile(std::string filename, std::string variable="",
+                    bool memmap=false);
             void calculateStatistics();
             void printStatistics();
 

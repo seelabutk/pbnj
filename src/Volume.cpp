@@ -8,22 +8,23 @@
 
 namespace pbnj {
 
-Volume::Volume(std::string filename, int x, int y, int z)
+Volume::Volume(std::string filename, int x, int y, int z, bool memmap)
 {
     //volumes contain a datafile
     //one datafile per volume, one volume per renderer/camera
     this->dataFile = new DataFile(x, y, z);
-    this->loadFromFile(filename);
+    this->loadFromFile(filename, "", memmap);
 
     this->init();
 }
 
-Volume::Volume(std::string filename, std::string var_name, int x, int y, int z)
+Volume::Volume(std::string filename, std::string var_name, int x, int y, int z,
+        bool memmap)
 {
     //volumes contain a datafile
     //one datafile per volume, one volume per renderer/camera
     this->dataFile = new DataFile(x, y, z);
-    this->loadFromFile(filename, var_name);
+    this->loadFromFile(filename, var_name, memmap);
 
     this->init();
 }
@@ -108,9 +109,10 @@ OSPVolume Volume::asOSPRayObject()
     return this->oVolume;
 }
 
-void Volume::loadFromFile(std::string filename, std::string var_name)
+void Volume::loadFromFile(std::string filename, std::string var_name,
+        bool memmap)
 {
-    this->dataFile->loadFromFile(filename, var_name);
+    this->dataFile->loadFromFile(filename, var_name, memmap);
     //this is slooooow :(
     this->dataFile->calculateStatistics();
     //this->dataFile->printStatistics();
