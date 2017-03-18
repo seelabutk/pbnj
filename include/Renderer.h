@@ -23,7 +23,7 @@ namespace pbnj {
             void setSamples(unsigned int spp);
 
             void render();
-            void renderToBuffer(unsigned char **buffer, int &width, int &height);
+            void renderToBuffer(unsigned char **buffer);
             void renderToPNGObject(std::vector<unsigned char> &png);
             void renderImage(std::string imageFilename);
 

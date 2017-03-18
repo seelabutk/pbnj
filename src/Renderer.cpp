@@ -88,19 +88,26 @@ void Renderer::renderImage(std::string imageFilename)
 
 void Renderer::renderToPNGObject(std::vector<unsigned char> &png)
 {
-    this->render();
-    this->bufferToPNG(png);
+    unsigned char *colorBuffer;
+    this->renderToBuffer(&colorBuffer);
+    unsigned int error = lodepng::encode(png, colorBuffer,
+            this->cameraWidth, this->cameraHeight);
+    if(error) {
+        std::cerr << "ERROR: could not encode PNG, error " << error << ": ";
+        std::cerr << lodepng_error_text(error) << std::endl;
+    }
+    free(colorBuffer);
 }
 
 /*
  * Renders the OSPRay buffer to buffer and sets the width and height in 
  * their respective variables.
  */
-void Renderer::renderToBuffer(unsigned char **buffer, int &width, int &height)
+void Renderer::renderToBuffer(unsigned char **buffer)
 {
     this->render();
-    width = this->cameraWidth;
-    height = this->cameraHeight;
+    int width = this->cameraWidth;
+    int height = this->cameraHeight;
     uint32_t *colorBuffer = (uint32_t *)ospMapFrameBuffer(this->oFrameBuffer,
             OSP_FB_COLOR);
     
@@ -211,42 +218,10 @@ void Renderer::saveAsPPM(std::string filename)
     ospRelease(this->oFrameBuffer);
 }
 
-// copy a rendered image into a PNG object
-//  - used for saveAsPNG() and renderToPNGObject()
-void Renderer::bufferToPNG(std::vector<unsigned char> &png)
-{
-    int width = this->cameraWidth, height = this->cameraHeight;
-    unsigned char *colorBuffer = (unsigned char *) ospMapFrameBuffer(
-            this->oFrameBuffer, OSP_FB_COLOR);
-
-    //set all alpha values to 255 to force the background
-    //this should eventually be set to the actual background
-    unsigned long int numPixels = width * height;
-    for(int i = 0; i < numPixels; i++)
-        colorBuffer[i * 4 + 3] = 255;
-
-    std::vector<unsigned char> image_vector(colorBuffer,
-            colorBuffer + 4 * width * height);
-
-    //convert to PNG object
-    unsigned int error = lodepng::encode(png, image_vector,
-            width, height);
-    if(error) {
-        std::cerr << "ERROR: could not encode PNG, error " << error << ": ";
-        std::cerr << lodepng_error_text(error) << std::endl;
-        return;
-    }
-
-    //unmap and release so OSPRay will deallocate the memory
-    //used by the framebuffer
-    ospUnmapFrameBuffer(colorBuffer, this->oFrameBuffer);
-    ospRelease(this->oFrameBuffer);
-}
-
 void Renderer::saveAsPNG(std::string filename)
 {
     std::vector<unsigned char> converted_image;
-    this->bufferToPNG(converted_image);
+    this->renderToPNGObject(converted_image);
     //write to file
     lodepng::save_file(converted_image, filename.c_str());
 }
