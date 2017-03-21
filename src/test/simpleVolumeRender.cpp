@@ -85,6 +85,13 @@ int main(int argc, const char **argv)
     camera->setUpVector(config->cameraUpX, config->cameraUpY,
             config->cameraUpZ);
 
+    // set up the renderer
+    // the samples and camera are the same regardless of whether we are
+    // rendering a single volume or a time series
+    pbnj::Renderer *renderer = new pbnj::Renderer();
+    renderer->setSamples(config->samples);
+    renderer->setCamera(camera);
+
     if(single) {
         // we have a single volume
         // let's take a single picture of it
@@ -95,10 +102,7 @@ int main(int argc, const char **argv)
         volume->attenuateOpacity(config->opacityAttenuation);
 
         // set up the renderer and get an image
-        pbnj::Renderer *renderer = new pbnj::Renderer();
         renderer->setVolume(volume);
-        renderer->setCamera(camera);
-        renderer->setSamples(config->samples);
         renderer->renderImage(config->imageFilename);
 
         std::cout << "Rendered image to " << config->imageFilename << std::endl;
@@ -116,10 +120,9 @@ int main(int argc, const char **argv)
             // modify the config filename so we have a family of images
             std::string imageFilename = imageFamily(config->imageFilename, v);
 
-            pbnj::Renderer *renderer = new pbnj::Renderer();
+            // set the current volume as the one to render
+            // this erases the last volume in the renderer
             renderer->setVolume(volume);
-            renderer->setCamera(camera);
-            renderer->setSamples(config->samples);
             renderer->renderImage(imageFilename);
 
             std::cout << "Rendered image to " << imageFilename << std::endl;

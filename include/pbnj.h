@@ -3,6 +3,8 @@
 
 #include <ospray/ospray.h>
 
+#include <string>
+
 namespace pbnj {
     /* contains metadata about the data being requested
      * This includes things like:
@@ -42,6 +44,8 @@ namespace pbnj {
     class Configuration;
 
     void pbnjInit(int *argc, const char **argv);
+
+    std::string createID();
 }
 
 #endif

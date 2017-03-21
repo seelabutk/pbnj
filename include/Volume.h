@@ -27,6 +27,8 @@ namespace pbnj {
             std::vector<int> getBounds();
             OSPVolume asOSPRayObject();
 
+            std::string ID;
+
         private:
             DataFile *dataFile;
             TransferFunction *transferFunction;
