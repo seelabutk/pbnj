@@ -6,6 +6,8 @@
 
 #include <ospray/ospray.h>
 
+#include <string>
+
 namespace pbnj {
 
     class Camera {
@@ -26,6 +28,8 @@ namespace pbnj {
 
             int imageWidth;
             int imageHeight;
+
+            std::string ID;
 
         private:
             float xPos;

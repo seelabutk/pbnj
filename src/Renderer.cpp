@@ -25,6 +25,8 @@ Renderer::Renderer() :
     this->setBackgroundColor(0, 0, 0);
     this->oCamera = NULL;
     this->oModel = NULL;
+    this->lastVolumeID = "unset";
+    this->lastCameraID = "unset";
 }
 
 Renderer::~Renderer()
@@ -46,11 +48,18 @@ void Renderer::setBackgroundColor(char r, char g, char b)
 
 void Renderer::setVolume(Volume *v)
 {
-    if(this->oModel != NULL) {
-        std::cerr << "Volume already set!" << std::endl;
+    if(this->lastVolumeID == v->ID) {
+        // this is the same volume as the current model
         return;
     }
+    if(this->oModel != NULL) {
+        //std::cerr << "Volume already set!" << std::endl;
+        //return;
+        ospRelease(this->oModel);
+        this->oModel = NULL;
+    }
 
+    this->lastVolumeID = v->ID;
     this->oModel = ospNewModel();
     ospAddVolume(this->oModel, v->asOSPRayObject());
     ospCommit(this->oModel);
@@ -58,11 +67,18 @@ void Renderer::setVolume(Volume *v)
 
 void Renderer::setCamera(Camera *c)
 {
-    if(this->oCamera != NULL) {
-        std::cerr << "Camera already set!" << std::endl;
+    if(this->lastCameraID == c->ID) {
+        // this is the same camera as the current one
         return;
     }
+    if(this->oCamera != NULL) {
+        //std::cerr << "Camera already set!" << std::endl;
+        //return;
+        ospRelease(this->oCamera);
+        this->oCamera = NULL;
+    }
 
+    this->lastCameraID = c->ID;
     this->cameraWidth = c->imageWidth;
     this->cameraHeight = c->imageHeight;
     this->oCamera = c->asOSPRayObject();

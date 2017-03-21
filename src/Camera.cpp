@@ -11,6 +11,7 @@ Camera::Camera(int width, int height) :
     imageWidth(width), imageHeight(height), xPos(0.0), yPos(0.0), zPos(0.0),
     viewX(0.0), viewY(0.0), viewZ(0.0), orbitRadius(0.0)
 {
+    this->ID = createID();
     //setup OSPRay camera with basic parameters
     this->oCamera = ospNewCamera("perspective");
     this->updateOSPRayPosition();

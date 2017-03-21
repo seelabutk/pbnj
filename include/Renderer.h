@@ -43,6 +43,9 @@ namespace pbnj {
             void saveAsPPM(std::string filename);
             void saveAsPNG(std::string filename);
             void bufferToPNG(std::vector<unsigned char> &png);
+
+            std::string lastVolumeID;
+            std::string lastCameraID;
     };
 }
 
