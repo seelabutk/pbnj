@@ -49,6 +49,9 @@ void Renderer::setBackgroundColor(char r, char g, char b)
 
 void Renderer::setBackgroundColor(std::vector<unsigned char> bgColor)
 {
+    if(bgColor.empty())
+        return;
+
     this->backgroundColor[0] = bgColor[0];
     this->backgroundColor[1] = bgColor[1];
     this->backgroundColor[2] = bgColor[2];
