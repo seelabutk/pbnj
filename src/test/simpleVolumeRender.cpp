@@ -90,6 +90,7 @@ int main(int argc, const char **argv)
     // rendering a single volume or a time series
     pbnj::Renderer *renderer = new pbnj::Renderer();
     renderer->setSamples(config->samples);
+    renderer->setBackgroundColor(config->bgColor);
     renderer->setCamera(camera);
 
     if(single) {

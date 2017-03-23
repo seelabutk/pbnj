@@ -29,6 +29,7 @@ namespace pbnj {
             int imageWidth;
             int imageHeight;
             std::string imageFilename;
+            std::vector<unsigned char> bgColor;
 
             std::vector<float> colorMap;
             std::vector<float> opacityMap;

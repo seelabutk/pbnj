@@ -18,6 +18,7 @@ namespace pbnj {
             ~Renderer();
 
             void setBackgroundColor(char r, char g, char b);
+            void setBackgroundColor(std::vector<unsigned char> bgColor);
             void setVolume(Volume *v);
             void setCamera(Camera *c);
             void setSamples(unsigned int spp);
