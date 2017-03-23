@@ -17,7 +17,7 @@ namespace pbnj {
             Renderer();
             ~Renderer();
 
-            void setBackgroundColor(char r, char g, char b);
+            void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b);
             void setBackgroundColor(std::vector<unsigned char> bgColor);
             void setVolume(Volume *v);
             void setCamera(Camera *c);
@@ -31,7 +31,7 @@ namespace pbnj {
             int cameraWidth;
             int cameraHeight;
         private:
-            char backgroundColor[3];
+            unsigned char backgroundColor[3];
 
             OSPRenderer oRenderer;
             OSPFrameBuffer oFrameBuffer;

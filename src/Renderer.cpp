@@ -37,7 +37,7 @@ Renderer::~Renderer()
     ospRelease(this->oModel);
 }
 
-void Renderer::setBackgroundColor(char r, char g, char b)
+void Renderer::setBackgroundColor(unsigned char r, unsigned char g, unsigned char b)
 {
     this->backgroundColor[0] = r;
     this->backgroundColor[1] = g;
@@ -49,16 +49,12 @@ void Renderer::setBackgroundColor(char r, char g, char b)
 
 void Renderer::setBackgroundColor(std::vector<unsigned char> bgColor)
 {
+    // if the incoming vector is empty, it's probably from the config
+    // just set to black instead
     if(bgColor.empty())
-        return;
-
-    this->backgroundColor[0] = bgColor[0];
-    this->backgroundColor[1] = bgColor[1];
-    this->backgroundColor[2] = bgColor[2];
-    float asVec[] = {bgColor[0]/(float)255.0, bgColor[1]/(float)255.0,
-        bgColor[2]/(float)255.0};
-    ospSet3fv(this->oRenderer, "bgColor", asVec);
-    ospCommit(this->oRenderer);
+        this->setBackgroundColor(0, 0, 0);
+    else
+        this->setBackgroundColor(bgColor[0], bgColor[1], bgColor[2]);
 }
 
 void Renderer::setVolume(Volume *v)
