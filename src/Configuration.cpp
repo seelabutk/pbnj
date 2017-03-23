@@ -97,6 +97,13 @@ Configuration::Configuration(std::string filename) :
     else
         this->imageFilename = json["outputImageFilename"].GetString();
 
+    // background color as list of RGB values, default is black
+    if(json.HasMember("backgroundColor")) {
+        const rapidjson::Value& bg = json["backgroundColor"];
+        for(rapidjson::SizeType i = 0; i < bg.Size(); i++)
+            this->bgColor.push_back((unsigned char)bg[i].GetUint());
+    }
+
     // choice of variable for netcdf files
     if(json.HasMember("dataVariable"))
         this->dataVariable = json["dataVariable"].GetString();

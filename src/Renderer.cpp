@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 #include <cstring>
+#include <vector>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -42,6 +43,17 @@ void Renderer::setBackgroundColor(char r, char g, char b)
     this->backgroundColor[1] = g;
     this->backgroundColor[2] = b;
     float asVec[] = {r/(float)255.0, g/(float)255.0, b/(float)255.0};
+    ospSet3fv(this->oRenderer, "bgColor", asVec);
+    ospCommit(this->oRenderer);
+}
+
+void Renderer::setBackgroundColor(std::vector<unsigned char> bgColor)
+{
+    this->backgroundColor[0] = bgColor[0];
+    this->backgroundColor[1] = bgColor[1];
+    this->backgroundColor[2] = bgColor[2];
+    float asVec[] = {bgColor[0]/(float)255.0, bgColor[1]/(float)255.0,
+        bgColor[2]/(float)255.0};
     ospSet3fv(this->oRenderer, "bgColor", asVec);
     ospCommit(this->oRenderer);
 }
@@ -133,9 +145,17 @@ void Renderer::renderToBuffer(unsigned char **buffer)
         unsigned char *rowIn = (unsigned char*)&colorBuffer[(height-1-j)*width];
         for(int i = 0; i < width; i++) {
             int index = j * width + i;
-            (*buffer)[4*index + 0] = rowIn[4*i + 0];
-            (*buffer)[4*index + 1] = rowIn[4*i + 1];
-            (*buffer)[4*index + 2] = rowIn[4*i + 2];
+            // composite rowIn RGB with background color
+            unsigned char r = rowIn[4*i + 0],
+                          g = rowIn[4*i + 1],
+                          b = rowIn[4*i + 2];
+            float a = rowIn[4*i + 3] / 255.0;
+            (*buffer)[4*index + 0] = (unsigned char) r * a +
+                this->backgroundColor[0] * (1.0-a);
+            (*buffer)[4*index + 1] = (unsigned char) g * a +
+                this->backgroundColor[1] * (1.0-a);
+            (*buffer)[4*index + 2] = (unsigned char) b * a +
+                this->backgroundColor[2] * (1.0-a);
             (*buffer)[4*index + 3] = 255;
         }
     }
@@ -218,9 +238,17 @@ void Renderer::saveAsPPM(std::string filename)
     for(int j = 0; j < height; j++) {
         unsigned char *rowIn = (unsigned char*)&colorBuffer[(height-1-j)*width];
         for(int i = 0; i < width; i++) {
-            rowOut[3*i + 0] = rowIn[4*i + 0];
-            rowOut[3*i + 1] = rowIn[4*i + 1];
-            rowOut[3*i + 2] = rowIn[4*i + 2];
+            // composite rowIn RGB with background color
+            unsigned char r = rowIn[4*i + 0],
+                          g = rowIn[4*i + 1],
+                          b = rowIn[4*i + 2];
+            float a = rowIn[4*i + 3] / 255.0;
+            rowOut[3*i + 0] = (unsigned char) r * a + 
+                this->backgroundColor[0] * (1.0-a);
+            rowOut[3*i + 1] = (unsigned char) g * a + 
+                this->backgroundColor[1] * (1.0-a);
+            rowOut[3*i + 2] = (unsigned char) b * a + 
+                this->backgroundColor[2] * (1.0-a);
         }
         fwrite(rowOut, 3*width, sizeof(char), file);
     }
