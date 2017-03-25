@@ -5,6 +5,8 @@
 #include "TransferFunction.h"
 #include "Volume.h"
 
+#include "lodepng/lodepng.h"
+
 #include <chrono>
 #include <fstream>
 #include <iomanip>
@@ -22,10 +24,15 @@ void print_current_vals(int *imsize, float att, int samp)
 int main(int argc, const char **argv)
 {
     // we only need the config file for the dataset
-    if(argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <config_file.json>" << std::endl;
+    if(argc < 2 || argc > 3) {
+        std::cerr << "Usage: " << argv[0] << " <config_file.json> [png]" << std::endl;
         return 1;
     }
+
+    std::string png_flag = "png";
+    bool png_benchmark = false;
+    if(argc == 3 && png_flag == argv[2])
+        png_benchmark = true;
 
     // pbnj and volume initialization
     pbnj::Configuration *config = new pbnj::Configuration(argv[1]);
@@ -48,21 +55,28 @@ int main(int argc, const char **argv)
     // pseudo-random generators for the camera
     std::random_device rand_device;
     std::mt19937 generator(rand_device());
-    std::uniform_int_distribution<> cam_x(-config->dataXDim, config->dataXDim);
-    std::uniform_int_distribution<> cam_y(-config->dataYDim, config->dataYDim);
-    std::uniform_int_distribution<> cam_z(-config->dataZDim, config->dataZDim);
+    std::uniform_int_distribution<> cam_x(-2*config->dataXDim, 2*config->dataXDim);
+    std::uniform_int_distribution<> cam_y(-2*config->dataYDim, 2*config->dataYDim);
+    std::uniform_int_distribution<> cam_z(-2*config->dataZDim, 2*config->dataZDim);
     // default ramp opacity map to reset the volume's opacity
     std::vector<float> ramp;
     for(int i = 0; i < 256; i++)
         ramp.push_back(i/255.0);
     // open CSV file and write headers to it
     std::ofstream csv;
-    csv.open("benchmark_results.csv");
+    if(png_benchmark)
+        csv.open("benchmark_results_png.csv");
+    else
+        csv.open("benchmark_results.csv");
     csv << "width,height,attenuation,samples per pixel,average time for ";
     csv << iterations << " iterations (s)\n";
+    pbnj::Renderer *renderer = new pbnj::Renderer();
 
     // iterate over all benchmarking parameters
     for(int image_index = 0; image_index < 6; image_index++) {
+        if(png_benchmark && image_sizes[image_index][0] != 64 && 
+                image_sizes[image_index][0] != 1024)
+            continue;
         int *current_image_size = image_sizes[image_index];
         for(int att_index = 0; att_index < 4; att_index++) {
             float current_attenuation = attenuations[att_index];
@@ -76,8 +90,9 @@ int main(int argc, const char **argv)
                 csv << current_attenuation << ",";
                 csv << current_samples << ",";
 
+                unsigned long int duration = 0;
+
                 // time the total iterations and get an average
-                auto begin = std::chrono::high_resolution_clock::now();
                 for(int iter_index = 0; iter_index < iterations; iter_index++) {
                     // set current attenuation and reset after rendering
                     volume->attenuateOpacity(current_attenuation);
@@ -87,18 +102,35 @@ int main(int argc, const char **argv)
                     camera->setPosition(cam_x(generator), cam_y(generator),
                             cam_z(generator));
                     camera->setUpVector(0, 1, 0);
+
                     // setup a renderer
-                    pbnj::Renderer *renderer = new pbnj::Renderer();
                     renderer->setVolume(volume);
                     renderer->setCamera(camera);
                     renderer->setSamples(current_samples);
-                    renderer->render(); // throw away the buffer
+                    std::vector<unsigned char> png_data;
+
+                    auto begin = std::chrono::high_resolution_clock::now();
+                    if(png_benchmark) {
+                        renderer->renderToPNGObject(png_data); // throw away the buffer
+                    }
+                    else
+                        renderer->render(); // throw away the buffer
+                    auto end = std::chrono::high_resolution_clock::now();
+                    duration += std::chrono::duration_cast
+                        <std::chrono::nanoseconds>(end - begin).count();
+
+                    if(png_benchmark && iter_index == iterations - 1) {
+                        std::string image_fname =
+                            std::to_string(current_image_size[0]) + "_" +
+                            std::to_string(current_attenuation) + "_" +
+                            std::to_string(current_samples) + ".png";
+                        lodepng::save_file(png_data, image_fname.c_str());
+                    }
                     // reset opacity map
                     volume->setOpacityMap(ramp);
                 }
-                auto end = std::chrono::high_resolution_clock::now();
-                auto duration = std::chrono::duration_cast
-                    <std::chrono::nanoseconds>(end - begin).count();
+                //auto duration = std::chrono::duration_cast
+                //    <std::chrono::nanoseconds>(end - begin).count();
                 // output average time taken
                 float seconds = duration / iterations / 1e9;
                 std::cout << std::setprecision(6)  << seconds << " s";
