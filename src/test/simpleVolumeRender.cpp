@@ -100,6 +100,7 @@ int main(int argc, const char **argv)
         // set up any remaining config options for the volume
         volume->setColorMap(config->colorMap);
         volume->setOpacityMap(config->opacityMap);
+        volume->setOpacityMap(config->opacityMap);
         volume->attenuateOpacity(config->opacityAttenuation);
 
         // set up the renderer and get an image

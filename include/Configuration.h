@@ -49,6 +49,7 @@ namespace pbnj {
             ConfigReader *reader;
 
             void selectColorMap(std::string userInput);
+            void selectOpacityMap(std::string userInput);
     };
 
 }
