@@ -15,6 +15,9 @@ TimeSeries::TimeSeries(std::vector<std::string> filenames,
     for(int i = 0; i < this->length; i++)
         this->volumes[i] = NULL;
     this->initSystemInfo();
+    // default values for volume attributes
+    this->opacityAttenuation = 1.0;
+    this->doMemoryMap = false;
 }
 
 TimeSeries::TimeSeries(std::vector<std::string> filenames,
@@ -103,12 +106,23 @@ Volume *TimeSeries::getVolume(unsigned int index)
     }
 
     if(this->volumes[index] == NULL) {
+        // load the volume
         if(this->dataVariable.empty())
             this->volumes[index] = new Volume(this->dataFilenames[index],
-                    this->xDim, this->yDim, this->zDim);
+                    this->xDim, this->yDim, this->zDim, this->doMemoryMap);
         else
             this->volumes[index] = new Volume(this->dataFilenames[index],
-                    this->dataVariable, this->xDim, this->yDim, this->zDim);
+                    this->dataVariable, this->xDim, this->yDim, this->zDim,
+                    this->doMemoryMap);
+
+        // set any given attributes
+        if(!this->colorMap.empty())
+            this->volumes[index]->setColorMap(this->colorMap);
+        if(!this->opacityMap.empty())
+            this->volumes[index]->setOpacityMap(this->opacityMap);
+        this->volumes[index]->attenuateOpacity(this->opacityAttenuation);
+
+        // place this volume in cache and/or set it as the newest
         this->encache(index);
     }
     
@@ -118,6 +132,30 @@ Volume *TimeSeries::getVolume(unsigned int index)
 unsigned int TimeSeries::getLength()
 {
     return this->length;
+}
+
+void TimeSeries::setColorMap(std::vector<float> &map)
+{
+    if(map.empty())
+        return;
+    this->colorMap = map;
+}
+
+void TimeSeries::setOpacityMap(std::vector<float> &map)
+{
+    if(map.empty())
+        return;
+    this->opacityMap = map;
+}
+
+void TimeSeries::setOpacityAttenuation(float attenuation)
+{
+    this->opacityAttenuation = attenuation;
+}
+
+void TimeSeries::setMemoryMapping(bool toMMap)
+{
+    this->doMemoryMap = toMMap;
 }
 
 }

@@ -22,6 +22,17 @@ namespace pbnj {
             unsigned int getLength();
             void setMaxMemory(unsigned int gigabytes);
 
+            // attributes for volumes to receive when loaded
+            std::vector<float> colorMap;
+            std::vector<float> opacityMap;
+            float opacityAttenuation;
+            bool doMemoryMap;
+
+            void setColorMap(std::vector<float> &map);
+            void setOpacityMap(std::vector<float> &map);
+            void setOpacityAttenuation(float attenuation);
+            void setMemoryMapping(bool toMMap);
+
         private:
             int xDim;
             int yDim;
