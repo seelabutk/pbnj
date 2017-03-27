@@ -41,6 +41,7 @@ namespace pbnj {
 
         private:
             FILETYPE getFiletype();
+            bool wasMemoryMapped;
     };
 
 }
