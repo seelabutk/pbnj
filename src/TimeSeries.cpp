@@ -48,9 +48,9 @@ void TimeSeries::initSystemInfo()
     sysinfo(&(this->systemInfo));
     unsigned long totalBytes, freeBytes, maxUsage;
     totalBytes = this->systemInfo.mem_unit * this->systemInfo.totalram /
-        1073741824; //GB
+        1073741824L; //GB
     freeBytes = this->systemInfo.mem_unit * this->systemInfo.freeram /
-        1073741824; // GB
+        1073741824L; // GB
     maxUsage = this->systemInfo.mem_unit * this->systemInfo.freeram *
         0.5; // bytes
     this->maxVolumes = maxUsage / this->dataSize;
@@ -58,13 +58,13 @@ void TimeSeries::initSystemInfo()
 
 void TimeSeries::setMaxMemory(unsigned int gigabytes)
 {
-    unsigned long freeBytes = this->systemInfo.mem_unit * this->systemInfo.freeram / 1073741824; // GB
+    unsigned long freeBytes = this->systemInfo.mem_unit * this->systemInfo.freeram / 1073741824L; // GB
     if(gigabytes > freeBytes) {
         std::cerr << "WARNING: Asking to use more memory than is currently ";
         std::cerr << "available. Keeping limit at previous value" << std::endl;
         return;
     }
-    unsigned long bytes = 1073741824 * gigabytes;
+    unsigned long bytes = 1073741824L * gigabytes;
     if(bytes < this->dataSize) {
         std::cerr << "WARNING: Asking to use less memory than a single volume ";
         std::cerr << "requires. Keeping limit at previous value" << std::endl;
