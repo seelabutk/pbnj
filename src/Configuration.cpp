@@ -115,9 +115,15 @@ Configuration::Configuration(std::string filename) :
 
     // opacity map is a ramp by default, otherwise get a list from the user
     if(json.HasMember("opacityMap")) {
-        const rapidjson::Value& omap = json["opacityMap"];
-        for(rapidjson::SizeType i = 0; i < omap.Size(); i++)
-            this->opacityMap.push_back(omap[i].GetFloat());
+        // opacity map can either be explicit or a named array
+        if(json["opacityMap"].IsArray()) {
+            const rapidjson::Value& omap = json["opacityMap"];
+            for(rapidjson::SizeType i = 0; i < omap.Size(); i++)
+                this->opacityMap.push_back(omap[i].GetFloat());
+        }
+        else {
+            this->selectOpacityMap(json["opacityMap"].GetString());
+        }
     }
 
     // opacity attenuation >= 1.0 doesn't do anything
@@ -165,7 +171,14 @@ Configuration::Configuration(std::string filename) :
 void Configuration::selectColorMap(std::string userInput)
 {
     // some simple alternatives to color map names are allowed
-    if(userInput.compare("coolToWarm") == 0 ||
+    if(userInput.compare("blackToWhite") == 0 || 
+       userInput.compare("grayscale") == 0 ||
+       userInput.compare("greyscale") == 0 ||
+       userInput.compare("xray") == 0 ||
+       userInput.compare("x-ray") ==0 ) {
+       // do nothing, this is the default
+    }
+    else if(userInput.compare("coolToWarm") == 0 ||
        userInput.compare("cool to warm") == 0) {
         this->colorMap = coolToWarm;
     }
@@ -183,6 +196,37 @@ void Configuration::selectColorMap(std::string userInput)
     else {
         // will default to black to white
         std::cerr << "Unrecognized color map " << userInput << "!" << std::endl;
+    }
+}
+
+void Configuration::selectOpacityMap(std::string userInput)
+{
+    if(userInput == "ramp") {
+        // do nothing, this is the default
+    }
+    else if(userInput == "reverseRamp" ||
+            userInput == "reverse ramp") {
+        this->opacityMap = reverseRamp;
+    }
+    else if(userInput == "tent" ||
+            userInput == "tents" ||
+            userInput == "teeth") {
+        this->opacityMap = teeth;
+    }
+    else if(userInput == "exponential") {
+        this->opacityMap = exponential;
+    }
+    else if(userInput == "reverseExponential" ||
+            userInput == "reverse exponential" ) {
+        this->opacityMap = reverseExponential;
+    }
+    else if(userInput == "flat") {
+        this->opacityMap = flat;
+    }
+    else {
+        // will default to ramp
+        std::cerr << "Unrecognized opacity map " << userInput << "!";
+        std::cerr << std::endl;
     }
 }
 

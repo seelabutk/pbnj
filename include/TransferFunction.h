@@ -9,10 +9,18 @@
 
 namespace pbnj {
 
+    // named color maps
     extern std::vector<float> coolToWarm;
     extern std::vector<float> spectralReverse;
     extern std::vector<float> magma;
     extern std::vector<float> viridis;
+
+    // named opacity maps
+    extern std::vector<float> reverseRamp;
+    extern std::vector<float> teeth;
+    extern std::vector<float> exponential;
+    extern std::vector<float> reverseExponential;
+    extern std::vector<float> flat;
 
     class TransferFunction {
         public:
