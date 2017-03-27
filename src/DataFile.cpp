@@ -27,7 +27,13 @@ DataFile::DataFile(int x, int y, int z) :
 DataFile::~DataFile()
 {
     if(this->data != NULL) {
-        free(this->data);
+        if(this->wasMemoryMapped) {
+            int mresult = munmap(this->data, this->numValues*sizeof(float));
+            if(mresult == -1)
+                std::cerr << "WARNING: Couldn't unmap data!" << std::endl;
+        }
+        else
+            free(this->data);
         this->data = NULL;
     }
 }
@@ -91,6 +97,7 @@ void DataFile::loadFromFile(std::string filename, std::string var_name,
             fclose(dataFile);
         }
     }
+    this->wasMemoryMapped = memmap;
 }
 
 FILETYPE DataFile::getFiletype()
