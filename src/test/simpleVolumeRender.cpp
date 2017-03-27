@@ -68,6 +68,10 @@ int main(int argc, const char **argv)
             std::cout << "Multiple volumes, no variable" << std::endl;
             timeSeries = new pbnj::TimeSeries(config->globbedFilenames,
                     config->dataXDim, config->dataYDim, config->dataZDim);
+            timeSeries->setColorMap(config->colorMap);
+            timeSeries->setOpacityMap(config->opacityMap);
+            timeSeries->setOpacityAttenuation(config->opacityAttenuation);
+            timeSeries->setMemoryMapping(true);
             single = false;
             break;
         case pbnj::MULTI_VAR:
@@ -75,6 +79,10 @@ int main(int argc, const char **argv)
             timeSeries = new pbnj::TimeSeries(config->globbedFilenames,
                     config->dataVariable, config->dataXDim, config->dataYDim,
                     config->dataZDim);
+            timeSeries->setColorMap(config->colorMap);
+            timeSeries->setOpacityMap(config->opacityMap);
+            timeSeries->setOpacityAttenuation(config->opacityAttenuation);
+            timeSeries->setMemoryMapping(true);
             single = false;
     }
 
@@ -115,9 +123,9 @@ int main(int argc, const char **argv)
         for(int v = 0; v < timeSeries->getLength(); v++) {
             // get the "current" volume
             volume = timeSeries->getVolume(v);
-            volume->setColorMap(config->colorMap);
-            volume->setOpacityMap(config->opacityMap);
-            volume->attenuateOpacity(config->opacityAttenuation);
+            //volume->setColorMap(config->colorMap);
+            //volume->setOpacityMap(config->opacityMap);
+            //volume->attenuateOpacity(config->opacityAttenuation);
 
             // modify the config filename so we have a family of images
             std::string imageFilename = imageFamily(config->imageFilename, v);
