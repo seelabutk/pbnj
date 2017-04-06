@@ -16,28 +16,10 @@
 
 #define PI 3.14158
 
-int main(int argc, const char **argv)
+void createOmni(pbnj::Volume *volume, pbnj::Renderer *renderer, 
+        pbnj::Camera *camera, pbnj::Configuration *config, std::string name, 
+        unsigned int renderWidth, unsigned int renderHeight)
 {
-    if(argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <config_file.json>" << std::endl;
-        return 1;
-    }
-
-    std::string confFile(argv[1]);
-    std::string confName = confFile.substr(confFile.rfind('/')+1);
-    confName = confName.substr(0, confName.rfind('.'));
-
-    pbnj::Configuration *config = new pbnj::Configuration(argv[1]);
-
-    pbnj::pbnjInit(&argc, argv);
-
-    pbnj::CONFSTATE confState = config->getConfigState();
-    if(confState != pbnj::SINGLE_NOVAR && confState != pbnj::SINGLE_VAR) {
-        std::cerr << "Multiple time steps not supported" << std::endl;
-        return 1;
-    }
-
-    unsigned int renderWidth = 1, renderHeight = 1;
     float radius = (float) sqrt(config->dataXDim * config->dataXDim +
                                 config->dataYDim * config->dataYDim +
                                 config->dataZDim * config->dataZDim);
@@ -60,20 +42,6 @@ int main(int argc, const char **argv)
     unsigned char *output = (unsigned char *) calloc(4*outputWidth*outputHeight, 1);
     float currentPhi = -90, currentTheta = 0;
     float camx = 0, camy = radius, camz = 0;
-
-    pbnj::Volume *volume = new pbnj::Volume(config->dataFilename,
-            config->dataVariable, config->dataXDim, config->dataYDim,
-            config->dataZDim);
-    volume->setColorMap(config->colorMap);
-    volume->setOpacityMap(config->opacityMap);
-    volume->attenuateOpacity(config->opacityAttenuation);
-
-    pbnj::Camera *camera = new pbnj::Camera(renderWidth, renderHeight);
-    camera->setUpVector(0, 1, 0);
-
-    pbnj::Renderer *renderer = new pbnj::Renderer();
-    renderer->setBackgroundColor(config->bgColor);
-    renderer->setVolume(volume);
 
     unsigned long int numPixels = outputWidth * outputHeight;
     std::cout << outputWidth << "x" << outputHeight << "=" << numPixels;
@@ -108,14 +76,75 @@ int main(int argc, const char **argv)
 
     std::vector<unsigned char> png;
     unsigned int error = lodepng::encode(png, output, outputWidth, outputHeight);
-    if(error) {
+    if (error) 
+    {
         std::cerr << "LodePNG had an error" << std::endl;
+        return;
+    }
+    lodepng::save_file(png, "omni_" + name + ".png");
+
+}
+
+int main(int argc, const char **argv)
+{
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <config_file.json>" << std::endl;
         return 1;
     }
-    lodepng::save_file(png, "omni_"+confName+".png");
+    unsigned int renderWidth = 1, renderHeight = 1;
 
-    // save to lodepng
+    std::string confFile(argv[1]);
+    std::string confName = confFile.substr(confFile.rfind('/')+1);
+    confName = confName.substr(0, confName.rfind('.'));
+    pbnj::Configuration *config = new pbnj::Configuration(argv[1]);
+    pbnj::pbnjInit(&argc, argv);
+
+    pbnj::CONFSTATE confState = config->getConfigState();
+
+    if (confState != pbnj::SINGLE_NOVAR && confState != pbnj::SINGLE_VAR) 
+    {
+        pbnj::Volume *volume;
+        pbnj::TimeSeries *timeSeries;
+        timeSeries = new pbnj::TimeSeries(config->globbedFilenames, 
+                config->dataVariable, config->dataXDim, config->dataYDim, 
+                config->dataZDim);
+        timeSeries->setMaxMemory(50);
+        timeSeries->setColorMap(config->colorMap);
+        timeSeries->setOpacityMap(config->opacityMap);
+        timeSeries->setOpacityAttenuation(config->opacityAttenuation);
+
+        pbnj::Camera *camera = new pbnj::Camera(renderWidth, renderHeight);
+        camera->setUpVector(0, 1, 0);
+
+        pbnj::Renderer *renderer = new pbnj::Renderer();
+        renderer->setBackgroundColor(config->bgColor);
+
+        for (int i = 0; i < timeSeries->getLength(); i++)
+        {
+            volume = timeSeries->getVolume(i);
+            renderer->setVolume(volume);
+            createOmni(volume, renderer, camera, config, confName + std::to_string(i), renderWidth, renderHeight);
+        }
+
+    }
+    else
+    {
+        pbnj::Volume *volume = new pbnj::Volume(config->dataFilename,
+            config->dataVariable, config->dataXDim, config->dataYDim,
+            config->dataZDim);
+        volume->setColorMap(config->colorMap);
+        volume->setOpacityMap(config->opacityMap);
+        volume->attenuateOpacity(config->opacityAttenuation);
+
+        pbnj::Camera *camera = new pbnj::Camera(renderWidth, renderHeight);
+        camera->setUpVector(0, 1, 0);
+
+        pbnj::Renderer *renderer = new pbnj::Renderer();
+        renderer->setBackgroundColor(config->bgColor);
+        renderer->setVolume(volume);
+
+        createOmni(volume, renderer, camera, config, confName, renderWidth, renderHeight);
+    }
 
     return 0;
-
 }
