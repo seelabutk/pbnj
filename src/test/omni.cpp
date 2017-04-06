@@ -37,15 +37,28 @@ int main(int argc, const char **argv)
         return 1;
     }
 
-    float degreeStep = 0.25;
-    unsigned int renderWidth = 64, renderHeight = 64;
-    unsigned int outputWidth = (unsigned int) 360/degreeStep;
-    unsigned int outputHeight = (unsigned int) 180/degreeStep;
-    unsigned char *output = (unsigned char *)calloc(4*outputWidth*outputHeight, 1);
-    float currentPhi = -90, currentTheta = 0;
+    unsigned int renderWidth = 1, renderHeight = 1;
     float radius = (float) sqrt(config->dataXDim * config->dataXDim +
                                 config->dataYDim * config->dataYDim +
                                 config->dataZDim * config->dataZDim);
+    float camera_distance = 0.0;
+    float fov = 1.0;
+    float near = 1e-6;
+    float r = near / std::sin(fov * PI / 360.0);
+    float r_prime = radius + camera_distance - near;
+    float t = fov / r; // in radians
+    float c_w = 2 * r * std::sin(t/2.0) * renderWidth;
+    float px_w = 1 / c_w * r; // pixel size in world unit on the screen space
+    // px_w should be equal to the pixel size in images space at this point
+
+    float px_obj = px_w / r_prime; // in radians
+    float angle_of_rotation = px_obj * 180 / PI; // in degrees
+    std::cout<<"Angle of rotation is "<<angle_of_rotation<<std::endl;
+
+    unsigned int outputWidth = (unsigned int) 360/angle_of_rotation;
+    unsigned int outputHeight = (unsigned int) 180/angle_of_rotation;
+    unsigned char *output = (unsigned char *) calloc(4*outputWidth*outputHeight, 1);
+    float currentPhi = -90, currentTheta = 0;
     float camx = 0, camy = radius, camz = 0;
 
     pbnj::Volume *volume = new pbnj::Volume(config->dataFilename,
@@ -85,9 +98,9 @@ int main(int argc, const char **argv)
             unsigned char *buffer;
             renderer->renderToBuffer(&buffer);
 
-            output[i*4 + j*outputWidth*4 + 0] = buffer[4*renderWidth/2 + 4*renderWidth*renderHeight/2 + 0];
-            output[i*4 + j*outputWidth*4 + 1] = buffer[4*renderWidth/2 + 4*renderWidth*renderHeight/2 + 1];
-            output[i*4 + j*outputWidth*4 + 2] = buffer[4*renderWidth/2 + 4*renderWidth*renderHeight/2 + 2];
+            output[i*4 + j*outputWidth*4 + 0] = buffer[4*(renderWidth/2) + 4*renderWidth*(renderHeight/2) + 0];
+            output[i*4 + j*outputWidth*4 + 1] = buffer[4*(renderWidth/2) + 4*renderWidth*(renderHeight/2) + 1];
+            output[i*4 + j*outputWidth*4 + 2] = buffer[4*(renderWidth/2) + 4*renderWidth*(renderHeight/2) + 2];
             output[i*4 + j*outputWidth*4 + 3] = 255;
         }
     }
