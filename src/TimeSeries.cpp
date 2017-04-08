@@ -2,6 +2,7 @@
 #include "Volume.h"
 
 #include <iostream>
+#include <algorithm>
 #include <sys/sysinfo.h>
 
 namespace pbnj {
@@ -127,6 +128,33 @@ Volume *TimeSeries::getVolume(unsigned int index)
     }
     
     return this->volumes[index];
+}
+
+int TimeSeries::getVolumeIndex(std::string filename)
+{
+    int index = 0;
+    int found = -1;
+    for (auto iter = this->dataFilenames.begin(); 
+            iter != this->dataFilenames.end(); iter++) {
+        std::size_t temp_index = (*iter).rfind(filename);
+        if (temp_index != std::string::npos)
+        {
+            std::cout<<temp_index<<" "<<std::string::npos<<std::endl;
+            found = index;
+            break;
+        }
+        index++;
+    }
+    if (found == -1)
+    {
+        std::cerr<<"WARNING: Asked for non-existing volume: "<<filename;
+        std::cerr<<std::endl;
+        return -1;
+    }
+    else
+    {
+        return found;
+    }
 }
 
 unsigned int TimeSeries::getLength()
