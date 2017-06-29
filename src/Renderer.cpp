@@ -21,8 +21,30 @@ Renderer::Renderer() :
     backgroundColor()
 {
     this->oRenderer = ospNewRenderer("scivis");
-    //ospSet1i(this->oRenderer, "spp", 4);
-    //ospSet1i(this->oRenderer, "maxDepth", 5); // maybe later
+
+    // vector stores all lights for this renderer
+    std::vector<OSPLight> lightHandles;
+    // add an ambient light to make AO work
+    lightHandles.push_back(ospNewLight(this->oRenderer, "ambient"));
+    float lightColor[] = {1.0, 0.0, 0.0};
+    ospSet3fv(lightHandles.front(), "color", lightColor);
+    float lightPos[] = {0.0, 0.0, 128.0};
+    ospSet3fv(lightHandles.front(), "position", lightPos);
+    ospSet1f(lightHandles.front(), "radius", 1.0);
+    ospSet1f(lightHandles.front(), "intensity", 0.05);
+    // make the vector an OSPDataArray
+    // The type of this should be OSP_LIGHT
+    // When creating the new data array, OSPRay checks the size of the object
+    // type being used (sizeOf() in OSPCommon.cpp). However OSPRay 1.1.0 does
+    // not have a case for OSP_LIGHT, and only has OSP_OBJECT/DATA
+    OSPData lightDataArray = ospNewData(lightHandles.size(), OSP_OBJECT,
+            lightHandles.data());
+    ospSetData(this->oRenderer, "lights", lightDataArray);
+    ospSet1f(this->oRenderer, "aoWeight", 1.0f);
+    ospSet1i(this->oRenderer, "aoSamples", 1);
+    ospSet1i(this->oRenderer, "shadowsEnabled", 1);
+    ospCommit(this->oRenderer);
+
     this->setBackgroundColor(0, 0, 0);
     this->oCamera = NULL;
     this->oModel = NULL;
@@ -70,9 +92,17 @@ void Renderer::setVolume(Volume *v)
         this->oModel = NULL;
     }
 
+    // create an isosurface
+    OSPGeometry isosurface = ospNewGeometry("isosurfaces");
+    float isoVals[] = {25, 50, 75};
+    OSPData isoValsDataArray = ospNewData(3, OSP_FLOAT, isoVals);
+    ospSetData(isosurface, "isovalues", isoValsDataArray);
+    ospSetObject(isosurface, "volume", v->asOSPRayObject());
+
     this->lastVolumeID = v->ID;
     this->oModel = ospNewModel();
-    ospAddVolume(this->oModel, v->asOSPRayObject());
+    //ospAddVolume(this->oModel, v->asOSPRayObject());
+    ospAddGeometry(this->oModel, isosurface);
     ospCommit(this->oModel);
 }
 
@@ -190,8 +220,9 @@ void Renderer::render()
     //this framebuffer will be released after a single frame
     this->oFrameBuffer = ospNewFrameBuffer(imageSize, OSP_FB_SRGBA,
                                            OSP_FB_COLOR | OSP_FB_ACCUM);
-    ospRenderFrame(this->oFrameBuffer, this->oRenderer,
-            OSP_FB_COLOR | OSP_FB_ACCUM);
+    for(int i = 0; i < 128; i++)
+        ospRenderFrame(this->oFrameBuffer, this->oRenderer,
+                OSP_FB_COLOR | OSP_FB_ACCUM);
 
 }
 
