@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "Volume.h"
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -18,7 +19,7 @@
 namespace pbnj {
 
 Renderer::Renderer() :
-    backgroundColor()
+    backgroundColor(), samples(1)
 {
     this->oRenderer = ospNewRenderer("scivis");
 
@@ -101,8 +102,8 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
     OSPData lightDataArray = ospNewData(lightHandles.size(), OSP_LIGHT,
             lightHandles.data());
     ospSetData(this->oRenderer, "lights", lightDataArray);
-    ospSet1f(this->oRenderer, "aoWeight", 1.0f);
-    ospSet1i(this->oRenderer, "aoSamples", 1);
+    unsigned int aoSamples = std::max(this->samples/8, (unsigned int) 1);
+    ospSet1i(this->oRenderer, "aoSamples", aoSamples);
     ospSet1i(this->oRenderer, "shadowsEnabled", 1);
     ospCommit(this->oRenderer);
 
@@ -141,6 +142,7 @@ void Renderer::setCamera(Camera *c)
 
 void Renderer::setSamples(unsigned int spp)
 {
+    this->samples = spp;
     ospSet1i(this->oRenderer, "spp", spp);
     ospCommit(this->oRenderer);
 }
