@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "Volume.h"
 
+#include <array>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -81,13 +82,12 @@ void Renderer::setBackgroundColor(std::vector<unsigned char> bgColor)
 
 void Renderer::setVolume(Volume *v)
 {
-    if(this->lastVolumeID == v->ID) {
-        // this is the same volume as the current model
+    if(this->lastVolumeID == v->ID && this->lastRenderType == "volume") {
+        // this is the same volume as the current model and we previously
+        // did a volume render
         return;
     }
     if(this->oModel != NULL) {
-        //std::cerr << "Volume already set!" << std::endl;
-        //return;
         ospRelease(this->oModel);
         this->oModel = NULL;
     }
@@ -100,8 +100,35 @@ void Renderer::setVolume(Volume *v)
     ospSetObject(isosurface, "volume", v->asOSPRayObject());
 
     this->lastVolumeID = v->ID;
+    this->lastRenderType = "volume";
     this->oModel = ospNewModel();
     //ospAddVolume(this->oModel, v->asOSPRayObject());
+    ospAddGeometry(this->oModel, isosurface);
+    ospCommit(this->oModel);
+}
+
+void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
+{
+    if(this->lastVolumeID == v->ID && this->lastRenderType == "isosurface") {
+        // this is the same volume as the current model and we previously
+        // did an isosurface render
+        return;
+    }
+    if(this->oModel != NULL) {
+        ospRelease(this->oModel);
+        this->oModel = NULL;
+    }
+
+    //create an isosurface object
+    OSPGeometry isosurface = ospNewGeometry("isosurfaces");
+    OSPData isoValuesDataArray = ospNewData(isoValues.size(), OSP_FLOAT,
+            isoValues.data());
+    ospSetData(isosurface, "isovalues", isoValuesDataArray);
+    ospSetObject(isosurface, "volume", v->asOSPRayObject());
+
+    this->lastVolumeID = v->ID;
+    this->lastRenderType = "isosurface";
+    this->oModel = ospNewModel();
     ospAddGeometry(this->oModel, isosurface);
     ospCommit(this->oModel);
 }

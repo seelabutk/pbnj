@@ -166,6 +166,21 @@ Configuration::Configuration(std::string filename) :
         this->cameraUpY = 1.0;
         this->cameraUpZ = 0.0;
     }
+
+    // isosurface values for rendering surfaces instead of volume rendering
+    // if this is not present, the vector is empty and a volume is rendered
+    if(json.HasMember("isosurfaceValues")) {
+        // there could be a single value or an array
+        if(json["isosurfaceValues"].IsArray()) {
+            const rapidjson::Value& vals = json["isosurfaceValues"];
+            for(rapidjson::SizeType i = 0; i < vals.Size(); i++)
+                this->isosurfaceValues.push_back(vals[i].GetFloat());
+        }
+        else {
+            this->isosurfaceValues.push_back(
+                    json["isosurfaceValues"].GetFloat());
+        }
+    }
 }
 
 void Configuration::selectColorMap(std::string userInput)
