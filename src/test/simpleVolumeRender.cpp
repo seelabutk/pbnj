@@ -112,7 +112,10 @@ int main(int argc, const char **argv)
         volume->attenuateOpacity(config->opacityAttenuation);
 
         // set up the renderer and get an image
-        renderer->setVolume(volume);
+        if(config->isosurfaceValues.size() == 0)
+            renderer->setVolume(volume);
+        else
+            renderer->setIsosurface(volume, config->isosurfaceValues);
         renderer->renderImage(config->imageFilename);
 
         std::cout << "Rendered image to " << config->imageFilename << std::endl;
