@@ -5,16 +5,22 @@ PROJECT(PeanutButterNJelly)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake/")
 
-SET(OSPRAY_BUILD_DIR "/export/ahota/ospray/1.1.0/build/"
-    CACHE FILEPATH "Path to OSPRay build directory")
-FIND_PACKAGE(OSPRay REQUIRED)
+SET(embree_DIR ""
+    CACHE FILEPATH "Directory containing an embree-config.cmake file")
+SET(ospray_DIR ""
+    CACHE FILEPATH "Directory containing an osprayConfig.cmake file")
+FIND_PACKAGE(embree "2.15.0" REQUIRED)
+FIND_PACKAGE(ospray REQUIRED)
 
 OPTION(USE_NETCDF "Enable NetCDF file reading" ON)
 OPTION(BUILD_EXAMPLES "Build example applications" ON)
 
-SET(PBNJ_LIBS ${OSPRAY_LIBRARIES})
+SET(PBNJ_LIBS ${EMBREE_LIBRARIES} ${OSPRAY_LIBRARIES})
 SET(PBNJ_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include"
-    ${OSPRAY_INCLUDE_DIRS})
+    ${OSPRAY_INCLUDE_DIRS} ${EMBREE_INCLUDE_DIRS})
+
+MESSAGE(STATUS "PBNJ LIBS: ${PBNJ_LIBS}")
+MESSAGE(STATUS "OSPRAY LIBS: ${OSPRAY_LIBRARIES}")
 
 #USE_NETCDF adds netcdf includes/libs for data reading
 IF(USE_NETCDF)

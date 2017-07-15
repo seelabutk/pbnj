@@ -45,6 +45,8 @@ namespace pbnj {
             float cameraUpY;
             float cameraUpZ;
 
+            std::vector<float> isosurfaceValues;
+
         private:
             ConfigReader *reader;
 
