@@ -1,6 +1,6 @@
 # Peanut Butter N Jelly
 
-Thin abstraction layer on top of OSPRay 
+C++ wrapper library on top of OSPRay to simplify scientific volume rendering
 
 Provides the following:
 
@@ -17,8 +17,9 @@ Provides the following:
 * Renderer abstraction
     * can directly create images (PPM or PNG)
     * can save to given buffer
+    * can rendering volumes or isosurfaces
 * JSON-based config file
-    * communicate with web applications, e.g. Enchiladas
+    * communicate with web applications, e.g. Enchiladas/Tapestry
 
 Each PBNJ object (apart from the Renderer at the moment) is designed to be
 initialized once and reused. This is the base for Enchiladas, as a Volume,
