@@ -49,6 +49,8 @@ namespace pbnj {
             std::string lastVolumeID;
             std::string lastCameraID;
             std::string lastRenderType;
+
+            unsigned int samples;
     };
 }
 
