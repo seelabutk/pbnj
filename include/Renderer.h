@@ -20,6 +20,7 @@ namespace pbnj {
             void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b);
             void setBackgroundColor(std::vector<unsigned char> bgColor);
             void setVolume(Volume *v);
+            void setIsosurface(Volume *v, std::vector<float> &isoValues);
             void setCamera(Camera *c);
             void setSamples(unsigned int spp);
 
@@ -47,6 +48,9 @@ namespace pbnj {
 
             std::string lastVolumeID;
             std::string lastCameraID;
+            std::string lastRenderType;
+
+            unsigned int samples;
     };
 }
 

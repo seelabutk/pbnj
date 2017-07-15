@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "Volume.h"
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -18,11 +19,10 @@
 namespace pbnj {
 
 Renderer::Renderer() :
-    backgroundColor()
+    backgroundColor(), samples(1)
 {
     this->oRenderer = ospNewRenderer("scivis");
-    //ospSet1i(this->oRenderer, "spp", 4);
-    //ospSet1i(this->oRenderer, "maxDepth", 5); // maybe later
+
     this->setBackgroundColor(0, 0, 0);
     this->oCamera = NULL;
     this->oModel = NULL;
@@ -59,20 +59,65 @@ void Renderer::setBackgroundColor(std::vector<unsigned char> bgColor)
 
 void Renderer::setVolume(Volume *v)
 {
-    if(this->lastVolumeID == v->ID) {
-        // this is the same volume as the current model
+    if(this->lastVolumeID == v->ID && this->lastRenderType == "volume") {
+        // this is the same volume as the current model and we previously
+        // did a volume render
         return;
     }
     if(this->oModel != NULL) {
-        //std::cerr << "Volume already set!" << std::endl;
-        //return;
         ospRelease(this->oModel);
         this->oModel = NULL;
     }
 
     this->lastVolumeID = v->ID;
+    this->lastRenderType = "volume";
     this->oModel = ospNewModel();
     ospAddVolume(this->oModel, v->asOSPRayObject());
+    ospCommit(this->oModel);
+}
+
+void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
+{
+    if(this->lastVolumeID == v->ID && this->lastRenderType == "isosurface") {
+        // this is the same volume as the current model and we previously
+        // did an isosurface render
+        return;
+    }
+    if(this->oModel != NULL) {
+        ospRelease(this->oModel);
+        this->oModel = NULL;
+    }
+
+    // vector stores all lights for this renderer
+    std::vector<OSPLight> lightHandles;
+    // add an ambient light to make AO work
+    lightHandles.push_back(ospNewLight(this->oRenderer, "ambient"));
+    float lightColor[] = {1.0, 0.0, 0.0};
+    ospSet3fv(lightHandles.front(), "color", lightColor);
+    float lightPos[] = {0.0, 0.0, 128.0};
+    ospSet3fv(lightHandles.front(), "position", lightPos);
+    ospSet1f(lightHandles.front(), "radius", 1.0);
+    ospSet1f(lightHandles.front(), "intensity", 0.05);
+    // make the vector an OSPDataArray
+    OSPData lightDataArray = ospNewData(lightHandles.size(), OSP_LIGHT,
+            lightHandles.data());
+    ospSetData(this->oRenderer, "lights", lightDataArray);
+    unsigned int aoSamples = std::max(this->samples/8, (unsigned int) 1);
+    ospSet1i(this->oRenderer, "aoSamples", aoSamples);
+    ospSet1i(this->oRenderer, "shadowsEnabled", 1);
+    ospCommit(this->oRenderer);
+
+    //create an isosurface object
+    OSPGeometry isosurface = ospNewGeometry("isosurfaces");
+    OSPData isoValuesDataArray = ospNewData(isoValues.size(), OSP_FLOAT,
+            isoValues.data());
+    ospSetData(isosurface, "isovalues", isoValuesDataArray);
+    ospSetObject(isosurface, "volume", v->asOSPRayObject());
+
+    this->lastVolumeID = v->ID;
+    this->lastRenderType = "isosurface";
+    this->oModel = ospNewModel();
+    ospAddGeometry(this->oModel, isosurface);
     ospCommit(this->oModel);
 }
 
@@ -97,6 +142,7 @@ void Renderer::setCamera(Camera *c)
 
 void Renderer::setSamples(unsigned int spp)
 {
+    this->samples = spp;
     ospSet1i(this->oRenderer, "spp", spp);
     ospCommit(this->oRenderer);
 }
