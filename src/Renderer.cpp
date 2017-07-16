@@ -81,7 +81,11 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
     if(this->lastVolumeID == v->ID && this->lastRenderType == "isosurface") {
         // this is the same volume as the current model and we previously
         // did an isosurface render
-        return;
+
+        // but check if the isoValues are different
+        if(this->lastIsoValues == isoValues) {
+            return;
+        }
     }
     if(this->oModel != NULL) {
         ospRelease(this->oModel);
@@ -135,6 +139,7 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
 
     this->lastVolumeID = v->ID;
     this->lastRenderType = "isosurface";
+    this->lastIsoValues = isoValues;
     this->oModel = ospNewModel();
     ospAddGeometry(this->oModel, this->oSurface);
     ospCommit(this->oModel);
