@@ -51,6 +51,7 @@ namespace pbnj {
             std::string lastVolumeID;
             std::string lastCameraID;
             std::string lastRenderType;
+            std::vector<float> lastIsoValues;
 
             std::vector<OSPLight> lights;
             unsigned int samples;
