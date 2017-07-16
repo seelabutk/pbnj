@@ -50,6 +50,7 @@ namespace pbnj {
             std::string lastCameraID;
             std::string lastRenderType;
 
+            std::vector<OSPLight> lights;
             unsigned int samples;
     };
 }
