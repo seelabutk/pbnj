@@ -88,23 +88,25 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
         this->oModel = NULL;
     }
 
-    // vector stores all lights for this renderer
-    std::vector<OSPLight> lightHandles;
-    // add an ambient light to make AO work
-    lightHandles.push_back(ospNewLight(this->oRenderer, "ambient"));
-    float lightColor[] = {1.0, 0.0, 0.0};
-    ospSet3fv(lightHandles.front(), "color", lightColor);
-    float lightPos[] = {0.0, 0.0, 128.0};
-    ospSet3fv(lightHandles.front(), "position", lightPos);
-    ospSet1f(lightHandles.front(), "radius", 1.0);
-    ospSet1f(lightHandles.front(), "intensity", 0.05);
-    // make the vector an OSPDataArray
-    OSPData lightDataArray = ospNewData(lightHandles.size(), OSP_LIGHT,
-            lightHandles.data());
-    ospSetData(this->oRenderer, "lights", lightDataArray);
+    if(this->lights.size() == 0) {
+        // create a new directional light
+        OSPLight light = ospNewLight(this->oRenderer, "distant");
+        float direction[] = {0, -1, 1};
+        ospSet3fv(light, "direction", direction);
+        // set the apparent size of the light in degrees
+        // 0.53 approximates the Sun
+        // however this doesn't seem to change anything!
+        ospSet1f(light, "angularDiameter", 0.53);
+        ospCommit(light);
+        this->lights.push_back(light);
+    }
+    OSPData lightDataArray = ospNewData(this->lights.size(), OSP_LIGHT, this->lights.data());
+    ospCommit(lightDataArray);
+    ospSetObject(this->oRenderer, "lights", lightDataArray);
     unsigned int aoSamples = std::max(this->samples/8, (unsigned int) 1);
     ospSet1i(this->oRenderer, "aoSamples", aoSamples);
-    ospSet1i(this->oRenderer, "shadowsEnabled", 1);
+    ospSet1i(this->oRenderer, "shadowsEnabled", 0);
+    ospSet1i(this->oRenderer, "oneSidedLighting", 0);
     ospCommit(this->oRenderer);
 
     //create an isosurface object
@@ -113,6 +115,15 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
             isoValues.data());
     ospSetData(isosurface, "isovalues", isoValuesDataArray);
     ospSetObject(isosurface, "volume", v->asOSPRayObject());
+    OSPMaterial surface = ospNewMaterial(this->oRenderer, "OBJMaterial");
+    float diffuse[] = {1.0, 1.0, 1.0};
+    float specular[] = {0.05, 0.05, 0.05};
+    ospSet3fv(surface, "Kd", diffuse);
+    ospSet3fv(surface, "Ks", specular);
+    ospSet1f(surface, "Ns", 10);
+    ospCommit(surface);
+    ospSetMaterial(isosurface, surface);
+    ospCommit(isosurface);
 
     this->lastVolumeID = v->ID;
     this->lastRenderType = "isosurface";
