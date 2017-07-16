@@ -88,6 +88,7 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
         this->oModel = NULL;
     }
 
+    // set up lights and material if necessary
     if(this->lights.size() == 0) {
         // create a new directional light
         OSPLight light = ospNewLight(this->oRenderer, "distant");
@@ -100,6 +101,16 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
         ospCommit(light);
         this->lights.push_back(light);
     }
+    if(this->oMaterial == NULL) {
+        // create a new surface material with some specular highlighting
+        this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
+        float diffuse[] = {1.0, 1.0, 1.0};
+        float specular[] = {0.05, 0.05, 0.05};
+        ospSet3fv(this->oMaterial, "Kd", diffuse);
+        ospSet3fv(this->oMaterial, "Ks", specular);
+        ospSet1f(this->oMaterial, "Ns", 10);
+        ospCommit(this->oMaterial);
+    }
     OSPData lightDataArray = ospNewData(this->lights.size(), OSP_LIGHT, this->lights.data());
     ospCommit(lightDataArray);
     ospSetObject(this->oRenderer, "lights", lightDataArray);
@@ -109,26 +120,23 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
     ospSet1i(this->oRenderer, "oneSidedLighting", 0);
     ospCommit(this->oRenderer);
 
-    //create an isosurface object
-    OSPGeometry isosurface = ospNewGeometry("isosurfaces");
+    // create an isosurface object
+    if(this->oSurface != NULL) {
+        ospRelease(this->oSurface);
+        this->oSurface = NULL;
+    }
+    this->oSurface = ospNewGeometry("isosurfaces");
     OSPData isoValuesDataArray = ospNewData(isoValues.size(), OSP_FLOAT,
             isoValues.data());
-    ospSetData(isosurface, "isovalues", isoValuesDataArray);
-    ospSetObject(isosurface, "volume", v->asOSPRayObject());
-    OSPMaterial surface = ospNewMaterial(this->oRenderer, "OBJMaterial");
-    float diffuse[] = {1.0, 1.0, 1.0};
-    float specular[] = {0.05, 0.05, 0.05};
-    ospSet3fv(surface, "Kd", diffuse);
-    ospSet3fv(surface, "Ks", specular);
-    ospSet1f(surface, "Ns", 10);
-    ospCommit(surface);
-    ospSetMaterial(isosurface, surface);
-    ospCommit(isosurface);
+    ospSetData(this->oSurface, "isovalues", isoValuesDataArray);
+    ospSetObject(this->oSurface, "volume", v->asOSPRayObject());
+    ospSetMaterial(this->oSurface, this->oMaterial);
+    ospCommit(this->oSurface);
 
     this->lastVolumeID = v->ID;
     this->lastRenderType = "isosurface";
     this->oModel = ospNewModel();
-    ospAddGeometry(this->oModel, isosurface);
+    ospAddGeometry(this->oModel, this->oSurface);
     ospCommit(this->oModel);
 }
 

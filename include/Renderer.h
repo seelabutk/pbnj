@@ -38,6 +38,8 @@ namespace pbnj {
             OSPFrameBuffer oFrameBuffer;
             OSPModel oModel;
             OSPCamera oCamera;
+            OSPGeometry oSurface;
+            OSPMaterial oMaterial;
 
             IMAGETYPE getFiletype(std::string filename);
             void saveImage(std::string filename, IMAGETYPE imageType);
