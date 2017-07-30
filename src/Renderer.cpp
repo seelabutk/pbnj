@@ -26,6 +26,8 @@ Renderer::Renderer() :
     this->setBackgroundColor(0, 0, 0);
     this->oCamera = NULL;
     this->oModel = NULL;
+    this->oSurface = NULL;
+    this->oMaterial = NULL;
     this->lastVolumeID = "unset";
     this->lastCameraID = "unset";
 }
@@ -35,6 +37,8 @@ Renderer::~Renderer()
     ospRelease(this->oRenderer);
     ospRelease(this->oCamera);
     ospRelease(this->oModel);
+    ospRelease(this->oSurface);
+    ospRelease(this->oMaterial);
 }
 
 void Renderer::setBackgroundColor(unsigned char r, unsigned char g, unsigned char b)
