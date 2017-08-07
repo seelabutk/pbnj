@@ -21,7 +21,8 @@ namespace pbnj {
 Renderer::Renderer() :
     backgroundColor(), samples(1)
 {
-    this->oRenderer = ospNewRenderer("scivis");
+    //this->oRenderer = ospNewRenderer("scivis");
+    this->oRenderer = ospNewRenderer("pathtracer");
 
     this->setBackgroundColor(0, 0, 0);
     this->oCamera = NULL;
@@ -98,34 +99,84 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
 
     // set up lights and material if necessary
     if(this->lights.size() == 0) {
+#if 1
+        OSPLight ambient = ospNewLight(this->oRenderer, "ambient");
+        //float color[] = {1.0, 0.0, 0.0};
+        //ospSet3fv(ambient, "color", color);
+        ospSet1f(ambient, "intensity", 0.005);
+        ospCommit(ambient);
+        this->lights.push_back(ambient);
+#endif
+        //
         // create a new directional light
-        OSPLight light = ospNewLight(this->oRenderer, "distant");
+#if 0
+        OSPLight distant = ospNewLight(this->oRenderer, "distant");
         float direction[] = {0, -1, 1};
-        ospSet3fv(light, "direction", direction);
+        ospSet3fv(distant, "direction", direction);
         // set the apparent size of the light in degrees
         // 0.53 approximates the Sun
-        // however this doesn't seem to change anything!
-        ospSet1f(light, "angularDiameter", 0.53);
-        ospCommit(light);
-        this->lights.push_back(light);
+        ospSet1f(distant, "angularDiameter", 60);
+        ospCommit(distant);
+        this->lights.push_back(distant);
+#endif
+        //
+        // experimenting with new lights
+#if 1
+        OSPLight quad = ospNewLight(this->oRenderer, "quad");
+        float firstVertexPosition[] = {160, 128, 0};
+        ospSet3fv(quad, "position", firstVertexPosition);
+        float edge1[] = {-200, 0, 0};
+        float edge2[] = {0, 0, 200};
+        ospSet3fv(quad, "edge1", edge1);
+        ospSet3fv(quad, "edge2", edge2);
+        ospCommit(quad);
+        this->lights.push_back(quad);
+        OSPLight quad2 = ospNewLight(this->oRenderer, "quad");
+        float firstVertexPosition2[] = {-160, 128, 0};
+        ospSet3fv(quad2, "position", firstVertexPosition2);
+        float edge12[] = {-200, 0, 0};
+        float edge22[] = {0, 0, 200};
+        ospSet3fv(quad2, "edge1", edge12);
+        ospSet3fv(quad2, "edge2", edge22);
+        ospCommit(quad2);
+        this->lights.push_back(quad2);
+#endif
+#if 0
+        OSPLight spot = ospNewLight(this->oRenderer, "spot");
+        float position[] = {0, 0, -324};
+        float direction[] = {0, 0, 1};
+        float opening = 60;
+        float penumbra = 5;
+        float radius = 5;
+        ospSet3fv(spot, "position", position);
+        ospSet3fv(spot, "direction", direction);
+        ospSet1f(spot, "openingAngle", opening);
+        ospSet1f(spot, "penumbraAngle", penumbra);
+        ospSet1f(spot, "radius", radius);
+        ospCommit(spot);
+        this->lights.push_back(spot);
+#endif
     }
     if(this->oMaterial == NULL) {
         // create a new surface material with some specular highlighting
         this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
-        float diffuse[] = {1.0, 1.0, 1.0};
-        float specular[] = {0.05, 0.05, 0.05};
+        float diffuse[] = {0.25, 0.25, 0.25};
+        float specular[] = {0.25, 0.25, 0.25};
+        float tfilter[] = {0.5, 0.5, 0.5};
         ospSet3fv(this->oMaterial, "Kd", diffuse);
         ospSet3fv(this->oMaterial, "Ks", specular);
-        ospSet1f(this->oMaterial, "Ns", 10);
+        ospSet3fv(this->oMaterial, "Tf", tfilter);
+        ospSet1f(this->oMaterial, "Ns", 100);
         ospCommit(this->oMaterial);
     }
     OSPData lightDataArray = ospNewData(this->lights.size(), OSP_LIGHT, this->lights.data());
     ospCommit(lightDataArray);
     ospSetObject(this->oRenderer, "lights", lightDataArray);
-    unsigned int aoSamples = std::max(this->samples/8, (unsigned int) 1);
+    unsigned int aoSamples = std::max(this->samples/4, (unsigned int) 1);
     ospSet1i(this->oRenderer, "aoSamples", aoSamples);
     ospSet1i(this->oRenderer, "shadowsEnabled", 0);
     ospSet1i(this->oRenderer, "oneSidedLighting", 0);
+    ospSet1i(this->oRenderer, "maxDepth", 64);
     ospCommit(this->oRenderer);
 
     // create an isosurface object
