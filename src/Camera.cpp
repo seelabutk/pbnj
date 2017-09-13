@@ -47,28 +47,30 @@ void Camera::setPosition(float x, float y, float z)
     this->updateOSPRayPosition();
 }
 
-// no longer needed as the volume is centered automatically
+void Camera::setView(float x, float y, float z)
+{
+    this->viewX = x;
+    this->viewY = y;
+    this->viewZ = z;
+    this->updateOSPRayPosition();
+}
+
 void Camera::centerView()
 {
     //center the camera's viewpoint on the center of a volume
     //std::vector<int> bounds = v->getBounds();
-    this->viewX = 0; //(float)(bounds[0])/2.0;
-    this->viewY = 0; //(float)(bounds[1])/2.0;
-    this->viewZ = 0; //(float)(bounds[2])/2.0;
+    this->viewX = -this->xPos; //(float)(bounds[0])/2.0;
+    this->viewY = -this->yPos; //(float)(bounds[1])/2.0;
+    this->viewZ = -this->zPos; //(float)(bounds[2])/2.0;
 }
 
 void Camera::updateOSPRayPosition()
 {
-    //calculate the components for the view vector
-    float deltaX = (this->viewX-this->xPos);
-    float deltaY = (this->viewY-this->yPos);
-    float deltaZ = (this->viewZ-this->zPos);
-
     //update OSPRay camera
     float position[] = {this->xPos, this->yPos, this->zPos};
     ospSet3fv(this->oCamera, "pos", position);
 
-    float direction[] = {deltaX, deltaY, deltaZ};
+    float direction[] = {this->viewX, this->viewY, this->viewZ};
     ospSet3fv(this->oCamera, "dir", direction);
 
     float up[] = {this->upX, this->upY, this->upZ};
