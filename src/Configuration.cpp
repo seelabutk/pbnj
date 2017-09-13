@@ -199,7 +199,8 @@ void Configuration::selectColorMap(std::string userInput)
     }
     else if(userInput.compare("spectralReverse") == 0 ||
             userInput.compare("spectral reverse") == 0 ||
-            userInput.compare("reverse spectral") == 0) {
+            userInput.compare("reverse spectral") == 0 ||
+            userInput.compare("reverseSpectral") == 0) {
         this->colorMap = spectralReverse;
     }
     else if(userInput.compare("magma") == 0) {
