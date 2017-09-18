@@ -135,7 +135,6 @@ Configuration::Configuration(std::string filename) :
     // samples per pixel
     if(json.HasMember("samplesPerPixel")) {
         unsigned int val = json["samplesPerPixel"].GetUint();
-        std::cerr << "samples: " << val << std::endl;
         this->samples = val;
     }
     else
