@@ -92,6 +92,7 @@ int main(int argc, const char **argv)
     camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
     camera->setUpVector(config->cameraUpX, config->cameraUpY,
             config->cameraUpZ);
+    camera->centerView();
 
     // set up the renderer
     // the samples and camera are the same regardless of whether we are

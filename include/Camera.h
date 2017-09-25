@@ -30,15 +30,16 @@ namespace pbnj {
             int imageWidth;
             int imageHeight;
 
+            float viewX;
+            float viewY;
+            float viewZ;
+
             std::string ID;
 
         private:
             float xPos;
             float yPos;
             float zPos;
-            float viewX;
-            float viewY;
-            float viewZ;
             float upX;
             float upY;
             float upZ;

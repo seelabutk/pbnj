@@ -80,6 +80,22 @@ void Renderer::setVolume(Volume *v)
     ospCommit(this->oModel);
 }
 
+void Renderer::addLight()
+{
+    // currently the renderer will hold only one light
+    if(this->lights.size() == 0) {
+        // create a new directional light
+        OSPLight light = ospNewLight(this->oRenderer, "distant");
+        //float direction[] = {0, -1, 1};
+        //ospSet3fv(light, "direction", direction);
+        // set the apparent size of the light in degrees
+        // 0.53 approximates the Sun
+        ospSet1f(light, "angularDiameter", 0.53);
+        ospCommit(light);
+        this->lights.push_back(light);
+    }
+}
+
 void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
 {
     if(this->lastVolumeID == v->ID && this->lastRenderType == "isosurface") {
@@ -96,19 +112,8 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
         this->oModel = NULL;
     }
 
-    // set up lights and material if necessary
-    if(this->lights.size() == 0) {
-        // create a new directional light
-        OSPLight light = ospNewLight(this->oRenderer, "distant");
-        float direction[] = {0, -1, 1};
-        ospSet3fv(light, "direction", direction);
-        // set the apparent size of the light in degrees
-        // 0.53 approximates the Sun
-        // however this doesn't seem to change anything!
-        ospSet1f(light, "angularDiameter", 0.53);
-        ospCommit(light);
-        this->lights.push_back(light);
-    }
+    // set up light and material if necessary
+    this->addLight();
     if(this->oMaterial == NULL) {
         // create a new surface material with some specular highlighting
         this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
@@ -119,14 +124,6 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
         ospSet1f(this->oMaterial, "Ns", 10);
         ospCommit(this->oMaterial);
     }
-    OSPData lightDataArray = ospNewData(this->lights.size(), OSP_LIGHT, this->lights.data());
-    ospCommit(lightDataArray);
-    ospSetObject(this->oRenderer, "lights", lightDataArray);
-    unsigned int aoSamples = std::max(this->samples/8, (unsigned int) 1);
-    ospSet1i(this->oRenderer, "aoSamples", aoSamples);
-    ospSet1i(this->oRenderer, "shadowsEnabled", 0);
-    ospSet1i(this->oRenderer, "oneSidedLighting", 0);
-    ospCommit(this->oRenderer);
 
     // create an isosurface object
     if(this->oSurface != NULL) {
@@ -165,6 +162,10 @@ void Renderer::setCamera(Camera *c)
     this->lastCameraID = c->ID;
     this->cameraWidth = c->imageWidth;
     this->cameraHeight = c->imageHeight;
+    // grab the light direction while we have the pbnj Camera
+    this->lightDirection[0] = c->viewX;
+    this->lightDirection[1] = c->viewY;
+    this->lightDirection[2] = c->viewZ;
     this->oCamera = c->asOSPRayObject();
 }
 
@@ -253,6 +254,19 @@ void Renderer::render()
         return;
 
     //finalize the OSPRay renderer
+    if(this->lights.size() == 1) {
+        //if there was a light, set its direction based on the camera
+        //and add it to the renderer
+        ospSet3fv(this->lights[0], "direction", this->lightDirection);
+        ospCommit(this->lights[0]);
+        OSPData lightDataArray = ospNewData(this->lights.size(), OSP_LIGHT, this->lights.data());
+        ospCommit(lightDataArray);
+        ospSetObject(this->oRenderer, "lights", lightDataArray);
+        unsigned int aoSamples = std::max(this->samples/8, (unsigned int) 1);
+        ospSet1i(this->oRenderer, "aoSamples", aoSamples);
+        ospSet1i(this->oRenderer, "shadowsEnabled", 0);
+        ospSet1i(this->oRenderer, "oneSidedLighting", 0);
+    }
     ospSetObject(this->oRenderer, "model", this->oModel);
     ospSetObject(this->oRenderer, "camera", this->oCamera);
     ospCommit(this->oRenderer);

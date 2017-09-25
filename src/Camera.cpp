@@ -59,9 +59,7 @@ void Camera::centerView()
 {
     //center the camera's viewpoint on the center of a volume
     //std::vector<int> bounds = v->getBounds();
-    this->viewX = -this->xPos; //(float)(bounds[0])/2.0;
-    this->viewY = -this->yPos; //(float)(bounds[1])/2.0;
-    this->viewZ = -this->zPos; //(float)(bounds[2])/2.0;
+    this->setView(-this->xPos, -this->yPos, -this->zPos);
 }
 
 void Camera::updateOSPRayPosition()
