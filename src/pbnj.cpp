@@ -37,9 +37,13 @@ std::string createID()
         return "";
     }
 
-    fgets(buffer, 1024, arp);
+    char *res = fgets(buffer, 1024, arp);
+    if(res == NULL) {
+        std::cerr << "WARNING: Unexpected error reading /proc/net/arp. ";
+        std::cerr << "Object IDs won't work." << std::endl;
+        return "";
+    }
 
-    // what are for loops?
     char *macaddr;
     macaddr = strtok(buffer, " ");
     macaddr = strtok(NULL, " ");

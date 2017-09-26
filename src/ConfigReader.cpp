@@ -2,6 +2,7 @@
 
 #include "rapidjson/document.h"
 
+#include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -22,7 +23,12 @@ void ConfigReader::parseConfigFile(std::string filename,
 
     //read the data into a string
     char *json = (char *)malloc(fileLength + 1);
-    fread(json, fileLength, 1, file);
+    size_t nread = fread(json, 1, fileLength, file);
+    if(nread != fileLength) {
+        std::cerr << "WARNING: Unexpected number of bytes read from ";
+        std::cerr << "configuration file. Read " << nread << " but";
+        std::cerr << " should be " << fileLength << std::endl;
+    }
     fclose(file);
     json[fileLength] = 0;
 
