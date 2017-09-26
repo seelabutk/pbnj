@@ -258,6 +258,32 @@ preconfigured visualization.
        ``setIsosurface`` function.
        This is set by ``specular`` in the configuration file.
 
+    .. cpp:function:: pbnj::CONFSTATE getConfigState()
+
+       This function will return one of six values depending on the combination
+       of parameters found in the configuration file.
+       The possible ``CONFSTATE`` values are:
+
+       ``SINGLE_NOVAR``
+            A single dataset was given with no variable name specified
+
+       ``SINGLE_VAR``
+            A single dataset was given with a specified variable name
+
+       ``MULTI_NOVAR``
+            Multiple datasets were given (i.e. a path with wildcards was
+            provided) with no variable name specified
+
+       ``MULTI_VAR``
+            Multiple datasets were given with a specified variable name
+
+       ``ERROR_NODATA``
+            No filename(s) were given
+
+       ``ERROR_MULTISET``
+            Both a single dataset and multiple datasets were provided
+            (i.e. the ``filename`` keyword was duplicated with different
+            values)
 
 Example
 -------
