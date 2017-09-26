@@ -5,6 +5,7 @@
 #include "rapidjson/document.h"
 
 #include <glob.h>
+#include <algorithm>
 #include <iostream>
 
 namespace pbnj {
@@ -179,6 +180,18 @@ Configuration::Configuration(std::string filename) :
             this->isosurfaceValues.push_back(
                     json["isosurfaceValues"].GetFloat());
         }
+    }
+    
+    // specularity for surface lighting
+    // isosurface renders create a directional light (with direction set
+    // to the camera view direction) and this will optionally set the amount
+    // of specular reflection, default is 0.1
+    if(json.HasMember("specular")) {
+        this->specularity =
+            std::max(std::min(json["specular"].GetFloat(), 1.f), 0.f);
+    }
+    else {
+        this->specularity = 0.1;
     }
 }
 

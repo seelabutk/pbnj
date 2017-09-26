@@ -121,6 +121,12 @@ void Renderer::addLight()
 
 void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
 {
+    this->setIsosurface(v, isoValues, 0.1);
+}
+
+void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues,
+        float specular)
+{
     if(this->lastVolumeID == v->ID && this->lastRenderType == "isosurface") {
         // this is the same volume as the current model and we previously
         // did an isosurface render
@@ -140,10 +146,10 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
     if(this->oMaterial == NULL) {
         // create a new surface material with some specular highlighting
         this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
-        float diffuse[] = {1.0, 1.0, 1.0};
-        float specular[] = {0.05, 0.05, 0.05};
-        ospSet3fv(this->oMaterial, "Kd", diffuse);
-        ospSet3fv(this->oMaterial, "Ks", specular);
+        float Ks[] = {specular, specular, specular};
+        float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
+        ospSet3fv(this->oMaterial, "Kd", Kd);
+        ospSet3fv(this->oMaterial, "Ks", Ks);
         ospSet1f(this->oMaterial, "Ns", 10);
         ospCommit(this->oMaterial);
     }
