@@ -66,20 +66,16 @@ void Volume::init()
 
 Volume::~Volume()
 {
-    // Memory leak in OSPRay
-    // User-set parameters cannot be removed and deallocated
-    // As such, all calls to ospSet*() create copies of the objects
-    // passed in and never get deleted. This accumulates over time.
-    //
-    // FIX: call ospRemoveParam() here to undo all ospSet*() calls
-    //      This has to be done in ALL objects that have underlying
-    //      OSPRay objects, though Volume is the worst offender
-    // REQUIRES: upgrading to OSPRay 1.2.0+
-    //           this is when ospRemoveParam() was officially released
     delete this->dataFile;
     this->dataFile = NULL;
     delete this->transferFunction;
     this->transferFunction = NULL;
+    ospRemoveParam(this->oVolume, "voxelData");
+    ospRemoveParam(this->oVolume, "dimensions");
+    ospRemoveParam(this->oVolume, "voxelType");
+    ospRemoveParam(this->oVolume, "voxelRange");
+    ospRemoveParam(this->oVolume, "gridOrigin");
+    ospRemoveParam(this->oVolume, "transferFunction");
     ospRelease(this->oVolume);
     ospRelease(this->oData);
 }

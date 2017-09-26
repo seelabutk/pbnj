@@ -21,6 +21,10 @@ Camera::Camera(int width, int height) :
 
 Camera::~Camera()
 {
+    ospRemoveParam(this->oCamera, "aspect");
+    ospRemoveParam(this->oCamera, "pos");
+    ospRemoveParam(this->oCamera, "dir");
+    ospRemoveParam(this->oCamera, "up");
     ospRelease(this->oCamera);
 }
 

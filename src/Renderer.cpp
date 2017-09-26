@@ -34,11 +34,34 @@ Renderer::Renderer() :
 
 Renderer::~Renderer()
 {
+    ospRemoveParam(this->oRenderer, "bgColor");
+    ospRemoveParam(this->oRenderer, "spp");
+    ospRemoveParam(this->oRenderer, "lights");
+    ospRemoveParam(this->oRenderer, "aoSamples");
+    ospRemoveParam(this->oRenderer, "shadowsEnabled");
+    ospRemoveParam(this->oRenderer, "oneSidedLighting");
+    ospRemoveParam(this->oRenderer, "model");
+    ospRemoveParam(this->oRenderer, "camera");
     ospRelease(this->oRenderer);
+
     ospRelease(this->oCamera);
+
     ospRelease(this->oModel);
-    ospRelease(this->oSurface);
+
+    ospRemoveParam(this->oMaterial, "Kd");
+    ospRemoveParam(this->oMaterial, "Ks");
+    ospRemoveParam(this->oMaterial, "Ns");
     ospRelease(this->oMaterial);
+
+    ospRemoveParam(this->oSurface, "isovalues");
+    ospRemoveParam(this->oSurface, "volume");
+    ospRelease(this->oSurface);
+
+    for(int light = 0; light < this->lights.size(); light++) {
+        ospRemoveParam(this->lights[light], "angularDiameter");
+        ospRemoveParam(this->lights[light], "direction");
+        ospRelease(this->lights[light]);
+    }
 }
 
 void Renderer::setBackgroundColor(unsigned char r, unsigned char g, unsigned char b)
