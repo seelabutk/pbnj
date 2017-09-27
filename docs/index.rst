@@ -12,7 +12,6 @@ Welcome to PBNJ's documentation!
 
    usage
    classes
-   Configuration
    example_applications
 
 
