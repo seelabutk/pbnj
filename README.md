@@ -1,4 +1,4 @@
-# Peanut Butter N Jelly
+# PBNJ - Peanut Butter N Jelly
 
 C++ wrapper library on top of OSPRay to simplify scientific volume rendering
 
@@ -26,6 +26,10 @@ initialized once and reused. This is the base for Enchiladas, as a Volume,
 Camera, and Renderer can be initialized once. Then a stream of images can be
 sent to a client.
 
+PBNJ forms the rendering core for the
+[Tapestry](https://github.com/seelabutk/tapestry) project.
+
 The example application `simpleVolumeRender` demonstrates using PBNJ with a
 JSON config file.
 
+Documentation is provided and can be built to HTML using Sphinx
