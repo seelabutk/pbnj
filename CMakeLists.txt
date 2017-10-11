@@ -9,8 +9,8 @@ SET(embree_DIR ""
     CACHE FILEPATH "Directory containing an embree-config.cmake file")
 SET(ospray_DIR ""
     CACHE FILEPATH "Directory containing an osprayConfig.cmake file")
-FIND_PACKAGE(embree "2.15.0" REQUIRED)
 FIND_PACKAGE(ospray REQUIRED)
+FIND_PACKAGE(embree "2.15.0" REQUIRED)
 
 OPTION(USE_NETCDF "Enable NetCDF file reading" ON)
 OPTION(BUILD_EXAMPLES "Build example applications" ON)
@@ -22,6 +22,7 @@ SET(PBNJ_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include"
 
 MESSAGE(STATUS "PBNJ LIBS: ${PBNJ_LIBS}")
 MESSAGE(STATUS "OSPRAY LIBS: ${OSPRAY_LIBRARIES}")
+MESSAGE(STATUS "EMBREE LIBS: ${EMBREE_LIBRARIES}")
 
 
 #USE_NETCDF adds netcdf includes/libs for data reading
