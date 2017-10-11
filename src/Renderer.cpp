@@ -213,7 +213,6 @@ void Renderer::renderImage(std::string imageFilename)
         return;
     }
 
-    this->render();
     this->saveImage(imageFilename, imageType);
 }
 
