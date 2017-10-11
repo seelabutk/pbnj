@@ -23,6 +23,7 @@ namespace pbnj {
             void addLight();
             void setIsosurface(Volume *v, std::vector<float> &isoValues);
             void setIsosurface(Volume *v, std::vector<float> &isoValues, float specular);
+            void setMaterialSpecular(float specular);
             void setCamera(Camera *c);
             void setSamples(unsigned int spp);
 

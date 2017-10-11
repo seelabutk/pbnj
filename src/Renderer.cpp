@@ -175,6 +175,19 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues,
     ospCommit(this->oModel);
 }
 
+void Renderer::setMaterialSpecular(float specular)
+{
+    if(this->oMaterial == NULL) {
+        std::cerr << "WARNING: setMaterialSpecular() should be called after " <<
+            "setIsosurface(). No specular value will be set." << std::endl;
+        return;
+    }
+
+    float Ks[] = {specular, specular, specular};
+    ospSet3fv(this->oMaterial, "Ks", Ks);
+    ospCommit(this->oMaterial);
+}
+
 void Renderer::setCamera(Camera *c)
 {
     if(this->lastCameraID == c->ID) {
