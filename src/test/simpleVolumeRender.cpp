@@ -22,7 +22,7 @@ std::string imageFamily(std::string filename, unsigned int count)
 
 int main(int argc, const char **argv)
 {
-    if(argc != 2) {
+    if(argc < 2) {
         std::cerr << "Usage: " << argv[0] << " <config_file.json>" << std::endl;
         return 1;
     }
@@ -108,7 +108,6 @@ int main(int argc, const char **argv)
 
         // set up any remaining config options for the volume
         volume->setColorMap(config->colorMap);
-        volume->setOpacityMap(config->opacityMap);
         volume->setOpacityMap(config->opacityMap);
         volume->attenuateOpacity(config->opacityAttenuation);
 
