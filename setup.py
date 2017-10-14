@@ -13,7 +13,7 @@ _pbnj = Extension(
         'pbnj',
     ],
     sources=[
-        'python/pbnjmodule.cpp',
+        'pbnj_wrap.cxx',
     ],
 )
 
@@ -39,5 +39,8 @@ setup(
     },
     ext_modules=[
         _pbnj,
+    ],
+    py_modules=[
+        'python/pbnj',
     ],
 )

@@ -1,16 +1,28 @@
-FROM ubuntu:latest
-MAINTAINER Tanner Hobson <thobson2@vols.utk.edu>
+FROM ubuntu:latest AS rapidjson
+
+RUN apt-get update && \
+    apt-get install -y \
+            # build-essential $(: all : compile tool) \
+            # Compilation tool for C/C++ programs
+            cmake $(: all : compile tool) \
+            # python $(: pistache : running tests) \
+            # libtbb-dev $(: embree ospray : threading framework) \
+            # libglu1-mesa-dev $(: embree ospray : OpenGL requirements) \
+            # freeglut3-dev $(: embree ospray : OpenGL requirements) \
+            # mesa-common-dev $(: embree ospray : OpenGL requirements) \
+            # libc6-dev $(: enchiladas : pthreads) \
+    && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && \
     apt-get install -y \
             build-essential $(: all : compile tool) \
-            cmake $(: all : compile tool) \
-            python $(: pistache : running tests) \
-            libtbb-dev $(: embree ospray : threading framework) \
-            libglu1-mesa-dev $(: embree ospray : OpenGL requirements) \
-            freeglut3-dev $(: embree ospray : OpenGL requirements) \
-            mesa-common-dev $(: embree ospray : OpenGL requirements) \
-            libc6-dev $(: enchiladas : pthreads) \
+            # python $(: pistache : running tests) \
+            # libtbb-dev $(: embree ospray : threading framework) \
+            # libglu1-mesa-dev $(: embree ospray : OpenGL requirements) \
+            # freeglut3-dev $(: embree ospray : OpenGL requirements) \
+            # mesa-common-dev $(: embree ospray : OpenGL requirements) \
+            # libc6-dev $(: enchiladas : pthreads) \
     && \
     rm -rf /var/lib/apt/lists/*
 
@@ -23,18 +35,40 @@ RUN true && \
           -DRAPIDJSON_BUILD_TESTS:BOOL=OFF \
     && \
     make && \
-    make install
+    make install DESTDIR=/stage
 
+FROM ubuntu:latest AS ispc
 WORKDIR /opt/
 ADD ispc-v1.9.1-linux.tar.gz /opt/
 RUN mv ispc-v1.9.1-linux ispc
 WORKDIR /opt/ispc/
-RUN update-alternatives --install /usr/bin/ispc ispc /opt/ispc/ispc 1
+RUN mkdir -p /stage/usr/bin && \
+    cp /opt/ispc/ispc /stage/usr/bin/
 
+FROM ubuntu:latest AS embree
 WORKDIR /opt/
 ADD embree-2.16.4.x86_64.linux.tar.gz /opt/
 RUN mv embree-2.16.4.x86_64.linux embree
 WORKDIR /opt/embree/
+
+FROM ubuntu:latest AS ospray
+
+RUN apt-get update && \
+    apt-get install -y \
+            build-essential \
+            # Compilation tool for C/C++ programs
+            cmake \
+            # python $(: pistache : running tests) \
+            # libtbb-dev $(: embree ospray : threading framework) \
+            # libglu1-mesa-dev $(: embree ospray : OpenGL requirements) \
+            # freeglut3-dev $(: embree ospray : OpenGL requirements) \
+            # mesa-common-dev $(: embree ospray : OpenGL requirements) \
+            # libc6-dev $(: enchiladas : pthreads) \
+    && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=ispc /stage /
+COPY --from=embree /opt/embree /opt/embree
 
 WORKDIR /opt/
 COPY ospray /opt/ospray
@@ -46,11 +80,28 @@ RUN true && \
           -DOSPRAY_TASKING_SYSTEM=OpenMP \
     && \
     make && \
-    make install
+    make install DESTDIR=/stage
+
+FROM ubuntu:latest AS pbnj
+COPY --from=rapidjson /stage /
+COPY --from=embree /opt/embree /opt/embree
+COPY --from=ospray /stage /
 
 RUN apt-get update && \
     apt-get install -y \
             python3-dev \
+    && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y \
+            cmake \
+    && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y \
+            build-essential \
     && \
     rm -rf /var/lib/apt/lists/*
 
@@ -76,7 +127,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/pbnj/
-COPY python ./python
+COPY pbnj.py ./pbnj.py
+COPY pbnj_wrap.cxx ./pbnj_wrap.cxx
 COPY setup.py ./setup.py
 WORKDIR /opt/pbnj/
 RUN true && \
@@ -86,6 +138,4 @@ RUN true && \
 RUN true && \
     env LD_RUN_PATH=/usr/local/lib:/opt/embree/lib venv/bin/pip install --verbose .
 COPY test.py ./test.py
-RUN true && \
-    venv/bin/python3 test.py && \
-    false
+CMD ["venv/bin/python3", "test.py"]
