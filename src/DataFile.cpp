@@ -81,7 +81,7 @@ void DataFile::loadFromFile(std::string filename, std::string var_name,
         FILE *dataFile = fopen(filename.c_str(), "r");
 
         if(dataFile == NULL) {
-            std::cerr << "Could not open file!" << std::endl;
+            std::cerr << "Could not open file! " << filename << std::endl;
         }
         else {
             if(memmap) {

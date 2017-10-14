@@ -18,7 +18,7 @@ namespace pbnj {
                     int x, int y, int z);
             ~TimeSeries();
 
-            Volume *getVolume(unsigned int index);
+            pbnj::Volume *getVolume(unsigned int index);
             int getVolumeIndex(std::string filename);
             unsigned int getLength();
             void setMaxMemory(unsigned int gigabytes);

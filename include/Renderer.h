@@ -19,9 +19,9 @@ namespace pbnj {
 
             void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b);
             void setBackgroundColor(std::vector<unsigned char> bgColor);
-            void setVolume(Volume *v);
-            void setIsosurface(Volume *v, std::vector<float> &isoValues);
-            void setCamera(Camera *c);
+            void setVolume(pbnj::Volume *v);
+            void setIsosurface(pbnj::Volume *v, std::vector<float> &isoValues);
+            void setCamera(pbnj::Camera *c);
             void setSamples(unsigned int spp);
 
             void render();
