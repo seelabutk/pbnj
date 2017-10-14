@@ -3,3 +3,5 @@ install/
 configs/
 renders/
 .*.swp
+*~
+__pycache__
