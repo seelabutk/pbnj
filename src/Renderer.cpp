@@ -23,7 +23,7 @@ Renderer::Renderer() :
 {
     this->oRenderer = ospNewRenderer("scivis");
 
-    this->setBackgroundColor(0, 0, 0);
+    this->setBackgroundColor(0, 0, 0, 0);
     this->oCamera = NULL;
     this->oModel = NULL;
     this->oSurface = NULL;
@@ -64,12 +64,13 @@ Renderer::~Renderer()
     }
 }
 
-void Renderer::setBackgroundColor(unsigned char r, unsigned char g, unsigned char b)
+void Renderer::setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
     this->backgroundColor[0] = r;
     this->backgroundColor[1] = g;
     this->backgroundColor[2] = b;
-    float asVec[] = {r/(float)255.0, g/(float)255.0, b/(float)255.0};
+    this->backgroundColor[3] = a;
+    float asVec[] = {r/(float)255.0, g/(float)255.0, b/(float)255.0, a/(float)255.0};
     ospSet3fv(this->oRenderer, "bgColor", asVec);
     ospCommit(this->oRenderer);
 }
@@ -78,10 +79,12 @@ void Renderer::setBackgroundColor(std::vector<unsigned char> bgColor)
 {
     // if the incoming vector is empty, it's probably from the config
     // just set to black instead
-    if(bgColor.empty())
-        this->setBackgroundColor(0, 0, 0);
+    if(bgColor.empty() || bgColor.size() < 3)
+        this->setBackgroundColor(0, 0, 0, 0);
+    else if (bgColor.size() == 3)
+        this->setBackgroundColor(bgColor[0], bgColor[1], bgColor[2], 255);
     else
-        this->setBackgroundColor(bgColor[0], bgColor[1], bgColor[2]);
+        this->setBackgroundColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 }
 
 void Renderer::setVolume(Volume *v)
@@ -250,15 +253,18 @@ void Renderer::renderToBuffer(unsigned char **buffer)
             // composite rowIn RGB with background color
             unsigned char r = rowIn[4*i + 0],
                           g = rowIn[4*i + 1],
-                          b = rowIn[4*i + 2];
-            float a = rowIn[4*i + 3] / 255.0;
-            (*buffer)[4*index + 0] = (unsigned char) r * a +
-                this->backgroundColor[0] * (1.0-a);
-            (*buffer)[4*index + 1] = (unsigned char) g * a +
-                this->backgroundColor[1] * (1.0-a);
-            (*buffer)[4*index + 2] = (unsigned char) b * a +
-                this->backgroundColor[2] * (1.0-a);
-            (*buffer)[4*index + 3] = 255;
+                          b = rowIn[4*i + 2],
+                          a = rowIn[4*i + 3];
+            float w = rowIn[4*i + 3] / 255.0;
+            bool doComposite = (this->backgroundColor[3] != 0);
+            (*buffer)[4*index + 0] = (unsigned char) r * w +
+                (doComposite ? this->backgroundColor[0] * (1.0-w) : 0);
+            (*buffer)[4*index + 1] = (unsigned char) g * w +
+                (doComposite ? this->backgroundColor[1] * (1.0-w) : 0);
+            (*buffer)[4*index + 2] = (unsigned char) b * w +
+                (doComposite ? this->backgroundColor[2] * (1.0-w) : 0);
+            (*buffer)[4*index + 3] = (unsigned char) a * w +
+                (doComposite ? this->backgroundColor[3] * (1.0-w) : 0);
         }
     }
 
