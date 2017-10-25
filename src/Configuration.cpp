@@ -7,6 +7,7 @@
 #include <glob.h>
 #include <algorithm>
 #include <iostream>
+#include <map>
 
 namespace pbnj {
 
@@ -207,23 +208,38 @@ void Configuration::selectColorMap(std::string userInput)
     }
     else if(userInput.compare("coolToWarm") == 0 ||
        userInput.compare("cool to warm") == 0) {
-        this->colorMap = coolToWarm;
+        this->colorMap = colormaps["coolToWarm"];
     }
     else if(userInput.compare("spectralReverse") == 0 ||
             userInput.compare("spectral reverse") == 0 ||
             userInput.compare("reverse spectral") == 0 ||
             userInput.compare("reverseSpectral") == 0) {
-        this->colorMap = spectralReverse;
+        this->colorMap = colormaps["spectralReverse"];
     }
     else if(userInput.compare("magma") == 0) {
-        this->colorMap = magma;
+        this->colorMap = colormaps["magma"];
     }
     else if(userInput.compare("viridis") == 0) {
-        this->colorMap = viridis;
+        this->colorMap = colormaps["viridis"];
     }
     else {
-        // will default to black to white
-        std::cerr << "Unrecognized color map " << userInput << "!" << std::endl;
+        // does it exist in colormaps
+        bool colormap_found = false;
+        std::map<std::string, std::vector<float>>::iterator it;
+        for(it = colormaps.begin(); it != colormaps.end(); it++)
+        {
+            if(userInput.compare(it->first) == 0)
+            {
+                this->colorMap = it->second;
+                colormap_found = true;
+                break;
+            }
+        }
+        if (colormap_found == false)
+        {
+            // will default to black to white
+            std::cerr << "Unrecognized color map " << userInput << "!" << std::endl;
+        }
     }
 }
 
