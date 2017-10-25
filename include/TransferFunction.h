@@ -6,14 +6,12 @@
 #include <ospray/ospray.h>
 
 #include <vector>
+#include <map>
 
 namespace pbnj {
 
     // named color maps
-    extern std::vector<float> coolToWarm;
-    extern std::vector<float> spectralReverse;
-    extern std::vector<float> magma;
-    extern std::vector<float> viridis;
+    extern std::map<std::string, std::vector<float>> colormaps;
 
     // named opacity maps
     extern std::vector<float> reverseRamp;
