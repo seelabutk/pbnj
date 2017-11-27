@@ -26,10 +26,10 @@ namespace pbnj {
             std::string filename;
             FILETYPE filetype;
 
-            int xDim;
-            int yDim;
-            int zDim;
-            long int numValues;
+            unsigned long int xDim;
+            unsigned long int yDim;
+            unsigned long int zDim;
+            unsigned long int numValues;
 
             float minVal; // these should 
             float maxVal; //
