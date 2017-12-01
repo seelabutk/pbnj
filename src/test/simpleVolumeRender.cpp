@@ -56,7 +56,7 @@ int main(int argc, const char **argv)
         case pbnj::SINGLE_NOVAR:
             std::cout << "Single volume, no variable" << std::endl;
             volume = new pbnj::Volume(config->dataFilename, config->dataXDim,
-                    config->dataYDim, config->dataZDim);
+                    config->dataYDim, config->dataZDim, true);
             break;
         case pbnj::SINGLE_VAR:
             std::cout << "Single volume, variable" << std::endl;
