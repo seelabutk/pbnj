@@ -23,10 +23,6 @@ DataFile::DataFile(int x, int y, int z) :
     xDim(x), yDim(y), zDim(z), numValues(x*y*z), statsCalculated(false)
 {
     this->numValues = xDim * yDim * zDim;
-    std::cerr << "DEBUG x: " << xDim << std::endl;
-    std::cerr << "DEBUG y: " << yDim << std::endl;
-    std::cerr << "DEBUG z: " << zDim << std::endl;
-    std::cerr << "DEBUG numValues: " << numValues << std::endl;
 }
 
 DataFile::~DataFile()
