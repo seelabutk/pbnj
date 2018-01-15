@@ -11,6 +11,7 @@
 #include <cmath>
 #include <stdlib.h>
 #include "lodepng/lodepng.h"
+#include "rapidjson/document.h"
 #include <string>
 #include <vector>
 
@@ -96,7 +97,10 @@ int main(int argc, const char **argv)
     std::string confFile(argv[1]);
     std::string confName = confFile.substr(confFile.rfind('/')+1);
     confName = confName.substr(0, confName.rfind('.'));
-    pbnj::Configuration *config = new pbnj::Configuration(argv[1]);
+    pbnj::ConfigReader *reader = new pbnj::ConfigReader();
+    rapidjson::Document json;
+    reader->parseConfigFile(argv[1], json);
+    pbnj::Configuration *config = new pbnj::Configuration(json);
     pbnj::pbnjInit(&argc, argv);
 
     pbnj::CONFSTATE confState = config->getConfigState();
