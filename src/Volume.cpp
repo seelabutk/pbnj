@@ -95,10 +95,10 @@ void Volume::setOpacityMap(std::vector<float> &map)
     this->transferFunction->setOpacityMap(map);
 }
 
-std::vector<int> Volume::getBounds()
+std::vector<long unsigned int> Volume::getBounds()
 {
-    std::vector<int> bounds = {this->dataFile->xDim, this->dataFile->yDim,
-        this->dataFile->zDim};
+    std::vector<long unsigned int> bounds = {this->dataFile->xDim,
+        this->dataFile->yDim, this->dataFile->zDim};
     return bounds;
 }
 

@@ -22,6 +22,7 @@ namespace pbnj {
 DataFile::DataFile(int x, int y, int z) :
     xDim(x), yDim(y), zDim(z), numValues(x*y*z), statsCalculated(false)
 {
+    this->numValues = xDim * yDim * zDim;
 }
 
 DataFile::~DataFile()
@@ -65,9 +66,9 @@ void DataFile::loadFromFile(std::string filename, std::string var_name,
         }
 
         // overwrite any configured values with the file's values
-        this->xDim = (int) variable.getDim(2).getSize();
-        this->yDim = (int) variable.getDim(1).getSize();
-        this->zDim = (int) variable.getDim(0).getSize();
+        this->xDim = (long unsigned int) variable.getDim(2).getSize();
+        this->yDim = (long unsigned int) variable.getDim(1).getSize();
+        this->zDim = (long unsigned int) variable.getDim(0).getSize();
         this->numValues = this->xDim * this->yDim * this->zDim;
 
         // load data
@@ -91,6 +92,13 @@ void DataFile::loadFromFile(std::string filename, std::string var_name,
             }
             else {
                 this->data = (float *)malloc(this->numValues * sizeof(float));
+                if(this->data == MAP_FAILED) {
+                    switch(errno) {
+                        case ENOMEM:
+                            std::cerr << "ENOMEM out of memory" << std::endl;
+                            break;
+                    }
+                }
                 size_t bytes = fread(this->data, sizeof(float), this->numValues,
                         dataFile);
             }

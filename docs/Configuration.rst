@@ -34,8 +34,8 @@ preconfigured visualization.
        | **outputImageFilename**     | An absolute path to where the rendered  | N/A                         |
        |                             | image(s) should be saved                |                             |
        +-----------------------------+-----------------------------------------+-----------------------------+
-       | backgroundColor             | A 3-element array describing a color in | [0, 0, 0] (black)           |
-       |                             | RGB format                              |                             |
+       | backgroundColor             | A 4-element array describing a color in | [0, 0, 0, 1] (black)        |
+       |                             | RGBA format                             |                             |
        +-----------------------------+-----------------------------------------+-----------------------------+
        | cameraPosition              | A 3-element array describing where the  | [0, 0, 0] (origin)          |
        |                             | camera should be placed in world space  |                             |
