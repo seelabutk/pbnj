@@ -6,6 +6,7 @@
 #include "Volume.h"
 
 #include "pbnj.h"
+#include "rapidjson/document.h"
 
 #include <iostream>
 
@@ -14,8 +15,10 @@ int main(int argc, const char **argv) {
 
 #if 1
 
-    pbnj::Configuration *config = new pbnj::Configuration(
-            "../configs/turbulence.json");
+    pbnj::ConfigReader *reader = new pbnj::ConfigReader();
+    rapidjson::Document json;
+    reader->parseConfigFile("../configs/turbulence.json", json);
+    pbnj::Configuration *config = new pbnj::Configuration(json);
 
     // initialization has to go after configuration!
     // otherwise it causes a segfault in OSPRay

@@ -6,6 +6,7 @@
 #include "Volume.h"
 
 #include "lodepng/lodepng.h"
+#include "rapidjson/document.h"
 
 #include <chrono>
 #include <fstream>
@@ -35,7 +36,10 @@ int main(int argc, const char **argv)
         png_benchmark = true;
 
     // pbnj and volume initialization
-    pbnj::Configuration *config = new pbnj::Configuration(argv[1]);
+    pbnj::ConfigReader *reader = new pbnj::ConfigReader();
+    rapidjson::Document json;
+    reader->parseConfigFile(argv[1], json);
+    pbnj::Configuration *config = new pbnj::Configuration(json);
     pbnj::pbnjInit(&argc, argv);
     pbnj::Volume *volume = new pbnj::Volume(config->dataFilename,
             config->dataXDim, config->dataYDim, config->dataZDim);

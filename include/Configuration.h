@@ -2,6 +2,7 @@
 #define PBNJ_CONFIGURATION_H
 
 #include <ConfigReader.h>
+#include "rapidjson/document.h"
 
 #include <string>
 #include <vector>
@@ -14,10 +15,8 @@ namespace pbnj {
     class Configuration {
 
         public:
-            Configuration(std::string filename);
+            Configuration(rapidjson::Document& json);
             CONFSTATE getConfigState();
-
-            std::string configFilename;
 
             std::string dataFilename;
             std::vector<std::string> globbedFilenames;

@@ -11,14 +11,8 @@
 
 namespace pbnj {
 
-Configuration::Configuration(std::string filename) :
-    configFilename(filename)
+Configuration::Configuration(rapidjson::Document& json)
 {
-    //get a parsed json document from the file
-    this->reader = new ConfigReader();
-    rapidjson::Document json;
-    this->reader->parseConfigFile(filename, json);
-
     /* the following are required:
      *  - data filename
      *  - data dimensions <- should be required only for raw
