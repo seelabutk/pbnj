@@ -87,13 +87,8 @@ void Renderer::setBackgroundColor(std::vector<unsigned char> bgColor)
         this->setBackgroundColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 }
 
-void Renderer::setVolume(Volume *v)
+void Renderer::addVolume(Volume *v)
 {
-    if(this->lastVolumeID == v->ID && this->lastRenderType == "volume") {
-        // this is the same volume as the current model and we previously
-        // did a volume render
-        return;
-    }
     if(this->oModel != NULL) {
         ospRelease(this->oModel);
         this->oModel = NULL;
@@ -104,6 +99,17 @@ void Renderer::setVolume(Volume *v)
     this->oModel = ospNewModel();
     ospAddVolume(this->oModel, v->asOSPRayObject());
     ospCommit(this->oModel);
+}
+
+void Renderer::setVolume(Volume *v)
+{
+    if(this->lastVolumeID == v->ID && this->lastRenderType == "volume") {
+        // this is the same volume as the current model and we previously
+        // did a volume render
+        return;
+    }
+
+    this->addVolume(v);
 }
 
 void Renderer::addLight()
@@ -120,6 +126,35 @@ void Renderer::addLight()
         ospCommit(light);
         this->lights.push_back(light);
     }
+}
+
+void Renderer::setSurfaceMaterial(float specular)
+{
+    if(this->oMaterial == NULL) {
+        // create a new surface material with some specular highlighting
+        this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
+        float Ks[] = {specular, specular, specular};
+        float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
+        ospSet3fv(this->oMaterial, "Kd", Kd);
+        ospSet3fv(this->oMaterial, "Ks", Ks);
+        ospSet1f(this->oMaterial, "Ns", 10);
+        ospCommit(this->oMaterial);
+    }
+}
+
+void Renderer::addSurface(Volume *v, std::vector<float> &isoValues)
+{
+    if(this->oSurface != NULL) {
+        ospRelease(this->oSurface);
+        this->oSurface = NULL;
+    }
+    this->oSurface = ospNewGeometry("isosurfaces");
+    OSPData isoValuesDataArray = ospNewData(isoValues.size(), OSP_FLOAT,
+            isoValues.data());
+    ospSetData(this->oSurface, "isovalues", isoValuesDataArray);
+    ospSetObject(this->oSurface, "volume", v->asOSPRayObject());
+    ospSetMaterial(this->oSurface, this->oMaterial);
+    ospCommit(this->oSurface);
 }
 
 void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues)
@@ -146,35 +181,50 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues,
 
     // set up light and material if necessary
     this->addLight();
-    if(this->oMaterial == NULL) {
-        // create a new surface material with some specular highlighting
-        this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
-        float Ks[] = {specular, specular, specular};
-        float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
-        ospSet3fv(this->oMaterial, "Kd", Kd);
-        ospSet3fv(this->oMaterial, "Ks", Ks);
-        ospSet1f(this->oMaterial, "Ns", 10);
-        ospCommit(this->oMaterial);
-    }
+    this->setSurfaceMaterial(specular);
 
     // create an isosurface object
-    if(this->oSurface != NULL) {
-        ospRelease(this->oSurface);
-        this->oSurface = NULL;
-    }
-    this->oSurface = ospNewGeometry("isosurfaces");
-    OSPData isoValuesDataArray = ospNewData(isoValues.size(), OSP_FLOAT,
-            isoValues.data());
-    ospSetData(this->oSurface, "isovalues", isoValuesDataArray);
-    ospSetObject(this->oSurface, "volume", v->asOSPRayObject());
-    ospSetMaterial(this->oSurface, this->oMaterial);
-    ospCommit(this->oSurface);
+    this->addSurface(v, isoValues);
 
     this->lastVolumeID = v->ID;
     this->lastRenderType = "isosurface";
     this->lastIsoValues = isoValues;
     this->oModel = ospNewModel();
     ospAddGeometry(this->oModel, this->oSurface);
+    ospCommit(this->oModel);
+}
+
+void Renderer::setVolumeAndIsosurface(Volume *v, std::vector<float> &isoValues,
+        float specular = 0.1)
+{
+    if(this->lastVolumeID == v->ID && this->lastRenderType == "composite") {
+        // this is the same volume as the current model and we previously
+        // did an composite render
+
+        // but check if the isoValues are different
+        if(this->lastIsoValues == isoValues) {
+            return;
+        }
+    }
+    if(this->oModel != NULL) {
+        ospRelease(this->oModel);
+        this->oModel = NULL;
+    }
+
+    // set up light and material if necessary
+    this->addLight();
+    this->setSurfaceMaterial(specular);
+
+    // create an isosurface object
+    this->addSurface(v, isoValues);
+
+    this->lastVolumeID = v->ID;
+    this->lastRenderType = "composite";
+    this->lastIsoValues = isoValues;
+    this->oModel = ospNewModel();
+    // add both the surface and the volume
+    ospAddGeometry(this->oModel, this->oSurface);
+    ospAddVolume(this->oModel, v->asOSPRayObject());
     ospCommit(this->oModel);
 }
 

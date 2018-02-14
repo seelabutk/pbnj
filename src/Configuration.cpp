@@ -194,6 +194,20 @@ Configuration::Configuration(std::string filename) :
     else {
         this->specularity = 0.1;
     }
+
+    // render type, can be one of
+    // - volume
+    // - isosurface
+    // - composite
+    // this controls what type of render the user wants
+    if(json.HasMember("renderType")) {
+        std::string userInput = json["renderType"].GetString();
+        this->renderType = selectRenderType(userInput);
+    }
+    else {
+        // default to volume
+        this->renderType = VOLUME;
+    }
 }
 
 void Configuration::selectColorMap(std::string userInput)
@@ -301,6 +315,22 @@ CONFSTATE Configuration::getConfigState()
         else
             return SINGLE_VAR;
     }
+}
+
+RENDERTYPE Configuration::selectRenderType(std::string userInput)
+{
+    if(userInput == "volume") {
+        return VOLUME;
+    }
+    if(userInput == "isosurface") {
+        return ISOSURFACE;
+    }
+    if(userInput == "composite") {
+        return COMPOSITE;
+    }
+    std::cerr << "Unrecognized render type " << userInput << "!";
+    std::cerr << std::endl;
+    return VOLUME;
 }
 
 }

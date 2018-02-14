@@ -111,13 +111,17 @@ int main(int argc, const char **argv)
         volume->setOpacityMap(config->opacityMap);
         volume->attenuateOpacity(config->opacityAttenuation);
 
-        // set up the renderer and get an image
-        if(config->isosurfaceValues.size() == 0) {
-            renderer->setVolume(volume);
-        }
-        else {
-            renderer->setIsosurface(volume, config->isosurfaceValues,
-                    config->specularity);
+        switch(config->renderType) {
+            case pbnj::VOLUME     : renderer->setVolume(volume);
+                                    break;
+            case pbnj::ISOSURFACE : renderer->setIsosurface(volume,
+                                            config->isosurfaceValues,
+                                            config->specularity);
+                                    break;
+            case pbnj::COMPOSITE  : renderer->setVolumeAndIsosurface(volume,
+                                            config->isosurfaceValues,
+                                            config->specularity);
+                                    break;
         }
         renderer->renderImage(config->imageFilename);
 

@@ -21,8 +21,8 @@ namespace pbnj {
             void setBackgroundColor(std::vector<unsigned char> bgColor);
             void setVolume(Volume *v);
             void addLight();
-            void setIsosurface(Volume *v, std::vector<float> &isoValues);
             void setIsosurface(Volume *v, std::vector<float> &isoValues, float specular);
+            void setVolumeAndIsosurface(Volume *v, std::vector<float> &isoValues, float specular);
             void setCamera(Camera *c);
             void setSamples(unsigned int spp);
 
@@ -42,6 +42,11 @@ namespace pbnj {
             OSPCamera oCamera;
             OSPGeometry oSurface;
             OSPMaterial oMaterial;
+
+            void addVolume(Volume *v);
+            void setSurfaceMaterial(float specular);
+            void addSurface(Volume *v, std::vector<float> &isoValues);
+            void setIsosurface(Volume *v, std::vector<float> &isoValues);
 
             IMAGETYPE getFiletype(std::string filename);
             void saveImage(std::string filename, IMAGETYPE imageType);

@@ -11,6 +11,8 @@ namespace pbnj {
     enum CONFSTATE {ERROR_NODATA, ERROR_MULTISET, SINGLE_NOVAR, SINGLE_VAR,
         MULTI_NOVAR, MULTI_VAR};
 
+    enum RENDERTYPE {VOLUME, ISOSURFACE, COMPOSITE};
+
     class Configuration {
 
         public:
@@ -48,11 +50,14 @@ namespace pbnj {
             std::vector<float> isosurfaceValues;
             float specularity;
 
+            RENDERTYPE renderType;
+
         private:
             ConfigReader *reader;
 
             void selectColorMap(std::string userInput);
             void selectOpacityMap(std::string userInput);
+            RENDERTYPE selectRenderType(std::string userInput);
     };
 
 }
