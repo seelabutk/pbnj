@@ -108,18 +108,39 @@ void Renderer::setVolume(Volume *v)
     this->lastRenderType = "volume";
     this->oModel = ospNewModel();
     ospAddVolume(this->oModel, v->asOSPRayObject());
-    //ospCommit(this->oModel);
-
-    std::vector<float> planeNormal = {-1, 1, 1};
-    std::vector<float> point = {216, 216, 216};
-    this->addSlices(v, planeNormal, point);
+    ospCommit(this->oModel);
 }
 
-void Renderer::addSlices(Volume *v, std::vector<float> &normal, std::vector<float> &p)
+void Renderer::setSlices(Volume *v, std::vector<float> &normals, std::vector<float> &points)
 {
-    float a = normal[0], b = normal[1], c = normal[2];
-    float d = -a*p[0] - b*p[1] - c*p[2];
-    float plane[] = {a, b, c, d};
+    if(this->lastVolumeID == v->ID && this->lastRenderType == "slices") {
+        // this is the same volume as the current model and we previously
+        // did a slices render
+        return;
+    }
+    if(this->oModel != NULL) {
+        ospRelease(this->oModel);
+        this->oModel = NULL;
+    }
+
+    if(normals.size() != points.size()) {
+        std::cerr << "ERROR: Slice plane normals and points vectors are ";
+        std::cerr << "unequal length" << std::endl;
+        return;
+    }
+
+    // create (a, b, c, d) tuples for each plane
+    std::vector<float> planes;
+    for(int i = 0; i < normals.size()/3; i++) {
+        float a = normals[i*3 + 0], b = normals[i*3 + 1], c = normals[i*3 + 2];
+        float d = -a*points[i*3 + 0] - b*points[i*3 + 1] - c*points[i*3 + 2];
+        planes.push_back(a);
+        planes.push_back(b);
+        planes.push_back(c);
+        planes.push_back(d);
+    }
+
+    this->addLight();
 
     // create a slices object
     if(this->oSlices != NULL) {
@@ -128,11 +149,14 @@ void Renderer::addSlices(Volume *v, std::vector<float> &normal, std::vector<floa
     }
 
     this->oSlices = ospNewGeometry("slices");
-    OSPData planeDataArray = ospNewData(4, OSP_FLOAT, plane);
+    OSPData planeDataArray = ospNewData(planes.size()/4, OSP_FLOAT4, planes.data());
     ospSetData(this->oSlices, "planes", planeDataArray);
     ospSetObject(this->oSlices, "volume", v->asOSPRayObject());
     ospCommit(this->oSlices);
 
+    this->lastVolumeID = v->ID;
+    this->lastRenderType = "slices";
+    this->oModel = ospNewModel();
     ospAddGeometry(this->oModel, this->oSlices);
     ospCommit(this->oModel);
 }
