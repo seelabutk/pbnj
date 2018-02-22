@@ -27,6 +27,7 @@ Renderer::Renderer() :
     this->oCamera = NULL;
     this->oModel = NULL;
     this->oSurface = NULL;
+    this->oSlices = NULL;
     this->oMaterial = NULL;
     this->lastVolumeID = "unset";
     this->lastCameraID = "unset";
@@ -56,6 +57,10 @@ Renderer::~Renderer()
     ospRemoveParam(this->oSurface, "isovalues");
     ospRemoveParam(this->oSurface, "volume");
     ospRelease(this->oSurface);
+
+    ospRemoveParam(this->oSlices, "planes");
+    ospRemoveParam(this->oSlices, "volume");
+    ospRelease(this->oSlices);
 
     for(int light = 0; light < this->lights.size(); light++) {
         ospRemoveParam(this->lights[light], "angularDiameter");
@@ -103,6 +108,32 @@ void Renderer::setVolume(Volume *v)
     this->lastRenderType = "volume";
     this->oModel = ospNewModel();
     ospAddVolume(this->oModel, v->asOSPRayObject());
+    //ospCommit(this->oModel);
+
+    std::vector<float> planeNormal = {-1, 1, 1};
+    std::vector<float> point = {216, 216, 216};
+    this->addSlices(v, planeNormal, point);
+}
+
+void Renderer::addSlices(Volume *v, std::vector<float> &normal, std::vector<float> &p)
+{
+    float a = normal[0], b = normal[1], c = normal[2];
+    float d = -a*p[0] - b*p[1] - c*p[2];
+    float plane[] = {a, b, c, d};
+
+    // create a slices object
+    if(this->oSlices != NULL) {
+        ospRelease(this->oSlices);
+        this->oSlices = NULL;
+    }
+
+    this->oSlices = ospNewGeometry("slices");
+    OSPData planeDataArray = ospNewData(4, OSP_FLOAT, plane);
+    ospSetData(this->oSlices, "planes", planeDataArray);
+    ospSetObject(this->oSlices, "volume", v->asOSPRayObject());
+    ospCommit(this->oSlices);
+
+    ospAddGeometry(this->oModel, this->oSlices);
     ospCommit(this->oModel);
 }
 

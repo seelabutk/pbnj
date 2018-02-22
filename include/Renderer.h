@@ -41,6 +41,7 @@ namespace pbnj {
             OSPModel oModel;
             OSPCamera oCamera;
             OSPGeometry oSurface;
+            OSPGeometry oSlices;
             OSPMaterial oMaterial;
 
             IMAGETYPE getFiletype(std::string filename);
@@ -58,6 +59,8 @@ namespace pbnj {
             std::vector<OSPLight> lights;
             float lightDirection[3];
             unsigned int samples;
+
+            void addSlices(Volume *v, std::vector<float> &normal, std::vector<float> &p);
     };
 }
 
