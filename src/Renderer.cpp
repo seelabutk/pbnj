@@ -28,6 +28,7 @@ Renderer::Renderer() :
     this->oModel = NULL;
     this->oSurface = NULL;
     this->oMaterial = NULL;
+    this->oCylinders = NULL;
     this->lastVolumeID = "unset";
     this->lastCameraID = "unset";
 }
@@ -56,6 +57,12 @@ Renderer::~Renderer()
     ospRemoveParam(this->oSurface, "isovalues");
     ospRemoveParam(this->oSurface, "volume");
     ospRelease(this->oSurface);
+
+    ospRemoveParam(this->oCylinders, "cylinders");
+    ospRemoveParam(this->oCylinders, "radius");
+    ospRemoveParam(this->oCylinders, "bytes_per_cylinder");
+    ospRemoveParam(this->oCylinders, "color");
+    ospRelease(this->oCylinders);
 
     for(int light = 0; light < this->lights.size(); light++) {
         ospRemoveParam(this->lights[light], "angularDiameter");
@@ -87,7 +94,7 @@ void Renderer::setBackgroundColor(std::vector<unsigned char> bgColor)
         this->setBackgroundColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 }
 
-void Renderer::setVolume(Volume *v)
+void Renderer::setVolume(Volume *v, bool showBbox)
 {
     if(this->lastVolumeID == v->ID && this->lastRenderType == "volume") {
         // this is the same volume as the current model and we previously
@@ -103,7 +110,70 @@ void Renderer::setVolume(Volume *v)
     this->lastRenderType = "volume";
     this->oModel = ospNewModel();
     ospAddVolume(this->oModel, v->asOSPRayObject());
+    if(showBbox)
+        addBoundingBox(v);
     ospCommit(this->oModel);
+}
+
+void Renderer::addBoundingBox(Volume *v)
+{
+    this->addLight();
+    float color[] = {1.0, 1.0, 1.0};
+    std::vector<long unsigned int> bounds = v->getBounds();
+    float halves[] = {0, 0, 0};
+    for(int i = 0; i < bounds.size(); i++) {
+        halves[i] = bounds[i] / 2.0;
+    }
+    float startEndVertices[] = {
+        -halves[0], -halves[1], -halves[2],
+        -halves[0], -halves[1], halves[2],
+
+        -halves[0], -halves[1], halves[2],
+        halves[0], -halves[1], halves[2],
+
+        halves[0], -halves[1], halves[2],
+        halves[0], -halves[1], -halves[2],
+
+        halves[0], -halves[1], -halves[2],
+        -halves[0], -halves[1], -halves[2],
+
+        -halves[0], -halves[1], -halves[2],
+        -halves[0], halves[1], -halves[2],
+
+        -halves[0], -halves[1], halves[2],
+        -halves[0], halves[1], halves[2],
+
+        halves[0], -halves[1], halves[2],
+        halves[0], halves[1], halves[2],
+
+        halves[0], -halves[1], -halves[2],
+        halves[0], halves[1], -halves[2],
+
+        -halves[0], halves[1], -halves[2],
+        -halves[0], halves[1], halves[2],
+
+        -halves[0], halves[1], halves[2],
+        halves[0], halves[1], halves[2],
+
+        halves[0], halves[1], halves[2],
+        halves[0], halves[1], -halves[2],
+
+        halves[0], halves[1], -halves[2],
+        -halves[0], halves[1], -halves[2]
+    };
+
+    if(this->oCylinders != NULL) {
+        ospRelease(this->oCylinders);
+        this->oCylinders = NULL;
+    }
+    this->oCylinders = ospNewGeometry("cylinders");
+    OSPData cylinderDataArray = ospNewData(72, OSP_FLOAT, startEndVertices);
+    ospSetData(this->oCylinders, "cylinders", cylinderDataArray);
+    ospSet1i(this->oCylinders, "bytes_per_cylinder", 24);
+    ospSet3fv(this->oCylinders, "color", color);
+    ospSet1f(this->oCylinders, "radius", 2.0);
+    ospCommit(this->oCylinders);
+    ospAddGeometry(this->oModel, this->oCylinders);
 }
 
 void Renderer::addLight()
