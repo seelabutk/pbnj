@@ -12,7 +12,7 @@ namespace pbnj {
     class DataFile {
 
         public:
-            DataFile(int x, int y, int z);
+            DataFile(int x, int y, int z, unsigned int components=1);
             ~DataFile();
 
             void loadFromFile(std::string filename, std::string variable="",
@@ -30,6 +30,7 @@ namespace pbnj {
             unsigned long int yDim;
             unsigned long int zDim;
             unsigned long int numValues;
+            unsigned int numComponents;
 
             float minVal; // these should 
             float maxVal; //
