@@ -125,12 +125,16 @@ void Renderer::setVolume(Volume *v, bool showBbox)
 void Renderer::addBoundingBox(Volume *v)
 {
     this->addLight();
-    float color[] = {1.0, 1.0, 1.0};
+
     std::vector<long unsigned int> bounds = v->getBounds();
+    float color[] = {1.0, 1.0, 1.0};
+    float radius = std::min(std::min(bounds[0], bounds[1]), bounds[2]) * 0.0025f;
+
     float halves[] = {0, 0, 0};
     for(int i = 0; i < bounds.size(); i++) {
         halves[i] = bounds[i] / 2.0;
     }
+
     float startEndVertices[] = {
         -halves[0], -halves[1], -halves[2],
         -halves[0], -halves[1], halves[2],
@@ -188,7 +192,7 @@ void Renderer::addBoundingBox(Volume *v)
     ospSetData(this->oCylinders, "cylinders", cylinderDataArray);
     ospSet1i(this->oCylinders, "bytes_per_cylinder", 24);
     ospSet3fv(this->oCylinders, "color", color);
-    ospSet1f(this->oCylinders, "radius", 1.0);
+    ospSet1f(this->oCylinders, "radius", radius);
 
     if(this->oSpheres != NULL) {
         ospRelease(this->oSpheres);
@@ -199,7 +203,7 @@ void Renderer::addBoundingBox(Volume *v)
     ospSetData(this->oSpheres, "spheres", sphereDataArray);
     ospSet1i(this->oSpheres, "bytes_per_sphere", 12);
     ospSet3fv(this->oSpheres, "color", color);
-    ospSet1f(this->oSpheres, "radius", 2.5);
+    ospSet1f(this->oSpheres, "radius", 2.5*radius);
     ospCommit(this->oSpheres);
 
     ospAddGeometry(this->oModel, this->oCylinders);
