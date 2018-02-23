@@ -16,9 +16,9 @@ namespace pbnj {
         public:
             //Volume(DataFile *df);
             Volume(std::string filename, int x, int y, int z,
-                    bool memmap=false);
+                    bool memmap=false, unsigned int components=1);
             Volume(std::string filename, std::string var_name, int x, int y,
-                    int z, bool memmap=false);
+                    int z, bool memmap=false, unsigned int components=1);
             ~Volume();
 
             void attenuateOpacity(float amount);

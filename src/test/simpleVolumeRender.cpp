@@ -59,18 +59,19 @@ int main(int argc, const char **argv)
         case pbnj::SINGLE_NOVAR:
             std::cout << "Single volume, no variable" << std::endl;
             volume = new pbnj::Volume(config->dataFilename, config->dataXDim,
-                    config->dataYDim, config->dataZDim, true);
+                    config->dataYDim, config->dataZDim, true, config->dataNumComponents);
             break;
         case pbnj::SINGLE_VAR:
             std::cout << "Single volume, variable" << std::endl;
             volume = new pbnj::Volume(config->dataFilename,
                     config->dataVariable, config->dataXDim, config->dataYDim,
-                    config->dataZDim);
+                    config->dataZDim, config->dataNumComponents);
             break;
         case pbnj::MULTI_NOVAR:
             std::cout << "Multiple volumes, no variable" << std::endl;
             timeSeries = new pbnj::TimeSeries(config->globbedFilenames,
-                    config->dataXDim, config->dataYDim, config->dataZDim);
+                    config->dataXDim, config->dataYDim, config->dataZDim,
+                    config->dataNumComponents);
             timeSeries->setColorMap(config->colorMap);
             timeSeries->setOpacityMap(config->opacityMap);
             timeSeries->setOpacityAttenuation(config->opacityAttenuation);
@@ -81,7 +82,7 @@ int main(int argc, const char **argv)
             std::cout << "Multiple volumes, variable" << std::endl;
             timeSeries = new pbnj::TimeSeries(config->globbedFilenames,
                     config->dataVariable, config->dataXDim, config->dataYDim,
-                    config->dataZDim);
+                    config->dataZDim, config->dataNumComponents);
             timeSeries->setColorMap(config->colorMap);
             timeSeries->setOpacityMap(config->opacityMap);
             timeSeries->setOpacityAttenuation(config->opacityAttenuation);

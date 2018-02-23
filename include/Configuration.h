@@ -24,6 +24,7 @@ namespace pbnj {
             int dataXDim;
             int dataYDim;
             int dataZDim;
+            unsigned int dataNumComponents;
 
             int imageWidth;
             int imageHeight;
