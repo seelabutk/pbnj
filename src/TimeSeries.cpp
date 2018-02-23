@@ -8,9 +8,9 @@
 namespace pbnj {
 
 TimeSeries::TimeSeries(std::vector<std::string> filenames,
-        int x, int y, int z) :
+        int x, int y, int z, unsigned int components) :
     dataFilenames(filenames), length(filenames.size()), xDim(x), yDim(y),
-    zDim(z), dataSize(x*y*z*4)
+    zDim(z), dataSize(x*y*z*4), numComponents(components)
 {
     this->volumes = new Volume*[this->length];
     for(int i = 0; i < this->length; i++)
@@ -22,7 +22,7 @@ TimeSeries::TimeSeries(std::vector<std::string> filenames,
 }
 
 TimeSeries::TimeSeries(std::vector<std::string> filenames,
-        std::string varname, int x, int y, int z) :
+        std::string varname, int x, int y, int z, unsigned int components) :
     dataFilenames(filenames), length(filenames.size()), dataVariable(varname),
     xDim(x), yDim(y), zDim(z), dataSize(x*y*z*4)
 {
@@ -110,11 +110,12 @@ Volume *TimeSeries::getVolume(unsigned int index)
         // load the volume
         if(this->dataVariable.empty())
             this->volumes[index] = new Volume(this->dataFilenames[index],
-                    this->xDim, this->yDim, this->zDim, this->doMemoryMap);
+                    this->xDim, this->yDim, this->zDim, this->doMemoryMap,
+                    this->numComponents);
         else
             this->volumes[index] = new Volume(this->dataFilenames[index],
                     this->dataVariable, this->xDim, this->yDim, this->zDim,
-                    this->doMemoryMap);
+                    this->doMemoryMap, this->numComponents);
 
         // set any given attributes
         if(!this->colorMap.empty())
