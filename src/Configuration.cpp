@@ -192,7 +192,7 @@ Configuration::Configuration(rapidjson::Document& json)
     // number of data components
     // defaults to 1 in DataFile if not used
     if(json.HasMember("components")) {
-        this->dataNumComponents = json["components"].GetInt();
+        this->dataNumComponents = json["components"].GetUint();
     }
     else {
         this->dataNumComponents = 1;
