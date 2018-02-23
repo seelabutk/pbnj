@@ -24,7 +24,7 @@ TimeSeries::TimeSeries(std::vector<std::string> filenames,
 TimeSeries::TimeSeries(std::vector<std::string> filenames,
         std::string varname, int x, int y, int z, unsigned int components) :
     dataFilenames(filenames), length(filenames.size()), dataVariable(varname),
-    xDim(x), yDim(y), zDim(z), dataSize(x*y*z*4)
+    xDim(x), yDim(y), zDim(z), dataSize(x*y*z*4), numComponents(components)
 {
     this->volumes = new Volume*[this->length];
     for(int i = 0; i < this->length; i++)
