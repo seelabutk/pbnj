@@ -29,6 +29,7 @@ Renderer::Renderer() :
     this->oSurface = NULL;
     this->oMaterial = NULL;
     this->oCylinders = NULL;
+    this->oSpheres = NULL;
     this->lastVolumeID = "unset";
     this->lastCameraID = "unset";
 }
@@ -63,6 +64,12 @@ Renderer::~Renderer()
     ospRemoveParam(this->oCylinders, "bytes_per_cylinder");
     ospRemoveParam(this->oCylinders, "color");
     ospRelease(this->oCylinders);
+
+    ospRemoveParam(this->oSpheres, "spheres");
+    ospRemoveParam(this->oSpheres, "radius");
+    ospRemoveParam(this->oSpheres, "bytes_per_sphere");
+    ospRemoveParam(this->oSpheres, "color");
+    ospRelease(this->oSpheres);
 
     for(int light = 0; light < this->lights.size(); light++) {
         ospRemoveParam(this->lights[light], "angularDiameter");
@@ -161,6 +168,16 @@ void Renderer::addBoundingBox(Volume *v)
         halves[0], halves[1], -halves[2],
         -halves[0], halves[1], -halves[2]
     };
+    float pointVertices[] = {
+        halves[0], halves[1], halves[2],
+        halves[0], halves[1], -halves[2],
+        halves[0], -halves[1], halves[2],
+        halves[0], -halves[1], -halves[2],
+        -halves[0], halves[1], halves[2],
+        -halves[0], halves[1], -halves[2],
+        -halves[0], -halves[1], halves[2],
+        -halves[0], -halves[1], -halves[2]
+    };
 
     if(this->oCylinders != NULL) {
         ospRelease(this->oCylinders);
@@ -171,9 +188,22 @@ void Renderer::addBoundingBox(Volume *v)
     ospSetData(this->oCylinders, "cylinders", cylinderDataArray);
     ospSet1i(this->oCylinders, "bytes_per_cylinder", 24);
     ospSet3fv(this->oCylinders, "color", color);
-    ospSet1f(this->oCylinders, "radius", 2.0);
-    ospCommit(this->oCylinders);
+    ospSet1f(this->oCylinders, "radius", 1.0);
+
+    if(this->oSpheres != NULL) {
+        ospRelease(this->oSpheres);
+        this->oSpheres = NULL;
+    }
+    this->oSpheres = ospNewGeometry("spheres");
+    OSPData sphereDataArray = ospNewData(24, OSP_FLOAT, pointVertices);
+    ospSetData(this->oSpheres, "spheres", sphereDataArray);
+    ospSet1i(this->oSpheres, "bytes_per_sphere", 12);
+    ospSet3fv(this->oSpheres, "color", color);
+    ospSet1f(this->oSpheres, "radius", 2.5);
+    ospCommit(this->oSpheres);
+
     ospAddGeometry(this->oModel, this->oCylinders);
+    ospAddGeometry(this->oModel, this->oSpheres);
 }
 
 void Renderer::addLight()
