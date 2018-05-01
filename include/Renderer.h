@@ -1,6 +1,9 @@
 #ifndef PBNJ_RENDERER_H
 #define PBNJ_RENDERER_H
 
+#define cimg_display 0
+#define cimg_use_jpeg 1 
+
 #include <pbnj.h>
 
 #include <string>
@@ -8,9 +11,11 @@
 
 #include <ospray/ospray.h>
 
+#include "CImg.h"
+
 namespace pbnj {
 
-    enum IMAGETYPE {INVALID, PIXMAP, PNG};
+    enum IMAGETYPE {INVALID, PIXMAP, PNG, JPG};
 
     class Renderer {
         public:
@@ -28,6 +33,7 @@ namespace pbnj {
 
             void render();
             void renderToBuffer(unsigned char **buffer);
+            void renderToJPGObject(std::vector<unsigned char> &jpg, int quality);
             void renderToPNGObject(std::vector<unsigned char> &png);
             void renderImage(std::string imageFilename);
 
@@ -48,6 +54,7 @@ namespace pbnj {
 
             void saveAsPPM(std::string filename);
             void saveAsPNG(std::string filename);
+            void saveAsJPG(std::string filename);
             void bufferToPNG(std::vector<unsigned char> &png);
 
             std::string lastVolumeID;

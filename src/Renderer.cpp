@@ -15,6 +15,7 @@
 #include <ospray/ospray.h>
 
 #include "lodepng/lodepng.h"
+#include "CImg.h"
 
 namespace pbnj {
 
@@ -219,6 +220,20 @@ void Renderer::renderImage(std::string imageFilename)
     this->saveImage(imageFilename, imageType);
 }
 
+void Renderer::renderToJPGObject(std::vector<unsigned char> &jpg, int quality)
+{
+    unsigned char *colorBuffer;
+    this->renderToBuffer(&colorBuffer);
+
+    // CImg doesn't interlace the channels, we have to work around that 
+    cimg_library::CImg<unsigned char> img(colorBuffer, 4, this->cameraWidth, 
+            this->cameraHeight, 1, false);
+    img.permute_axes("yzcx");
+
+    img.save_jpeg_to_memory(jpg, quality);
+    free(colorBuffer);
+}
+
 void Renderer::renderToPNGObject(std::vector<unsigned char> &png)
 {
     unsigned char *colorBuffer;
@@ -332,6 +347,9 @@ IMAGETYPE Renderer::getFiletype(std::string filename)
     else if(token.compare("png") == 0) {
         return PNG;
     }
+    else if(token.compare("jpg") == 0) {
+        return JPG;
+    }
     else {
         return INVALID;
     }
@@ -343,6 +361,8 @@ void Renderer::saveImage(std::string filename, IMAGETYPE imageType)
         this->saveAsPPM(filename);
     else if(imageType == PNG)
         this->saveAsPNG(filename);
+    else if (imageType == JPG)
+        this->saveAsJPG(filename);
 }
 
 void Renderer::saveAsPPM(std::string filename)
@@ -389,6 +409,19 @@ void Renderer::saveAsPNG(std::string filename)
     this->renderToPNGObject(converted_image);
     //write to file
     lodepng::save_file(converted_image, filename.c_str());
+}
+
+void Renderer::saveAsJPG(std::string filename)
+{
+    unsigned char *colorBuffer;
+    this->renderToBuffer(&colorBuffer);
+
+    // CImg doesn't interlace the channels, we have to work around that 
+    cimg_library::CImg<unsigned char> img(colorBuffer, 4, this->cameraWidth, 
+            this->cameraHeight, 1, false);
+    img.permute_axes("yzcx");
+
+    img.save(filename.c_str());
 }
 
 }
