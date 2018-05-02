@@ -193,13 +193,14 @@ void Renderer::setCamera(Camera *c)
     }
 
     this->lastCameraID = c->ID;
-    this->cameraWidth = c->imageWidth;
-    this->cameraHeight = c->imageHeight;
+    this->cameraWidth = c->getImageWidth();
+    this->cameraHeight = c->getImageHeight();
     // grab the light direction while we have the pbnj Camera
     this->lightDirection[0] = c->viewX;
     this->lightDirection[1] = c->viewY;
     this->lightDirection[2] = c->viewZ;
     this->oCamera = c->asOSPRayObject();
+    this->pbnjCamera = c;
 }
 
 void Renderer::setSamples(unsigned int spp)
@@ -322,8 +323,8 @@ void Renderer::render()
 
     //set up framebuffer
     osp::vec2i imageSize;
-    imageSize.x = this->cameraWidth;
-    imageSize.y = this->cameraHeight;
+    imageSize.x = this->pbnjCamera->getImageWidth();
+    imageSize.y = this->pbnjCamera->getImageHeight();
     //this framebuffer will be released after a single frame
     this->oFrameBuffer = ospNewFrameBuffer(imageSize, OSP_FB_SRGBA,
                                            OSP_FB_COLOR | OSP_FB_ACCUM);

@@ -66,6 +66,22 @@ void Camera::centerView()
     this->setView(-this->xPos, -this->yPos, -this->zPos);
 }
 
+void Camera::setImageSize(int width, int height)
+{
+    this->imageWidth  = width;
+    this->imageHeight = height;
+}
+
+int Camera::getImageWidth()
+{
+    return this->imageWidth;
+}
+
+int Camera::getImageHeight()
+{
+    return this->imageHeight;
+}
+
 void Camera::updateOSPRayPosition()
 {
     //update OSPRay camera
