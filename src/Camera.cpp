@@ -96,6 +96,16 @@ void Camera::updateOSPRayPosition()
     ospCommit(this->oCamera);
 }
 
+void Camera::setRegion(float top, float right, float bottom, float left)
+{
+    // render only a defined region of the current view (set clip space)
+    // to be used with tiles
+    float upperRight[] = {top, right};
+    float lowerLeft[] = {bottom, left};
+    ospSet2fv(this->oCamera, "imageStart", lowerLeft);
+    ospSet2fv(this->oCamera, "imageEnd", upperRight);
+}
+
 OSPCamera Camera::asOSPRayObject()
 {
     return this->oCamera;

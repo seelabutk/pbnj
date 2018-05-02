@@ -25,6 +25,8 @@ namespace pbnj {
             // no longer needed as the volume is centered automatically
             void centerView();
 
+            void setRegion(float top, float right, float bottom, float left);
+
             OSPCamera asOSPRayObject();
 
             //some sort of setPath function that takes an enum type for the path
