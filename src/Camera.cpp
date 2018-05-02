@@ -100,6 +100,10 @@ void Camera::setRegion(float top, float right, float bottom, float left)
 {
     // render only a defined region of the current view (set clip space)
     // to be used with tiles
+    // bottom left of the full image is [0, 0]
+    // top right of the full image is [1, 1]
+    // e.g. the upper left quadrant of the image would be defined with
+    // setRegion(1, 0.5, 0.5, 0)
     float upperRight[] = {top, right};
     float lowerLeft[] = {bottom, left};
     ospSet2fv(this->oCamera, "imageStart", lowerLeft);
