@@ -323,8 +323,10 @@ void Renderer::render()
 
     //set up framebuffer
     osp::vec2i imageSize;
-    imageSize.x = this->pbnjCamera->getImageWidth();
-    imageSize.y = this->pbnjCamera->getImageHeight();
+    this->cameraWidth = this->pbnjCamera->getImageWidth();
+    this->cameraHeight = this->pbnjCamera->getImageHeight();
+    imageSize.x = this->cameraWidth;
+    imageSize.y = this->cameraHeight;
     //this framebuffer will be released after a single frame
     this->oFrameBuffer = ospNewFrameBuffer(imageSize, OSP_FB_SRGBA,
                                            OSP_FB_COLOR | OSP_FB_ACCUM);
