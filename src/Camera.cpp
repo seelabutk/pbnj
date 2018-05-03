@@ -104,8 +104,8 @@ void Camera::setRegion(float top, float right, float bottom, float left)
     // top right of the full image is [1, 1]
     // e.g. the upper left quadrant of the image would be defined with
     // setRegion(1, 0.5, 0.5, 0)
-    float upperRight[] = {top, right};
-    float lowerLeft[] = {bottom, left};
+    float upperRight[] = {right, top};
+    float lowerLeft[] = {left, bottom};
     ospSet2fv(this->oCamera, "imageStart", lowerLeft);
     ospSet2fv(this->oCamera, "imageEnd", upperRight);
 }
