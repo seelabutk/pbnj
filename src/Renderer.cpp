@@ -367,6 +367,7 @@ void Renderer::saveImage(std::string filename, IMAGETYPE imageType)
 
 void Renderer::saveAsPPM(std::string filename)
 {
+    this->render();
     int width = this->cameraWidth, height = this->cameraHeight;
     uint32_t *colorBuffer = (uint32_t *)ospMapFrameBuffer(this->oFrameBuffer,
             OSP_FB_COLOR);
