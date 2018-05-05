@@ -1,7 +1,9 @@
 #ifndef PBNJ_RENDERER_H
 #define PBNJ_RENDERER_H
 
+// disable using an X display
 #define cimg_display 0
+// force libjpeg usage
 #define cimg_use_jpeg 1 
 
 #include <pbnj.h>

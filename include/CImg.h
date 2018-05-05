@@ -52818,7 +52818,6 @@ namespace cimg_library_suffixed {
       struct jpeg_error_mgr jerr;
       cinfo.err = jpeg_std_error(&jerr);
       jpeg_create_compress(&cinfo);
-      std::cout<<"using libjpeg\n";
       std::FILE *const nfile = file?file:cimg::fopen(filename,"wb");
       jpeg_stdio_dest(&cinfo,nfile);
       cinfo.image_width = _width;

@@ -347,7 +347,7 @@ IMAGETYPE Renderer::getFiletype(std::string filename)
     else if(token.compare("png") == 0) {
         return PNG;
     }
-    else if(token.compare("jpg") == 0) {
+    else if(token.compare("jpg") == 0 || token.compare("jpeg") == 0) {
         return JPG;
     }
     else {
