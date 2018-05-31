@@ -27,6 +27,7 @@ namespace pbnj {
             void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
             void setBackgroundColor(std::vector<unsigned char> bgColor);
             void setVolume(Volume *v);
+            void setParticles(Particles *p);
             void addLight();
             void setIsosurface(Volume *v, std::vector<float> &isoValues);
             void setIsosurface(Volume *v, std::vector<float> &isoValues, float specular);

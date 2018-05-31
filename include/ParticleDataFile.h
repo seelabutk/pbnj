@@ -15,14 +15,13 @@ namespace pbnj {
             ~ParticleDataFile();
 
             void loadFromFile(std::string filename);
+            float *particleData;
+            unsigned int numParticles;
 
         private:
             FILETYPE getFiletype();
             FILETYPE filetype;
             std::string filename;
-
-            float *particleData;
-            unsigned int numParticles;
     };
 }
 
