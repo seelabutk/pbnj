@@ -16,14 +16,14 @@ namespace pbnj {
             Particles(std::string filename);
             ~Particles();
 
-            OSPGeometry asOSPRayObject();
+            std::vector<OSPGeometry> asOSPRayObject();
 
             std::string ID;
 
         private:
             ParticleDataFile *dataFile;
             
-            OSPGeometry oSpheres;
+            std::vector<OSPGeometry> sphereSets;
     };
 }
 

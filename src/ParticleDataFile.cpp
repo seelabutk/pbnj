@@ -12,6 +12,7 @@
 namespace pbnj {
 
 ParticleDataFile::ParticleDataFile()
+    : numParticles(0)
 {
 }
 
@@ -35,7 +36,7 @@ void ParticleDataFile::loadFromFile(std::string filename)
         else {
             // find number of particles in the file
             char numParticlesLine[1024];
-            fgets(numParticlesLine, 1024, dataFile);
+            char *res = fgets(numParticlesLine, 1024, dataFile);
             int read = sscanf(numParticlesLine, "%u ", &(this->numParticles));
             if(read != 1) {
                 std::cerr << "Unexpected formatting error on first line";
@@ -43,12 +44,15 @@ void ParticleDataFile::loadFromFile(std::string filename)
             }
             else {
                 std::cout << "DEBUG: " << numParticlesLine;
-                this->particleData = 
-                    (float *)malloc(this->numParticles * sizeof(float) * 3);
+                /*
+                this->particleData = std::unordered_map<std::string,
+                    std::vector<float> >();
+                this->particleTypes.reserve(this->numParticles);
+                */
 
                 // skip the comment line
                 char commentLine[1024];
-                fgets(commentLine, 1024, dataFile);
+                res = fgets(commentLine, 1024, dataFile);
                 std::cerr << "DEBUG: " << commentLine;
 
                 // start reading particles
@@ -58,7 +62,7 @@ void ParticleDataFile::loadFromFile(std::string filename)
                 int numRead = 0;
                 for(int lineIndex = 0; lineIndex < this->numParticles;
                         lineIndex++) {
-                    fgets(particleLine, 1024, dataFile);
+                    res = fgets(particleLine, 1024, dataFile);
                     read = sscanf(particleLine, "%s %f %f %f ",
                             particleType, &curX, &curY, &curZ);
                     if(read != 4) {
@@ -70,16 +74,35 @@ void ParticleDataFile::loadFromFile(std::string filename)
                     std::cerr << "DEBUG: " << particleType << " ";
                     std::cerr << curX << " " << curY << " " << curZ;
                     std::cerr << std::endl;
-                    int particleOffset = lineIndex*3;
-                    this->particleData[particleOffset + 0] = curX;
-                    this->particleData[particleOffset + 1] = curY;
-                    this->particleData[particleOffset + 2] = curZ;
+
+                    // check if we've seen this type before
+                    std::string pType(particleType);
+                    if(this->particleData.find(pType) == this->particleData.end()) {
+                        std::cerr << "DEBUG: found new particle type ";
+                        std::cerr << pType << std::endl;
+                        this->particleData[pType] = std::vector<float>({
+                                curX, curY, curZ });
+                        this->particleTypes.push_back(pType);
+                    }
+                    else {
+                        this->particleData[pType].push_back(curX);
+                        this->particleData[pType].push_back(curY);
+                        this->particleData[pType].push_back(curZ);
+                    }
                     numRead++;
                 }
                 std::cerr << "DEBUG: read " << numRead << " particles";
                 std::cerr << std::endl;
+                // sanity check
+                if(this->numParticles != numRead)
+                    std::cerr << "DEBUG: HEY THIS IS BAD" << std::endl;
+                std::cerr << "DEBUG: " << this->particleTypes.size() << " types ";
+                for(int i = 0; i < this->particleTypes.size(); i++)
+                    std::cerr << this->particleTypes[i] << " ";
+                std::cerr << std::endl;
             }
             fclose(dataFile);
+
         }
     }
     else {
@@ -105,6 +128,30 @@ FILETYPE ParticleDataFile::getFiletype()
     else {
         return UNKNOWN;
     }
+}
+
+unsigned int ParticleDataFile::getNumParticles(std::string particleType)
+{
+    if(particleType.empty() ||
+       this->particleData.find(particleType) == this->particleData.end()) {
+        std::cerr << "Invalid particle type requested";
+        std::cerr << std::endl;
+        return 0;
+    }
+
+    return this->particleData[particleType].size();
+}
+
+float *ParticleDataFile::getParticleData(std::string particleType)
+{
+    if(particleType.empty() ||
+       this->particleData.find(particleType) == this->particleData.end()) {
+        std::cerr << "Invalid particle type requested";
+        std::cerr << std::endl;
+        return nullptr;
+    }
+
+    return this->particleData[particleType].data();
 }
 
 }

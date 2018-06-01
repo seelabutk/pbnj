@@ -135,7 +135,9 @@ void Renderer::setParticles(Particles *p)
     this->lastVolumeID = p->ID;
     this->lastRenderType = "particles";
     this->oModel = ospNewModel();
-    ospAddGeometry(this->oModel, p->asOSPRayObject());
+    for(OSPGeometry spheres : p->asOSPRayObject()) {
+        ospAddGeometry(this->oModel, spheres);
+    }
     ospCommit(this->oModel);
 }
 
