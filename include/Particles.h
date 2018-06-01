@@ -4,11 +4,15 @@
 #include <pbnj.h>
 #include <ParticleDataFile.h>
 
+#include <map>
 #include <string>
 
 #include <ospray/ospray.h>
 
 namespace pbnj {
+
+    // mapping between atom names and CPK colors
+    extern std::map<std::string, std::vector<float>> CPKcolors;
 
     class Particles {
 

@@ -5,6 +5,34 @@
 
 namespace pbnj {
 
+// can these be unordered maps?
+
+// CPK should eventually be JMol colors for better coverage
+std::map<std::string, std::vector<float>> CPKcolors = {
+    {"H",  {1.0f, 1.0f, 1.0f}},
+    {"C",  {0.0f, 0.0f, 0.0f}},
+    {"N",  {0.0f, 0.0f, 1.0f}},
+    {"O",  {1.0f, 0.0f, 0.0f}},
+    {"F",  {0.0f, 1.0f, 0.0f}},
+    {"Cl", {0.0f, 1.0f, 0.0f}},
+    {"Br", {0.5f, 0.0f, 0.0f}},
+    {"I",  {0.5f, 0.0f, 0.5f}},
+    {"He", {0.0f, 1.0f, 1.0f}},
+    {"Ne", {0.0f, 1.0f, 1.0f}},
+    {"Ar", {0.0f, 1.0f, 1.0f}},
+    {"Xe", {0.0f, 1.0f, 1.0f}},
+    {"Kr", {0.0f, 1.0f, 1.0f}},
+    {"P",  {1.0f, 0.5f, 0.0f}},
+    {"S",  {1.0f, 1.0f, 0.0f}},
+    {"B",  {1.0f, 0.5f, 0.3f}},
+    // still need:
+    // rest of transition metals (B),
+    // alkali metals (1, 0, 0.5)
+    // alkaline earth metals (0, 0.5, 0)
+    // titanium (0.5, 0.5, 0.5)
+    // iron (0.5, 0.5, 0)
+};
+
 std::map<std::string, std::vector<float>> colormaps = {
     {"coolToWarm", {
         0.2298057, 0.2987180, 0.7536832,

@@ -136,6 +136,7 @@ void Renderer::setParticles(Particles *p)
     this->lastRenderType = "particles";
     this->oModel = ospNewModel();
     for(OSPGeometry spheres : p->asOSPRayObject()) {
+        ospSetMaterial(spheres, this->oMaterial);
         ospAddGeometry(this->oModel, spheres);
     }
     ospCommit(this->oModel);

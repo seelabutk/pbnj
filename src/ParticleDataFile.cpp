@@ -139,7 +139,7 @@ unsigned int ParticleDataFile::getNumParticles(std::string particleType)
         return 0;
     }
 
-    return this->particleData[particleType].size();
+    return this->particleData[particleType].size() / 3;
 }
 
 float *ParticleDataFile::getParticleData(std::string particleType)

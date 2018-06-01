@@ -1,6 +1,8 @@
 #include "Particles.h"
 #include "ParticleDataFile.h"
 
+#include <iostream>
+
 #include <ospray/ospray.h>
 
 namespace pbnj {
@@ -11,9 +13,13 @@ Particles::Particles(std::string filename)
     this->dataFile = new ParticleDataFile();
     this->dataFile->loadFromFile(filename);
 
-    float color[] = {0.8, 0.8, 0.7};
+    float defaultColor[] = {1.0, 0.0, 0.0};
     // should this iterator over particleData?
     for(std::string particleType : this->dataFile->particleTypes) {
+        unsigned int numOfType = this->dataFile->getNumParticles(particleType);
+        std::cerr << "DEBUG: adding " << particleType << " ";
+        std::cerr << numOfType << std::endl;
+
         OSPGeometry spheres = ospNewGeometry("spheres");
         float *pData = this->dataFile->getParticleData(particleType);
         OSPData sphereDataArray = ospNewData(
@@ -21,8 +27,32 @@ Particles::Particles(std::string filename)
                 OSP_FLOAT, pData);
         ospSetData(spheres, "spheres", sphereDataArray);
         ospSet1i(spheres, "bytes_per_sphere", 12);
-        ospSet3fv(spheres, "color", color);
-        ospSet1f(spheres, "radius", 0.5);
+
+        OSPData sphereColorDataArray;
+        float rgb[numOfType * 3];
+        if(CPKcolors.find(particleType) != CPKcolors.end()) {
+            std::cerr << "DEBUG: found color for " << particleType << ": ";
+            for(float val : CPKcolors[particleType])
+                std::cerr << val << " ";
+            std::cerr << std::endl;
+
+            for(int p = 0; p < numOfType; p++) {
+                rgb[p*3 + 0] = CPKcolors[particleType][0];
+                rgb[p*3 + 1] = CPKcolors[particleType][1];
+                rgb[p*3 + 2] = CPKcolors[particleType][2];
+            }
+        }
+        else {
+            for(int p = 0; p < numOfType; p++) {
+                rgb[p*3 + 0] = defaultColor[0];
+                rgb[p*3 + 1] = defaultColor[1];
+                rgb[p*3 + 2] = defaultColor[2];
+            }
+        }
+        sphereColorDataArray = ospNewData(numOfType, OSP_FLOAT3, rgb);
+
+        ospSetData(spheres, "color", sphereColorDataArray);
+        ospSet1f(spheres, "radius", 1.0);
         ospCommit(spheres);
 
         this->sphereSets.push_back(spheres);
