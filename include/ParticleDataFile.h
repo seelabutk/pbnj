@@ -8,7 +8,13 @@
 #include <pbnj.h>
 #include <DataFile.h>
 
+#include <map>
+
 namespace pbnj {
+
+    // mapping between atom names and CPK colors
+    extern std::map<std::string, std::vector<float>> CPKcolors;
+    static float defaultColor[3] = {0.8, 1.0, 0.6};
 
     class ParticleDataFile {
         public:
@@ -16,22 +22,15 @@ namespace pbnj {
             ~ParticleDataFile();
 
             void loadFromFile(std::string filename);
-            
-            // unique particle types (atom names)
-            // these are used to do lookups into the particleData map
-            std::vector<std::string> particleTypes;
 
-            unsigned int getNumParticles(std::string particleType);
-            float *getParticleData(std::string particleType);
+            float *particleData;
+            float *particleColorData;
+            unsigned int numParticles;
 
         private:
             FILETYPE getFiletype();
             FILETYPE filetype;
             std::string filename;
-            unsigned int numParticles;
-
-            // maps atom name to <x, y, z>
-            std::unordered_map<std::string, std::vector<float> > particleData;
     };
 }
 

@@ -129,16 +129,15 @@ void Renderer::setParticles(Particles *p)
         float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
         ospSet3fv(this->oMaterial, "Kd", Kd);
         ospSet3fv(this->oMaterial, "Ks", Ks);
-        ospSet1f(this->oMaterial, "Ns", 10);
+        ospSet1f(this->oMaterial, "Ns", 7);
         ospCommit(this->oMaterial);
     }
     this->lastVolumeID = p->ID;
     this->lastRenderType = "particles";
     this->oModel = ospNewModel();
-    for(OSPGeometry spheres : p->asOSPRayObject()) {
-        ospSetMaterial(spheres, this->oMaterial);
-        ospAddGeometry(this->oModel, spheres);
-    }
+    OSPGeometry particles = p->asOSPRayObject();
+    ospSetMaterial(particles, this->oMaterial);
+    ospAddGeometry(this->oModel, particles);
     ospCommit(this->oModel);
 }
 

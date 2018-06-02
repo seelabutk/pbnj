@@ -49,6 +49,10 @@ void ParticleDataFile::loadFromFile(std::string filename)
                     std::vector<float> >();
                 this->particleTypes.reserve(this->numParticles);
                 */
+                this->particleData = 
+                    (float *)malloc(this->numParticles * 3 * sizeof(float));
+                this->particleColorData =
+                    (float *)malloc(this->numParticles * 3 * sizeof(float));
 
                 // skip the comment line
                 char commentLine[1024];
@@ -75,20 +79,23 @@ void ParticleDataFile::loadFromFile(std::string filename)
                     std::cerr << curX << " " << curY << " " << curZ;
                     std::cerr << std::endl;
 
-                    // check if we've seen this type before
-                    std::string pType(particleType);
-                    if(this->particleData.find(pType) == this->particleData.end()) {
-                        std::cerr << "DEBUG: found new particle type ";
-                        std::cerr << pType << std::endl;
-                        this->particleData[pType] = std::vector<float>({
-                                curX, curY, curZ });
-                        this->particleTypes.push_back(pType);
+                    this->particleData[lineIndex*3 + 0] = curX;
+                    this->particleData[lineIndex*3 + 1] = curY;
+                    this->particleData[lineIndex*3 + 2] = curZ;
+
+                    // check if the particle type is a known type
+                    // so we can add a known color
+                    float *rgb;
+                    if(CPKcolors.find(particleType) != CPKcolors.end()) {
+                        rgb = CPKcolors[particleType].data();
                     }
+                    // if it isn't, use a default color
                     else {
-                        this->particleData[pType].push_back(curX);
-                        this->particleData[pType].push_back(curY);
-                        this->particleData[pType].push_back(curZ);
+                        rgb = defaultColor;
                     }
+                    this->particleColorData[lineIndex*3 + 0] = rgb[0];
+                    this->particleColorData[lineIndex*3 + 1] = rgb[1];
+                    this->particleColorData[lineIndex*3 + 2] = rgb[2];
                     numRead++;
                 }
                 std::cerr << "DEBUG: read " << numRead << " particles";
@@ -96,13 +103,8 @@ void ParticleDataFile::loadFromFile(std::string filename)
                 // sanity check
                 if(this->numParticles != numRead)
                     std::cerr << "DEBUG: HEY THIS IS BAD" << std::endl;
-                std::cerr << "DEBUG: " << this->particleTypes.size() << " types ";
-                for(int i = 0; i < this->particleTypes.size(); i++)
-                    std::cerr << this->particleTypes[i] << " ";
-                std::cerr << std::endl;
             }
             fclose(dataFile);
-
         }
     }
     else {
@@ -128,30 +130,6 @@ FILETYPE ParticleDataFile::getFiletype()
     else {
         return UNKNOWN;
     }
-}
-
-unsigned int ParticleDataFile::getNumParticles(std::string particleType)
-{
-    if(particleType.empty() ||
-       this->particleData.find(particleType) == this->particleData.end()) {
-        std::cerr << "Invalid particle type requested";
-        std::cerr << std::endl;
-        return 0;
-    }
-
-    return this->particleData[particleType].size() / 3;
-}
-
-float *ParticleDataFile::getParticleData(std::string particleType)
-{
-    if(particleType.empty() ||
-       this->particleData.find(particleType) == this->particleData.end()) {
-        std::cerr << "Invalid particle type requested";
-        std::cerr << std::endl;
-        return nullptr;
-    }
-
-    return this->particleData[particleType].data();
 }
 
 }
