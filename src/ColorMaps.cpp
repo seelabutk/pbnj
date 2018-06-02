@@ -10,7 +10,7 @@ namespace pbnj {
 // CPK should eventually be JMol colors for better coverage
 std::map<std::string, std::vector<float>> CPKcolors = {
     {"H",  {1.0f, 1.0f, 1.0f}},
-    {"C",  {0.0f, 0.0f, 0.0f}},
+    {"C",  {0.05f, 0.05f, 0.05f}},
     {"N",  {0.0f, 0.0f, 1.0f}},
     {"O",  {1.0f, 0.0f, 0.0f}},
     {"F",  {0.0f, 1.0f, 0.0f}},

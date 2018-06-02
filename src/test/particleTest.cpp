@@ -9,11 +9,11 @@ int main(int argc, const char **argv)
     pbnj::pbnjInit(&argc, argv);
     //pbnj::ParticleDataFile *pdf = new pbnj::ParticleDataFile();
     //pdf->loadFromFile("/home/ahota/projects/pbnj/configs/test.xyz");
-    std::string filename = "/home/ahota/projects/pbnj/configs/caffeine.xyz";
+    std::string filename = "/home/ahota/projects/pbnj/configs/phbh.xyz";
     pbnj::Particles *particles = new pbnj::Particles(filename);
 
     pbnj::Camera *camera = new pbnj::Camera(512, 512);
-    camera->setPosition(0, 0, 10);
+    camera->setPosition(0, 0, 20);
     camera->setUpVector(0, 1, 0);
     camera->centerView();
 

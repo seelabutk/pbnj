@@ -62,14 +62,21 @@ void ParticleDataFile::loadFromFile(std::string filename)
                 // start reading particles
                 char particleLine[1024];
                 char particleType[512];
+                char particleColor[512];
                 float curX, curY, curZ;
                 int numRead = 0;
                 for(int lineIndex = 0; lineIndex < this->numParticles;
                         lineIndex++) {
                     res = fgets(particleLine, 1024, dataFile);
-                    read = sscanf(particleLine, "%s %f %f %f ",
-                            particleType, &curX, &curY, &curZ);
-                    if(read != 4) {
+                    read = sscanf(particleLine, "%s %f %f %f %[^\n]",
+                            particleType, &curX, &curY, &curZ, particleColor);
+                    bool useCustomColor = false;
+                    if(read == 5) {
+                        std::cerr << "DEBUG: particleColor: ";
+                        std::cerr << particleColor << std::endl;
+                        useCustomColor = true;
+                    }
+                    if(read > 5 || read < 4) {
                         std::cerr << "Error reading line " << lineIndex;
                         std::cerr << std::endl;
                         std::cerr << particleLine << std::endl;
@@ -83,10 +90,22 @@ void ParticleDataFile::loadFromFile(std::string filename)
                     this->particleData[lineIndex*3 + 1] = curY;
                     this->particleData[lineIndex*3 + 2] = curZ;
 
+                    // check if the file supplied a color
+                    float *rgb;
+                    if(useCustomColor) {
+                        float r, g, b;
+                        read = sscanf(particleColor, "%f %f %f ", &r, &g, &b);
+                        if(read != 3) {
+                            rgb = defaultColor;
+                        }
+                        else {
+                            rgb = (float *)malloc(3 * sizeof(float));
+                            rgb[0] = r; rgb[1] = g; rgb[2] = b;
+                        }
+                    }
                     // check if the particle type is a known type
                     // so we can add a known color
-                    float *rgb;
-                    if(CPKcolors.find(particleType) != CPKcolors.end()) {
+                    else if(CPKcolors.find(particleType) != CPKcolors.end()) {
                         rgb = CPKcolors[particleType].data();
                     }
                     // if it isn't, use a default color

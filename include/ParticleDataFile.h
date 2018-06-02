@@ -14,7 +14,7 @@ namespace pbnj {
 
     // mapping between atom names and CPK colors
     extern std::map<std::string, std::vector<float>> CPKcolors;
-    static float defaultColor[3] = {0.8, 1.0, 0.6};
+    static float defaultColor[3] = {0.8, 0.8, 0.6};
 
     class ParticleDataFile {
         public:
