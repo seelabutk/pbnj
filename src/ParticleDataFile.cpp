@@ -96,7 +96,7 @@ void ParticleDataFile::loadFromFile(std::string filename)
                         float r, g, b;
                         read = sscanf(particleColor, "%f %f %f ", &r, &g, &b);
                         if(read != 3) {
-                            rgb = defaultColor;
+                            rgb = CPKcolors["default"].data();
                         }
                         else {
                             rgb = (float *)malloc(3 * sizeof(float));
@@ -110,7 +110,7 @@ void ParticleDataFile::loadFromFile(std::string filename)
                     }
                     // if it isn't, use a default color
                     else {
-                        rgb = defaultColor;
+                        rgb = CPKcolors["default"].data();
                     }
                     this->particleColorData[lineIndex*3 + 0] = rgb[0];
                     this->particleColorData[lineIndex*3 + 1] = rgb[1];

@@ -10,7 +10,7 @@ namespace pbnj {
 // CPK should eventually be JMol colors for better coverage
 std::map<std::string, std::vector<float>> CPKcolors = {
     {"H",  {1.0f, 1.0f, 1.0f}},
-    {"C",  {0.05f, 0.05f, 0.05f}},
+    {"C",  {0.01f, 0.01f, 0.01f}},
     {"N",  {0.0f, 0.0f, 1.0f}},
     {"O",  {1.0f, 0.0f, 0.0f}},
     {"F",  {0.0f, 1.0f, 0.0f}},
@@ -25,12 +25,27 @@ std::map<std::string, std::vector<float>> CPKcolors = {
     {"P",  {1.0f, 0.5f, 0.0f}},
     {"S",  {1.0f, 1.0f, 0.0f}},
     {"B",  {1.0f, 0.5f, 0.3f}},
-    // still need:
-    // rest of transition metals (B),
-    // alkali metals (1, 0, 0.5)
-    // alkaline earth metals (0, 0.5, 0)
-    // titanium (0.5, 0.5, 0.5)
-    // iron (0.5, 0.5, 0)
+    {"Si", {1.0f, 0.5f, 0.3f}},
+    {"Ge", {1.0f, 0.5f, 0.3f}},
+    {"As", {1.0f, 0.5f, 0.3f}},
+    {"Sb", {1.0f, 0.5f, 0.3f}},
+    {"Te", {1.0f, 0.5f, 0.3f}},
+    {"At", {1.0f, 0.5f, 0.3f}},
+    {"Li", {0.5f, 0.0f, 1.0f}},
+    {"Na", {0.5f, 0.0f, 1.0f}},
+    {"K",  {0.5f, 0.0f, 1.0f}},
+    {"Rb", {0.5f, 0.0f, 1.0f}},
+    {"Cs", {0.5f, 0.0f, 1.0f}},
+    {"Fr", {0.5f, 0.0f, 1.0f}},
+    {"Be", {0.0f, 0.5f, 0.0f}},
+    {"Mg", {0.0f, 0.5f, 0.0f}},
+    {"Ca", {0.0f, 0.5f, 0.0f}},
+    {"Sr", {0.0f, 0.5f, 0.0f}},
+    {"Ba", {0.0f, 0.5f, 0.0f}},
+    {"Ra", {0.0f, 0.5f, 0.0f}},
+    {"Ti", {0.5f, 0.5f, 0.5f}},
+    {"Fe", {0.5f, 0.5f, 0.0f}},
+    {"default", {1.0f, 0.4f, 0.7f}}
 };
 
 std::map<std::string, std::vector<float>> colormaps = {
