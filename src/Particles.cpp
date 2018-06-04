@@ -35,6 +35,15 @@ Particles::~Particles()
     ospRelease(this->oSpheres);
 }
 
+std::vector<float> Particles::getParticleCenter()
+{
+    return std::vector<float>({
+            this->dataFile->averageXPos,
+            this->dataFile->averageYPos,
+            this->dataFile->averageZPos,
+    });
+}
+
 OSPGeometry Particles::asOSPRayObject()
 {
     return this->oSpheres;

@@ -5,6 +5,7 @@
 #include <ParticleDataFile.h>
 
 #include <string>
+#include <vector>
 
 #include <ospray/ospray.h>
 
@@ -17,6 +18,7 @@ namespace pbnj {
             ~Particles();
 
             OSPGeometry asOSPRayObject();
+            std::vector<float> getParticleCenter();
 
             std::string ID;
 

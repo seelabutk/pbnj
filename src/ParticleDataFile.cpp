@@ -12,7 +12,7 @@
 namespace pbnj {
 
 ParticleDataFile::ParticleDataFile()
-    : numParticles(0)
+    : numParticles(0), averageXPos(0), averageYPos(0), averageZPos(0)
 {
 }
 
@@ -34,6 +34,9 @@ void ParticleDataFile::loadFromFile(std::string filename)
             std::cerr << "Could not open file!" << std::endl;
         }
         else {
+            // for finding average
+            double totalX = 0, totalY = 0, totalZ = 0;
+
             // find number of particles in the file
             char numParticlesLine[1024];
             char *res = fgets(numParticlesLine, 1024, dataFile);
@@ -90,6 +93,8 @@ void ParticleDataFile::loadFromFile(std::string filename)
                     this->particleData[lineIndex*3 + 1] = curY;
                     this->particleData[lineIndex*3 + 2] = curZ;
 
+                    totalX += curX; totalY += curY; totalZ += curZ;
+
                     // check if the file supplied a color
                     float *rgb;
                     if(useCustomColor) {
@@ -117,11 +122,19 @@ void ParticleDataFile::loadFromFile(std::string filename)
                     this->particleColorData[lineIndex*3 + 2] = rgb[2];
                     numRead++;
                 }
+                this->averageXPos = totalX / this->numParticles;
+                this->averageYPos = totalY / this->numParticles;
+                this->averageZPos = totalZ / this->numParticles;
+
                 std::cerr << "DEBUG: read " << numRead << " particles";
                 std::cerr << std::endl;
                 // sanity check
                 if(this->numParticles != numRead)
                     std::cerr << "DEBUG: HEY THIS IS BAD" << std::endl;
+                std::cerr << "DEBUG: average position: ";
+                std::cerr << this->averageXPos << " ";
+                std::cerr << this->averageYPos << " ";
+                std::cerr << this->averageZPos << std::endl;
             }
             fclose(dataFile);
         }

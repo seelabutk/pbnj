@@ -26,6 +26,10 @@ namespace pbnj {
             float *particleColorData;
             unsigned int numParticles;
 
+            float averageXPos;
+            float averageYPos;
+            float averageZPos;
+
         private:
             FILETYPE getFiletype();
             FILETYPE filetype;
