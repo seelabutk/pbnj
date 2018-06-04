@@ -1,29 +1,33 @@
 #include "pbnj.h"
 
 #include "Camera.h"
+#include "ConfigReader.h"
+#include "Configuration.h"
 #include "Particles.h"
 #include "Renderer.h"
 
 int main(int argc, const char **argv)
 {
-    pbnj::pbnjInit(&argc, argv);
-    //pbnj::ParticleDataFile *pdf = new pbnj::ParticleDataFile();
-    //pdf->loadFromFile("/home/ahota/projects/pbnj/configs/test.xyz");
-    std::string filename = "/home/ahota/projects/pbnj/configs/phbh.xyz";
-    pbnj::Particles *particles = new pbnj::Particles(filename);
+    pbnj::ConfigReader *reader = new pbnj::ConfigReader();
+    rapidjson::Document json;
+    reader->parseConfigFile(argv[1], json);
+    pbnj::Configuration *config = new pbnj::Configuration(json);
 
-    pbnj::Camera *camera = new pbnj::Camera(512, 512);
-    camera->setPosition(0, 0, 20);
+    pbnj::pbnjInit(&argc, argv);
+    pbnj::Particles *particles = new pbnj::Particles(config->dataFilename);
+
+    pbnj::Camera *camera = new pbnj::Camera(config->imageWidth, config->imageHeight);
+    camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
     camera->setUpVector(0, 1, 0);
     camera->centerView();
 
     pbnj::Renderer *renderer = new pbnj::Renderer();
-    renderer->setBackgroundColor(0, 100, 100, 255);
+    renderer->setBackgroundColor(config->bgColor);
     renderer->setParticles(particles);
     renderer->setCamera(camera);
-    renderer->setSamples(8);
+    renderer->setSamples(config->samples);
 
-    renderer->renderImage("/home/ahota/projects/pbnj/renders/particles.png");
+    renderer->renderImage(config->imageFilename);
 
     return 0;
 }
