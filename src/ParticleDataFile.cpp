@@ -46,7 +46,7 @@ void ParticleDataFile::loadFromFile(std::string filename)
                 std::cerr << std::endl;
             }
             else {
-                std::cout << "DEBUG: " << numParticlesLine;
+                //std::cout << "DEBUG: " << numParticlesLine;
                 /*
                 this->particleData = std::unordered_map<std::string,
                     std::vector<float> >();
@@ -60,7 +60,7 @@ void ParticleDataFile::loadFromFile(std::string filename)
                 // skip the comment line
                 char commentLine[1024];
                 res = fgets(commentLine, 1024, dataFile);
-                std::cerr << "DEBUG: " << commentLine;
+                //std::cerr << "DEBUG: " << commentLine;
 
                 // start reading particles
                 char particleLine[1024];
@@ -75,8 +75,8 @@ void ParticleDataFile::loadFromFile(std::string filename)
                             particleType, &curX, &curY, &curZ, particleColor);
                     bool useCustomColor = false;
                     if(read == 5) {
-                        std::cerr << "DEBUG: particleColor: ";
-                        std::cerr << particleColor << std::endl;
+                        //std::cerr << "DEBUG: particleColor: ";
+                        //std::cerr << particleColor << std::endl;
                         useCustomColor = true;
                     }
                     if(read > 5 || read < 4) {
@@ -85,9 +85,9 @@ void ParticleDataFile::loadFromFile(std::string filename)
                         std::cerr << particleLine << std::endl;
                         break;
                     }
-                    std::cerr << "DEBUG: " << particleType << " ";
-                    std::cerr << curX << " " << curY << " " << curZ;
-                    std::cerr << std::endl;
+                    //std::cerr << "DEBUG: " << particleType << " ";
+                    //std::cerr << curX << " " << curY << " " << curZ;
+                    //std::cerr << std::endl;
 
                     this->particleData[lineIndex*3 + 0] = curX;
                     this->particleData[lineIndex*3 + 1] = curY;
@@ -126,15 +126,15 @@ void ParticleDataFile::loadFromFile(std::string filename)
                 this->averageYPos = totalY / this->numParticles;
                 this->averageZPos = totalZ / this->numParticles;
 
-                std::cerr << "DEBUG: read " << numRead << " particles";
-                std::cerr << std::endl;
+                //std::cerr << "DEBUG: read " << numRead << " particles";
+                //std::cerr << std::endl;
                 // sanity check
-                if(this->numParticles != numRead)
-                    std::cerr << "DEBUG: HEY THIS IS BAD" << std::endl;
-                std::cerr << "DEBUG: average position: ";
-                std::cerr << this->averageXPos << " ";
-                std::cerr << this->averageYPos << " ";
-                std::cerr << this->averageZPos << std::endl;
+                //if(this->numParticles != numRead)
+                    //std::cerr << "DEBUG: HEY THIS IS BAD" << std::endl;
+                //std::cerr << "DEBUG: average position: ";
+                //std::cerr << this->averageXPos << " ";
+                //std::cerr << this->averageYPos << " ";
+                //std::cerr << this->averageZPos << std::endl;
             }
             fclose(dataFile);
         }
