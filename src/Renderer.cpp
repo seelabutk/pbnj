@@ -230,9 +230,9 @@ void Renderer::setCamera(Camera *c)
     this->cameraWidth = c->imageWidth;
     this->cameraHeight = c->imageHeight;
     // grab the light direction while we have the pbnj Camera
-    this->lightDirection[0] = c->viewX;
-    this->lightDirection[1] = c->viewY;
-    this->lightDirection[2] = c->viewZ;
+    this->lightDirection[0] = &(c->viewX);
+    this->lightDirection[1] = &(c->viewY);
+    this->lightDirection[2] = &(c->viewZ);
     this->oCamera = c->asOSPRayObject();
 }
 
@@ -340,7 +340,8 @@ void Renderer::render()
     if(this->lights.size() == 1) {
         //if there was a light, set its direction based on the camera
         //and add it to the renderer
-        ospSet3fv(this->lights[0], "direction", this->lightDirection);
+        float camdir[3] = {*(this->lightDirection[0]), *(this->lightDirection[1]), *(this->lightDirection[2])};
+        ospSet3fv(this->lights[0], "direction", camdir);
         ospCommit(this->lights[0]);
         OSPData lightDataArray = ospNewData(this->lights.size(), OSP_LIGHT, this->lights.data());
         ospCommit(lightDataArray);

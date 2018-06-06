@@ -66,7 +66,7 @@ namespace pbnj {
             std::vector<float> lastIsoValues;
 
             std::vector<OSPLight> lights;
-            float lightDirection[3];
+            float *lightDirection[3];
             unsigned int samples;
     };
 }
