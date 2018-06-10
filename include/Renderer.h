@@ -27,6 +27,7 @@ namespace pbnj {
             void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
             void setBackgroundColor(std::vector<unsigned char> bgColor);
             void setVolume(Volume *v);
+            void setStreamlines(Streamlines *s);
             void addLight();
             void setIsosurface(Volume *v, std::vector<float> &isoValues);
             void setIsosurface(Volume *v, std::vector<float> &isoValues, float specular);
@@ -60,12 +61,13 @@ namespace pbnj {
             void bufferToPNG(std::vector<unsigned char> &png);
 
             std::string lastVolumeID;
+            std::string lastStreamlinesID;
             std::string lastCameraID;
             std::string lastRenderType;
             std::vector<float> lastIsoValues;
 
             std::vector<OSPLight> lights;
-            float lightDirection[3];
+            float *lightDirection[3];
             unsigned int samples;
     };
 }

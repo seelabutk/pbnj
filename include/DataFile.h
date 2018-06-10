@@ -7,7 +7,7 @@
 
 namespace pbnj {
 
-    enum FILETYPE {UNKNOWN, BINARY, NETCDF};
+    enum FILETYPE {UNKNOWN, BINARY, NETCDF, XML};
 
     class DataFile {
 
