@@ -1,3 +1,4 @@
+#include "BoundingBox.h"
 #include "Camera.h"
 #include "Renderer.h"
 #include "Volume.h"
@@ -20,7 +21,7 @@
 namespace pbnj {
 
 Renderer::Renderer() :
-    backgroundColor(), samples(1)
+    backgroundColor(), samples(1), doBoundingBox(false)
 {
     this->oRenderer = ospNewRenderer("scivis");
 
@@ -29,8 +30,6 @@ Renderer::Renderer() :
     this->oModel = NULL;
     this->oSurface = NULL;
     this->oMaterial = NULL;
-    this->oBBoxCylinders = NULL;
-    this->oBBoxSpheres = NULL;
     this->lastVolumeID = "unset";
     this->lastCameraID = "unset";
 }
@@ -59,18 +58,6 @@ Renderer::~Renderer()
     ospRemoveParam(this->oSurface, "isovalues");
     ospRemoveParam(this->oSurface, "volume");
     ospRelease(this->oSurface);
-
-    ospRemoveParam(this->oBBoxCylinders, "cylinders");
-    ospRemoveParam(this->oBBoxCylinders, "radius");
-    ospRemoveParam(this->oBBoxCylinders, "bytes_per_cylinder");
-    ospRemoveParam(this->oBBoxCylinders, "color");
-    ospRelease(this->oBBoxCylinders);
-
-    ospRemoveParam(this->oBBoxSpheres, "spheres");
-    ospRemoveParam(this->oBBoxSpheres, "radius");
-    ospRemoveParam(this->oBBoxSpheres, "bytes_per_sphere");
-    ospRemoveParam(this->oBBoxSpheres, "color");
-    ospRelease(this->oBBoxSpheres);
 
     for(int light = 0; light < this->lights.size(); light++) {
         ospRemoveParam(this->lights[light], "angularDiameter");
@@ -102,7 +89,7 @@ void Renderer::setBackgroundColor(std::vector<unsigned char> bgColor)
         this->setBackgroundColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 }
 
-void Renderer::setVolume(Volume *v, bool showBbox)
+void Renderer::setVolume(Volume *v)
 {
     if(this->lastVolumeID == v->ID && this->lastRenderType == "volume") {
         // this is the same volume as the current model and we previously
@@ -130,97 +117,13 @@ void Renderer::setVolume(Volume *v, bool showBbox)
     this->lastRenderType = "volume";
     this->oModel = ospNewModel();
     ospAddVolume(this->oModel, v->asOSPRayObject());
-    if(showBbox)
-        addBoundingBox();
     ospCommit(this->oModel);
 }
 
 void Renderer::addBoundingBox()
 {
     this->addLight();
-
-    float color[] = {1.0, 1.0, 1.0};
-    float radius = std::min(std::min(this->bboxBounds[0], this->bboxBounds[1]),
-            this->bboxBounds[2]) * 0.0025f;
-
-    float halves[] = {0, 0, 0};
-    for(int i = 0; i < this->bboxBounds.size(); i++) {
-        halves[i] = this->bboxBounds[i] / 2.0;
-    }
-
-    float startEndVertices[] = {
-        -halves[0], -halves[1], -halves[2],
-        -halves[0], -halves[1], halves[2],
-
-        -halves[0], -halves[1], halves[2],
-        halves[0], -halves[1], halves[2],
-
-        halves[0], -halves[1], halves[2],
-        halves[0], -halves[1], -halves[2],
-
-        halves[0], -halves[1], -halves[2],
-        -halves[0], -halves[1], -halves[2],
-
-        -halves[0], -halves[1], -halves[2],
-        -halves[0], halves[1], -halves[2],
-
-        -halves[0], -halves[1], halves[2],
-        -halves[0], halves[1], halves[2],
-
-        halves[0], -halves[1], halves[2],
-        halves[0], halves[1], halves[2],
-
-        halves[0], -halves[1], -halves[2],
-        halves[0], halves[1], -halves[2],
-
-        -halves[0], halves[1], -halves[2],
-        -halves[0], halves[1], halves[2],
-
-        -halves[0], halves[1], halves[2],
-        halves[0], halves[1], halves[2],
-
-        halves[0], halves[1], halves[2],
-        halves[0], halves[1], -halves[2],
-
-        halves[0], halves[1], -halves[2],
-        -halves[0], halves[1], -halves[2]
-    };
-    float pointVertices[] = {
-        halves[0], halves[1], halves[2],
-        halves[0], halves[1], -halves[2],
-        halves[0], -halves[1], halves[2],
-        halves[0], -halves[1], -halves[2],
-        -halves[0], halves[1], halves[2],
-        -halves[0], halves[1], -halves[2],
-        -halves[0], -halves[1], halves[2],
-        -halves[0], -halves[1], -halves[2]
-    };
-
-    if(this->oBBoxCylinders != NULL) {
-        ospRelease(this->oBBoxCylinders);
-        this->oBBoxCylinders = NULL;
-    }
-    this->oBBoxCylinders = ospNewGeometry("cylinders");
-    OSPData cylinderDataArray = ospNewData(72, OSP_FLOAT, startEndVertices);
-    ospSetData(this->oBBoxCylinders, "cylinders", cylinderDataArray);
-    ospSet1i(this->oBBoxCylinders, "bytes_per_cylinder", 24);
-    ospSet3fv(this->oBBoxCylinders, "color", color);
-    ospSet1f(this->oBBoxCylinders, "radius", radius);
-
-    if(this->oBBoxSpheres != NULL) {
-        ospRelease(this->oBBoxSpheres);
-        this->oBBoxSpheres = NULL;
-    }
-    this->oBBoxSpheres = ospNewGeometry("spheres");
-    OSPData sphereDataArray = ospNewData(24, OSP_FLOAT, pointVertices);
-    ospSetData(this->oBBoxSpheres, "spheres", sphereDataArray);
-    ospSet1i(this->oBBoxSpheres, "bytes_per_sphere", 12);
-    ospSet3fv(this->oBBoxSpheres, "color", color);
-    ospSet1f(this->oBBoxSpheres, "radius", 2.5*radius);
-    ospCommit(this->oBBoxSpheres);
-
-    ospAddGeometry(this->oModel, this->oBBoxCylinders);
-    ospAddGeometry(this->oModel, this->oBBoxSpheres);
+    this->doBoundingBox = true;
 }
 
 void Renderer::addLight()
@@ -419,6 +322,11 @@ void Renderer::render()
         return;
 
     //finalize the OSPRay renderer
+    if(this->doBoundingBox) {
+        BoundingBox *bbox = new BoundingBox(this->bboxBounds);
+        ospAddGeometry(this->oModel, bbox->asOSPRayObject());
+        ospCommit(this->oModel);
+    }
     if(this->lights.size() == 1) {
         //if there was a light, set its direction based on the camera
         //and add it to the renderer

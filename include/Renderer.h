@@ -26,10 +26,11 @@ namespace pbnj {
 
             void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
             void setBackgroundColor(std::vector<unsigned char> bgColor);
-            void setVolume(Volume *v, bool showBbox=false);
+            void setVolume(Volume *v);
             void addLight();
             void setIsosurface(Volume *v, std::vector<float> &isoValues);
             void setIsosurface(Volume *v, std::vector<float> &isoValues, float specular);
+            void addBoundingBox();
             void setCamera(Camera *c);
             void setSamples(unsigned int spp);
 
@@ -50,11 +51,9 @@ namespace pbnj {
             OSPCamera oCamera;
             OSPGeometry oSurface;
             OSPMaterial oMaterial;
-            OSPGeometry oBBoxCylinders;
-            OSPGeometry oBBoxSpheres;
 
             std::vector<long unsigned int> bboxBounds;
-            void addBoundingBox();
+            bool doBoundingBox;
 
             IMAGETYPE getFiletype(std::string filename);
             void saveImage(std::string filename, IMAGETYPE imageType);

@@ -31,6 +31,8 @@ namespace pbnj {
     /* abstraction wrapper around OSPRay renderer */
     class Renderer;
 
+    class BoundingBox;
+
     /* abstraction wrapper around OSPRay camera
      * Provides simplified camera movement
      */
