@@ -114,26 +114,38 @@ void Renderer::setVolume(Volume *v, bool showBbox)
         this->oModel = NULL;
     }
 
+    if(this->bboxBounds.empty()) {
+        this->bboxBounds = v->getBounds();
+    }
+    else {
+        std::vector<long unsigned int> vBounds = v->getBounds();
+        for(int bIndex = 0; bIndex < vBounds.size(); bIndex++) {
+            if(vBounds[bIndex] < this->bboxBounds[bIndex]) {
+                this->bboxBounds[bIndex] = vBounds[bIndex];
+            }
+        }
+    }
+
     this->lastVolumeID = v->ID;
     this->lastRenderType = "volume";
     this->oModel = ospNewModel();
     ospAddVolume(this->oModel, v->asOSPRayObject());
     if(showBbox)
-        addBoundingBox(v);
+        addBoundingBox();
     ospCommit(this->oModel);
 }
 
-void Renderer::addBoundingBox(Volume *v)
+void Renderer::addBoundingBox()
 {
     this->addLight();
 
-    std::vector<long unsigned int> bounds = v->getBounds();
     float color[] = {1.0, 1.0, 1.0};
-    float radius = std::min(std::min(bounds[0], bounds[1]), bounds[2]) * 0.0025f;
+    float radius = std::min(std::min(this->bboxBounds[0], this->bboxBounds[1]),
+            this->bboxBounds[2]) * 0.0025f;
 
     float halves[] = {0, 0, 0};
-    for(int i = 0; i < bounds.size(); i++) {
-        halves[i] = bounds[i] / 2.0;
+    for(int i = 0; i < this->bboxBounds.size(); i++) {
+        halves[i] = this->bboxBounds[i] / 2.0;
     }
 
     float startEndVertices[] = {

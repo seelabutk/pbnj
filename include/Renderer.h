@@ -53,7 +53,8 @@ namespace pbnj {
             OSPGeometry oBBoxCylinders;
             OSPGeometry oBBoxSpheres;
 
-            void addBoundingBox(Volume *v);
+            std::vector<long unsigned int> bboxBounds;
+            void addBoundingBox();
 
             IMAGETYPE getFiletype(std::string filename);
             void saveImage(std::string filename, IMAGETYPE imageType);
