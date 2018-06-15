@@ -29,8 +29,8 @@ Renderer::Renderer() :
     this->oModel = NULL;
     this->oSurface = NULL;
     this->oMaterial = NULL;
-    this->oCylinders = NULL;
-    this->oSpheres = NULL;
+    this->oBBoxCylinders = NULL;
+    this->oBBoxSpheres = NULL;
     this->lastVolumeID = "unset";
     this->lastCameraID = "unset";
 }
@@ -60,17 +60,17 @@ Renderer::~Renderer()
     ospRemoveParam(this->oSurface, "volume");
     ospRelease(this->oSurface);
 
-    ospRemoveParam(this->oCylinders, "cylinders");
-    ospRemoveParam(this->oCylinders, "radius");
-    ospRemoveParam(this->oCylinders, "bytes_per_cylinder");
-    ospRemoveParam(this->oCylinders, "color");
-    ospRelease(this->oCylinders);
+    ospRemoveParam(this->oBBoxCylinders, "cylinders");
+    ospRemoveParam(this->oBBoxCylinders, "radius");
+    ospRemoveParam(this->oBBoxCylinders, "bytes_per_cylinder");
+    ospRemoveParam(this->oBBoxCylinders, "color");
+    ospRelease(this->oBBoxCylinders);
 
-    ospRemoveParam(this->oSpheres, "spheres");
-    ospRemoveParam(this->oSpheres, "radius");
-    ospRemoveParam(this->oSpheres, "bytes_per_sphere");
-    ospRemoveParam(this->oSpheres, "color");
-    ospRelease(this->oSpheres);
+    ospRemoveParam(this->oBBoxSpheres, "spheres");
+    ospRemoveParam(this->oBBoxSpheres, "radius");
+    ospRemoveParam(this->oBBoxSpheres, "bytes_per_sphere");
+    ospRemoveParam(this->oBBoxSpheres, "color");
+    ospRelease(this->oBBoxSpheres);
 
     for(int light = 0; light < this->lights.size(); light++) {
         ospRemoveParam(this->lights[light], "angularDiameter");
@@ -184,31 +184,31 @@ void Renderer::addBoundingBox(Volume *v)
         -halves[0], -halves[1], -halves[2]
     };
 
-    if(this->oCylinders != NULL) {
-        ospRelease(this->oCylinders);
-        this->oCylinders = NULL;
+    if(this->oBBoxCylinders != NULL) {
+        ospRelease(this->oBBoxCylinders);
+        this->oBBoxCylinders = NULL;
     }
-    this->oCylinders = ospNewGeometry("cylinders");
+    this->oBBoxCylinders = ospNewGeometry("cylinders");
     OSPData cylinderDataArray = ospNewData(72, OSP_FLOAT, startEndVertices);
-    ospSetData(this->oCylinders, "cylinders", cylinderDataArray);
-    ospSet1i(this->oCylinders, "bytes_per_cylinder", 24);
-    ospSet3fv(this->oCylinders, "color", color);
-    ospSet1f(this->oCylinders, "radius", radius);
+    ospSetData(this->oBBoxCylinders, "cylinders", cylinderDataArray);
+    ospSet1i(this->oBBoxCylinders, "bytes_per_cylinder", 24);
+    ospSet3fv(this->oBBoxCylinders, "color", color);
+    ospSet1f(this->oBBoxCylinders, "radius", radius);
 
-    if(this->oSpheres != NULL) {
-        ospRelease(this->oSpheres);
-        this->oSpheres = NULL;
+    if(this->oBBoxSpheres != NULL) {
+        ospRelease(this->oBBoxSpheres);
+        this->oBBoxSpheres = NULL;
     }
-    this->oSpheres = ospNewGeometry("spheres");
+    this->oBBoxSpheres = ospNewGeometry("spheres");
     OSPData sphereDataArray = ospNewData(24, OSP_FLOAT, pointVertices);
-    ospSetData(this->oSpheres, "spheres", sphereDataArray);
-    ospSet1i(this->oSpheres, "bytes_per_sphere", 12);
-    ospSet3fv(this->oSpheres, "color", color);
-    ospSet1f(this->oSpheres, "radius", 2.5*radius);
-    ospCommit(this->oSpheres);
+    ospSetData(this->oBBoxSpheres, "spheres", sphereDataArray);
+    ospSet1i(this->oBBoxSpheres, "bytes_per_sphere", 12);
+    ospSet3fv(this->oBBoxSpheres, "color", color);
+    ospSet1f(this->oBBoxSpheres, "radius", 2.5*radius);
+    ospCommit(this->oBBoxSpheres);
 
-    ospAddGeometry(this->oModel, this->oCylinders);
-    ospAddGeometry(this->oModel, this->oSpheres);
+    ospAddGeometry(this->oModel, this->oBBoxCylinders);
+    ospAddGeometry(this->oModel, this->oBBoxSpheres);
 }
 
 void Renderer::addLight()

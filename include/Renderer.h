@@ -50,8 +50,8 @@ namespace pbnj {
             OSPCamera oCamera;
             OSPGeometry oSurface;
             OSPMaterial oMaterial;
-            OSPGeometry oCylinders;
-            OSPGeometry oSpheres;
+            OSPGeometry oBBoxCylinders;
+            OSPGeometry oBBoxSpheres;
 
             void addBoundingBox(Volume *v);
 
