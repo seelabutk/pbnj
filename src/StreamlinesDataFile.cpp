@@ -45,9 +45,6 @@ void StreamlinesDataFile::loadFromFile(std::string filename)
             return;
         }
 
-        std::cerr << "DEBUG: found streamlines tag" << std::endl;
-
-
         pugi::xml_node vnode = sl.child("vertex");
         pugi::xml_node inode = sl.child("index");
         if(strcmp(vnode.name(), "") == 0) {
@@ -58,8 +55,6 @@ void StreamlinesDataFile::loadFromFile(std::string filename)
             std::cerr << "No index tag found!" << std::endl;
             return;
         }
-
-        std::cerr << "DEBUG: found vertex and index tags" << std::endl;
 
         const char *cvstring = vnode.child_value();
         char *vstring = (char *)malloc(strlen(cvstring)+1);
@@ -80,9 +75,6 @@ void StreamlinesDataFile::loadFromFile(std::string filename)
 
         this->numVertices = this->vertexData.size();
 
-        std::cerr << "DEBUG: read " << this->numVertices << " vertices";
-        std::cerr << std::endl;
-
         const char *cistring = inode.child_value();
         char *istring = (char *)malloc(strlen(cistring)+1);
         strcpy(istring, cistring); // to un-const
@@ -93,9 +85,6 @@ void StreamlinesDataFile::loadFromFile(std::string filename)
         }
 
         this->numIndices = this->indexData.size();
-
-        std::cerr << "DEBUG: read " << this->numIndices << " indices";
-        std::cerr << std::endl;
     }
     else {
         std::cerr << "Not a PBNJ streamlines capable file!" << std::endl;
