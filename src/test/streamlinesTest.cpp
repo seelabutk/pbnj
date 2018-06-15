@@ -1,5 +1,7 @@
 #include "pbnj.h"
 #include "Camera.h"
+#include "ConfigReader.h"
+#include "Configuration.h"
 #include "Renderer.h"
 #include "Streamlines.h"
 
@@ -9,24 +11,33 @@
 int main(int argc, const char **argv)
 {
     if(argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <xml filename>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <configuration file>";
+        std::cerr << std::endl;
         return 1;
     }
 
-    pbnj::pbnjInit(&argc, argv);
-    pbnj::Streamlines *sl = new pbnj::Streamlines(std::string(argv[1]));
+    pbnj::ConfigReader *reader = new pbnj::ConfigReader();
+    rapidjson::Document json;
+    reader->parseConfigFile(argv[1], json);
+    pbnj::Configuration *config = new pbnj::Configuration(json);
 
-    pbnj::Camera *camera = new pbnj::Camera(1024, 1024);
-    camera->setPosition(0.75, 0.1, 0.75);
-    camera->setUpVector(0, 1, 0);
+    pbnj::pbnjInit(&argc, argv);
+    pbnj::Streamlines *sl = new pbnj::Streamlines(config->dataFilename);
+
+    pbnj::Camera *camera = new pbnj::Camera(config->imageWidth,
+            config->imageHeight);
+    camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
+    camera->setUpVector(config->cameraUpX, config->cameraUpY,
+            config->cameraUpZ);
     camera->centerView();
 
     pbnj::Renderer *renderer = new pbnj::Renderer();
+    renderer->setBackgroundColor(config->bgColor);
     renderer->setCamera(camera);
     renderer->setStreamlines(sl);
-    renderer->setSamples(8);
+    renderer->setSamples(config->samples);
 
-    renderer->renderImage("/home/ahota/projects/pbnj/renders/streamlines.png");
+    renderer->renderImage(config->imageFilename);
 
     return 0;
 }
