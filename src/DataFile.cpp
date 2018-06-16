@@ -105,8 +105,11 @@ void DataFile::loadFromFile(std::string filename, std::string var_name,
                     for(int i = 0; i < this->numValues; i++) {
                         size_t numbytes = fread(chunk, sizeof(float),
                                 this->numComponents, dataFile);
-                        this->data[i] = std::sqrt(chunk[0]*chunk[0] +
-                                chunk[1]*chunk[1] + chunk[2]*chunk[2]);
+                        double total = 0.;
+                        for(int c = 0; c < this->numComponents; c++) {
+                            total += chunk[c]*chunk[c];
+                        }
+                        this->data[i] = std::sqrt(total);
                     }
                 }
             }
@@ -128,8 +131,11 @@ void DataFile::loadFromFile(std::string filename, std::string var_name,
                     for(int i = 0; i < this->numValues; i++) {
                         size_t numbytes = fread(chunk, sizeof(float),
                                 this->numComponents, dataFile);
-                        this->data[i] = std::sqrt(chunk[0]*chunk[0] +
-                                chunk[1]*chunk[1] + chunk[2]*chunk[2]);
+                        double total = 0.;
+                        for(int c = 0; c < this->numComponents; c++) {
+                            total += chunk[c]*chunk[c];
+                        }
+                        this->data[i] = std::sqrt(total);
                     }
                 }
             }
