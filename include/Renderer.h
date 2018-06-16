@@ -27,6 +27,7 @@ namespace pbnj {
             void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
             void setBackgroundColor(std::vector<unsigned char> bgColor);
             void setVolume(Volume *v);
+            void setSlices(Volume *v, std::vector<float> &normal, std::vector<float> &p);
             void addLight();
             void setIsosurface(Volume *v, std::vector<float> &isoValues);
             void setIsosurface(Volume *v, std::vector<float> &isoValues, float specular);
@@ -50,6 +51,7 @@ namespace pbnj {
             OSPModel oModel;
             OSPCamera oCamera;
             OSPGeometry oSurface;
+            OSPGeometry oSlices;
             OSPMaterial oMaterial;
 
             std::vector<long unsigned int> bboxBounds;
@@ -71,6 +73,7 @@ namespace pbnj {
             std::vector<OSPLight> lights;
             float lightDirection[3];
             unsigned int samples;
+
     };
 }
 
