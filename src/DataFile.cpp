@@ -19,8 +19,9 @@
 
 namespace pbnj {
 
-DataFile::DataFile(int x, int y, int z) :
-    xDim(x), yDim(y), zDim(z), numValues(x*y*z), statsCalculated(false)
+DataFile::DataFile(int x, int y, int z, unsigned int components) :
+    xDim(x), yDim(y), zDim(z), numValues(x*y*z), statsCalculated(false),
+    numComponents(components)
 {
     this->numValues = xDim * yDim * zDim;
 }
@@ -86,9 +87,28 @@ void DataFile::loadFromFile(std::string filename, std::string var_name,
         }
         else {
             if(memmap) {
-                int fd = fileno(dataFile);
-                this->data = (float *)mmap(NULL, this->numValues*sizeof(float),
-                        PROT_READ, MAP_SHARED, fd, 0);
+                if(this->numComponents == 1) {
+                    int fd = fileno(dataFile);
+                    this->data = (float *)mmap(NULL, this->numValues*sizeof(float),
+                            PROT_READ, MAP_SHARED, fd, 0);
+                }
+                else {
+                    this->data = (float *)malloc(this->numValues * sizeof(float));
+                    if(this->data == MAP_FAILED) {
+                        switch(errno) {
+                            case ENOMEM:
+                                std::cerr << "ENOMEM out of memory" << std::endl;
+                                break;
+                        }
+                    }
+                    float *chunk = (float *)malloc(this->numComponents*sizeof(float));
+                    for(int i = 0; i < this->numValues; i++) {
+                        size_t numbytes = fread(chunk, sizeof(float),
+                                this->numComponents, dataFile);
+                        this->data[i] = std::sqrt(chunk[0]*chunk[0] +
+                                chunk[1]*chunk[1] + chunk[2]*chunk[2]);
+                    }
+                }
             }
             else {
                 this->data = (float *)malloc(this->numValues * sizeof(float));
@@ -99,8 +119,19 @@ void DataFile::loadFromFile(std::string filename, std::string var_name,
                             break;
                     }
                 }
-                size_t bytes = fread(this->data, sizeof(float), this->numValues,
-                        dataFile);
+                if(this->numComponents == 1) {
+                    size_t bytes = fread(this->data, sizeof(float),
+                            this->numValues, dataFile);
+                }
+                else {
+                    float *chunk = (float *)malloc(this->numComponents*sizeof(float));
+                    for(int i = 0; i < this->numValues; i++) {
+                        size_t numbytes = fread(chunk, sizeof(float),
+                                this->numComponents, dataFile);
+                        this->data[i] = std::sqrt(chunk[0]*chunk[0] +
+                                chunk[1]*chunk[1] + chunk[2]*chunk[2]);
+                    }
+                }
             }
             fclose(dataFile);
         }
