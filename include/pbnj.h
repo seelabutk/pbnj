@@ -20,6 +20,8 @@ namespace pbnj {
     /* abstraction wrapper around OSPRay volumes */
     class Volume;
 
+    class Slices;
+
     /* abstraction around Volume to hold a series of data volumes */
     class TimeSeries;
 

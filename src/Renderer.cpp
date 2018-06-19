@@ -1,6 +1,7 @@
 #include "BoundingBox.h"
 #include "Camera.h"
 #include "Renderer.h"
+#include "Slices.h"
 #include "Volume.h"
 
 #include <algorithm>
@@ -29,7 +30,6 @@ Renderer::Renderer() :
     this->oCamera = NULL;
     this->oModel = NULL;
     this->oSurface = NULL;
-    this->oSlices = NULL;
     this->oMaterial = NULL;
     this->lastVolumeID = "unset";
     this->lastCameraID = "unset";
@@ -59,10 +59,6 @@ Renderer::~Renderer()
     ospRemoveParam(this->oSurface, "isovalues");
     ospRemoveParam(this->oSurface, "volume");
     ospRelease(this->oSurface);
-
-    ospRemoveParam(this->oSlices, "planes");
-    ospRemoveParam(this->oSlices, "volume");
-    ospRelease(this->oSlices);
 
     for(int light = 0; light < this->lights.size(); light++) {
         ospRemoveParam(this->lights[light], "angularDiameter");
@@ -131,53 +127,13 @@ void Renderer::addBoundingBox()
     this->doBoundingBox = true;
 }
 
-void Renderer::setSlices(Volume *v, std::vector<float> &normals, std::vector<float> &points)
+void Renderer::addSlices(Slices *s)
 {
-    if(this->lastVolumeID == v->ID && this->lastRenderType == "slices") {
-        // this is the same volume as the current model and we previously
-        // did a slices render
-        return;
-    }
-    if(this->oModel != NULL) {
-        ospRelease(this->oModel);
-        this->oModel = NULL;
-    }
-
-    if(normals.size() != points.size()) {
-        std::cerr << "ERROR: Slice plane normals and points vectors are ";
-        std::cerr << "unequal length" << std::endl;
-        return;
-    }
-
-    // create (a, b, c, d) tuples for each plane
-    std::vector<float> planes;
-    for(int i = 0; i < normals.size()/3; i++) {
-        float a = normals[i*3 + 0], b = normals[i*3 + 1], c = normals[i*3 + 2];
-        float d = -a*points[i*3 + 0] - b*points[i*3 + 1] - c*points[i*3 + 2];
-        planes.push_back(a);
-        planes.push_back(b);
-        planes.push_back(c);
-        planes.push_back(d);
-    }
-
     this->addLight();
-
-    // create a slices object
-    if(this->oSlices != NULL) {
-        ospRelease(this->oSlices);
-        this->oSlices = NULL;
+    if(this->oModel == NULL) {
+        this->oModel = ospNewModel();
     }
-
-    this->oSlices = ospNewGeometry("slices");
-    OSPData planeDataArray = ospNewData(planes.size()/4, OSP_FLOAT4, planes.data());
-    ospSetData(this->oSlices, "planes", planeDataArray);
-    ospSetObject(this->oSlices, "volume", v->asOSPRayObject());
-    ospCommit(this->oSlices);
-
-    this->lastVolumeID = v->ID;
-    this->lastRenderType = "slices";
-    this->oModel = ospNewModel();
-    ospAddGeometry(this->oModel, this->oSlices);
+    ospAddGeometry(this->oModel, s->asOSPRayObject());
     ospCommit(this->oModel);
 }
 
