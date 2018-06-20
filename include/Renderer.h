@@ -28,6 +28,7 @@ namespace pbnj {
             void setBackgroundColor(std::vector<unsigned char> bgColor);
             void setVolume(Volume *v);
             void addSlices(Slices *s);
+            void setParticles(Particles *p);
             void addLight();
             void setIsosurface(Volume *v, std::vector<float> &isoValues);
             void setIsosurface(Volume *v, std::vector<float> &isoValues, float specular);
@@ -71,7 +72,7 @@ namespace pbnj {
             std::vector<float> lastIsoValues;
 
             std::vector<OSPLight> lights;
-            float lightDirection[3];
+            float *lightDirection[3];
             unsigned int samples;
 
     };

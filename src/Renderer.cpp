@@ -1,5 +1,6 @@
 #include "BoundingBox.h"
 #include "Camera.h"
+#include "Particles.h"
 #include "Renderer.h"
 #include "Slices.h"
 #include "Volume.h"
@@ -134,6 +135,38 @@ void Renderer::addSlices(Slices *s)
         this->oModel = ospNewModel();
     }
     ospAddGeometry(this->oModel, s->asOSPRayObject());
+}
+
+void Renderer::setParticles(Particles *p)
+{
+    if(this->lastVolumeID == p->ID && this->lastRenderType == "particles") {
+        // this is the same particles as the current model and we previously
+        // did a particles render
+        return;
+    }
+    if(this->oModel != NULL) {
+        ospRelease(this->oModel);
+        this->oModel = NULL;
+    }
+    // set up light and material if necessary
+    this->addLight();
+    float specular = 0.1;
+    if(this->oMaterial == NULL) {
+        // create a new surface material with some specular highlighting
+        this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
+        float Ks[] = {specular, specular, specular};
+        float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
+        ospSet3fv(this->oMaterial, "Kd", Kd);
+        ospSet3fv(this->oMaterial, "Ks", Ks);
+        ospSet1f(this->oMaterial, "Ns", 7);
+        ospCommit(this->oMaterial);
+    }
+    this->lastVolumeID = p->ID;
+    this->lastRenderType = "particles";
+    this->oModel = ospNewModel();
+    OSPGeometry particles = p->asOSPRayObject();
+    ospSetMaterial(particles, this->oMaterial);
+    ospAddGeometry(this->oModel, particles);
     ospCommit(this->oModel);
 }
 
@@ -142,14 +175,21 @@ void Renderer::addLight()
     // currently the renderer will hold only one light
     if(this->lights.size() == 0) {
         // create a new directional light
-        OSPLight light = ospNewLight(this->oRenderer, "distant");
+        //OSPLight light = ospNewLight(this->oRenderer, "distant");
+        OSPLight light = ospNewLight(this->oRenderer, "ambient");
         //float direction[] = {0, -1, 1};
         //ospSet3fv(light, "direction", direction);
         // set the apparent size of the light in degrees
         // 0.53 approximates the Sun
-        ospSet1f(light, "angularDiameter", 0.53);
+        //ospSet1f(light, "angularDiameter", 0.53);
+        ospSet1f(light, "intensity", 1.0);
         ospCommit(light);
         this->lights.push_back(light);
+
+        OSPLight light2 = ospNewLight(this->oRenderer, "distant");
+        ospSet1f(light2, "angularDiameter", 0.53);
+        ospCommit(light2);
+        this->lights.push_back(light2);
     }
 }
 
@@ -226,9 +266,9 @@ void Renderer::setCamera(Camera *c)
     this->cameraWidth = c->getImageWidth();
     this->cameraHeight = c->getImageHeight();
     // grab the light direction while we have the pbnj Camera
-    this->lightDirection[0] = c->viewX;
-    this->lightDirection[1] = c->viewY;
-    this->lightDirection[2] = c->viewZ;
+    this->lightDirection[0] = &(c->viewX);
+    this->lightDirection[1] = &(c->viewY);
+    this->lightDirection[2] = &(c->viewZ);
     this->oCamera = c->asOSPRayObject();
     this->pbnjCamera = c;
 }
@@ -339,16 +379,20 @@ void Renderer::render()
         ospAddGeometry(this->oModel, bbox->asOSPRayObject());
         ospCommit(this->oModel);
     }
-    if(this->lights.size() == 1) {
+    if(this->lights.size() >= 1) {
         //if there was a light, set its direction based on the camera
         //and add it to the renderer
-        ospSet3fv(this->lights[0], "direction", this->lightDirection);
-        ospCommit(this->lights[0]);
+        float camdir[3] = {*(this->lightDirection[0]), *(this->lightDirection[1]), *(this->lightDirection[2])};
+        ospSet3fv(this->lights[1], "direction", camdir);
+        ospCommit(this->lights[1]);
         OSPData lightDataArray = ospNewData(this->lights.size(), OSP_LIGHT, this->lights.data());
         ospCommit(lightDataArray);
         ospSetObject(this->oRenderer, "lights", lightDataArray);
         unsigned int aoSamples = std::max(this->samples/8, (unsigned int) 1);
-        ospSet1i(this->oRenderer, "aoSamples", aoSamples);
+        if(this->cameraWidth > 64)
+            ospSet1i(this->oRenderer, "aoSamples", 1);
+        else
+            ospSet1i(this->oRenderer, "aoSamples", 0);
         ospSet1i(this->oRenderer, "shadowsEnabled", 0);
         ospSet1i(this->oRenderer, "oneSidedLighting", 0);
     }
