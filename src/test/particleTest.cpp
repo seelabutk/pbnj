@@ -23,7 +23,7 @@ int main(int argc, const char **argv)
 
     pbnj::Renderer *renderer = new pbnj::Renderer();
     renderer->setBackgroundColor(config->bgColor);
-    renderer->setParticles(particles);
+    renderer->addParticles(particles);
     renderer->setCamera(camera);
     renderer->setSamples(config->samples);
 
