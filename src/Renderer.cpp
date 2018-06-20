@@ -137,7 +137,7 @@ void Renderer::addSlices(Slices *s)
     ospAddGeometry(this->oModel, s->asOSPRayObject());
 }
 
-void Renderer::setParticles(Particles *p)
+void Renderer::addParticles(Particles *p)
 {
     if(this->lastVolumeID == p->ID && this->lastRenderType == "particles") {
         // this is the same particles as the current model and we previously
