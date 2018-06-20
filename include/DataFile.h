@@ -8,7 +8,7 @@
 namespace pbnj {
 
     // TODO this should be moved out of DataFile
-    enum FILETYPE {UNKNOWN, BINARY, NETCDF, PARTICLE};
+    enum FILETYPE {UNKNOWN, BINARY, NETCDF, PARTICLE, XML};
 
     class DataFile {
 

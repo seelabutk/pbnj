@@ -29,6 +29,7 @@ namespace pbnj {
             void setVolume(Volume *v);
             void addSlices(Slices *s);
             void addParticles(Particles *p);
+            void setStreamlines(Streamlines *s);
             void addLight();
             void setIsosurface(Volume *v, std::vector<float> &isoValues);
             void setIsosurface(Volume *v, std::vector<float> &isoValues, float specular);
@@ -67,6 +68,7 @@ namespace pbnj {
             void bufferToPNG(std::vector<unsigned char> &png);
 
             std::string lastVolumeID;
+            std::string lastStreamlinesID;
             std::string lastCameraID;
             std::string lastRenderType;
             std::vector<float> lastIsoValues;

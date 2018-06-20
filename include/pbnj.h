@@ -24,6 +24,8 @@ namespace pbnj {
 
     class Slices;
 
+    class Streamlines;
+
     /* abstraction around Volume to hold a series of data volumes */
     class TimeSeries;
 

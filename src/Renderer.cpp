@@ -3,6 +3,7 @@
 #include "Particles.h"
 #include "Renderer.h"
 #include "Slices.h"
+#include "Streamlines.h"
 #include "Volume.h"
 
 #include <algorithm>
@@ -138,6 +139,38 @@ void Renderer::addSlices(Slices *s)
     ospCommit(this->oModel);
 }
 
+void Renderer::setStreamlines(Streamlines *s)
+{
+    if(this->lastStreamlinesID == s->ID && this->lastRenderType == "streamlines") {
+        // this is the same streamlines as the current model and we previously
+        // did a streamlines render
+        return;
+    }
+    if(this->oModel != NULL) {
+        ospRelease(this->oModel);
+        this->oModel = NULL;
+    }
+
+    this->addLight();
+    float specular = 0.1;
+    if(this->oMaterial == NULL) {
+        // create a new surface material with some specular highlighting
+        this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
+        float Ks[] = {specular, specular, specular};
+        float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
+        ospSet3fv(this->oMaterial, "Kd", Kd);
+        ospSet3fv(this->oMaterial, "Ks", Ks);
+        ospSet1f(this->oMaterial, "Ns", 10);
+        ospCommit(this->oMaterial);
+    }
+
+    this->lastStreamlinesID = s->ID;
+    this->lastRenderType = "streamlines";
+    this->oModel = ospNewModel();
+    ospAddGeometry(this->oModel, s->asOSPRayObject());
+    ospCommit(this->oModel);
+}
+
 void Renderer::addParticles(Particles *p)
 {
     if(this->lastVolumeID == p->ID && this->lastRenderType == "particles") {
@@ -176,14 +209,12 @@ void Renderer::addLight()
     // currently the renderer will hold only one light
     if(this->lights.size() == 0) {
         // create a new directional light
-        //OSPLight light = ospNewLight(this->oRenderer, "distant");
         OSPLight light = ospNewLight(this->oRenderer, "ambient");
         //float direction[] = {0, -1, 1};
         //ospSet3fv(light, "direction", direction);
         // set the apparent size of the light in degrees
         // 0.53 approximates the Sun
         //ospSet1f(light, "angularDiameter", 0.53);
-        ospSet1f(light, "intensity", 1.0);
         ospCommit(light);
         this->lights.push_back(light);
 
