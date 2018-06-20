@@ -108,6 +108,7 @@ void Camera::setRegion(float top, float right, float bottom, float left)
     float lowerLeft[] = {left, bottom};
     ospSet2fv(this->oCamera, "imageStart", lowerLeft);
     ospSet2fv(this->oCamera, "imageEnd", upperRight);
+    ospCommit(this->oCamera);
 }
 
 OSPCamera Camera::asOSPRayObject()
