@@ -135,6 +135,7 @@ void Renderer::addSlices(Slices *s)
         this->oModel = ospNewModel();
     }
     ospAddGeometry(this->oModel, s->asOSPRayObject());
+    ospCommit(this->oModel);
 }
 
 void Renderer::addParticles(Particles *p)
