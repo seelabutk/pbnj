@@ -40,9 +40,6 @@ namespace pbnj {
             void renderToJPGObject(std::vector<unsigned char> &jpg, int quality);
             void renderToPNGObject(std::vector<unsigned char> &png);
             void renderImage(std::string imageFilename);
-
-            int cameraWidth;
-            int cameraHeight;
         private:
             unsigned char backgroundColor[4];
 
@@ -55,6 +52,10 @@ namespace pbnj {
 
             std::vector<long unsigned int> bboxBounds;
             bool doBoundingBox;
+            Camera *pbnjCamera;
+
+            int cameraWidth;
+            int cameraHeight;
 
             IMAGETYPE getFiletype(std::string filename);
             void saveImage(std::string filename, IMAGETYPE imageType);
