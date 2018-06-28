@@ -3,6 +3,7 @@
 #include "TransferFunction.h"
 
 #include <vector>
+#include <string>
 
 #include <ospray/ospray.h>
 
@@ -118,6 +119,11 @@ void Volume::loadFromFile(std::string filename, std::string var_name,
 bool Volume::isSurface()
 {
     return false;
+}
+
+std::string Volume::getRenderType()
+{
+    return "volume";
 }
 
 }

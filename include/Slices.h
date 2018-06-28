@@ -5,6 +5,7 @@
 #include <Subject.h>
 #include <Volume.h>
 
+#include <string>
 #include <vector>
 
 #include <ospray/ospray.h>
@@ -18,6 +19,7 @@ namespace pbnj {
 
             OSPGeometry asOSPRayObject();
             bool isSurface();
+            std::string getRenderType();
 
         private:
             OSPGeometry oSlices;

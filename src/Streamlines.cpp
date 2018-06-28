@@ -1,6 +1,8 @@
 #include "Streamlines.h"
 #include "StreamlinesDataFile.h"
 
+#include <string>
+
 #include <ospray/ospray.h>
 
 namespace pbnj {
@@ -38,6 +40,11 @@ OSPGeometry Streamlines::asOSPRayObject()
 bool Streamlines::isSurface()
 {
     return true;
+}
+
+std::string Streamlines::getRenderType()
+{
+    return "streamlines";
 }
 
 }

@@ -33,6 +33,7 @@ Renderer::Renderer() :
     this->oModel = NULL;
     this->oSurface = NULL;
     this->oMaterial = NULL;
+    this->lastSubjectID = "unset";
     this->lastVolumeID = "unset";
     this->lastCameraID = "unset";
 }
@@ -90,6 +91,52 @@ void Renderer::setBackgroundColor(std::vector<unsigned char> bgColor)
         this->setBackgroundColor(bgColor[0], bgColor[1], bgColor[2], 255);
     else
         this->setBackgroundColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
+}
+
+void Renderer::addSubject(Subject *s)
+{
+    if(this->lastSubjectID == s->ID &&
+       this->lastRenderType == s->getRenderType()) {
+        return;
+    }
+    if(this->oModel == NULL) {
+        this->oModel = ospNewModel();
+    }
+
+    if(s->isSurface()) {
+        this->addLight();
+        float specular = 0.1;
+        if(this->oMaterial == NULL) {
+            // create a new surface material with some specular highlighting
+            this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
+            float Ks[] = {specular, specular, specular};
+            float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
+            ospSet3fv(this->oMaterial, "Kd", Kd);
+            ospSet3fv(this->oMaterial, "Ks", Ks);
+            ospSet1f(this->oMaterial, "Ns", 10);
+            ospCommit(this->oMaterial);
+        }
+        ospAddGeometry(this->oModel, (OSPGeometry)s->asOSPRayObject());
+    }
+    else {
+        ospAddVolume(this->oModel, (OSPVolume)s->asOSPRayObject());
+    }
+
+    if(this->bboxBounds.empty()) {
+        this->bboxBounds = s->getBounds();
+    }
+    else {
+        std::vector<long unsigned int> sBounds = s->getBounds();
+        for(int bIndex = 0; bIndex < sBounds.size(); bIndex++) {
+            if(sBounds[bIndex] < this->bboxBounds[bIndex]) {
+                this->bboxBounds[bIndex] = sBounds[bIndex];
+            }
+        }
+    }
+
+    this->lastSubjectID = s->ID;
+    this->lastRenderType = s->getRenderType();
+    ospCommit(this->oModel);
 }
 
 void Renderer::setVolume(Volume *v)

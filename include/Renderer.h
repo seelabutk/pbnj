@@ -7,6 +7,7 @@
 #define cimg_use_jpeg 1 
 
 #include <pbnj.h>
+#include <Subject.h>
 
 #include <string>
 #include <vector>
@@ -26,6 +27,8 @@ namespace pbnj {
 
             void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
             void setBackgroundColor(std::vector<unsigned char> bgColor);
+
+            void addSubject(Subject *s);
             void setVolume(Volume *v);
             void addSlices(Slices *s);
             void addParticles(Particles *p);
@@ -67,6 +70,7 @@ namespace pbnj {
             void saveAsJPG(std::string filename);
             void bufferToPNG(std::vector<unsigned char> &png);
 
+            std::string lastSubjectID;
             std::string lastVolumeID;
             std::string lastStreamlinesID;
             std::string lastCameraID;

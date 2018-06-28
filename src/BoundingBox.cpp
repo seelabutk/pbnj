@@ -1,6 +1,7 @@
 #include "BoundingBox.h"
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 namespace pbnj {
@@ -89,6 +90,11 @@ OSPGeometry BoundingBox::asOSPRayObject()
 bool BoundingBox::isSurface()
 {
     return true;
+}
+
+std::string BoundingBox::getRenderType()
+{
+    return "boundingbox";
 }
 
 }

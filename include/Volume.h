@@ -28,6 +28,7 @@ namespace pbnj {
             std::vector<long unsigned int> getBounds();
             OSPVolume asOSPRayObject();
             bool isSurface();
+            std::string getRenderType();
 
             std::string ID;
 

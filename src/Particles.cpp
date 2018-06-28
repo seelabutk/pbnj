@@ -2,6 +2,7 @@
 #include "ParticleDataFile.h"
 
 #include <iostream>
+#include <string>
 
 #include <ospray/ospray.h>
 
@@ -51,6 +52,11 @@ OSPGeometry Particles::asOSPRayObject()
 bool Particles::isSurface()
 {
     return true;
+}
+
+std::string Particles::getRenderType()
+{
+    return "particles";
 }
 
 }

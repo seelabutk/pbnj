@@ -2,6 +2,7 @@
 #include "Volume.h"
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 namespace pbnj {
@@ -48,6 +49,11 @@ OSPGeometry Slices::asOSPRayObject()
 bool Slices::isSurface()
 {
     return true;
+}
+
+std::string Slices::getRenderType()
+{
+    return "slices";
 }
 
 }
