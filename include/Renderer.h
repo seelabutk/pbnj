@@ -58,6 +58,8 @@ namespace pbnj {
             std::vector<long unsigned int> bboxBounds;
             bool doBoundingBox;
             Camera *pbnjCamera;
+            void setupMaterial();
+            void updateBounds(std::vector<long unsigned int> bounds);
 
             int cameraWidth;
             int cameraHeight;

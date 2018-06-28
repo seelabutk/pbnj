@@ -105,38 +105,46 @@ void Renderer::addSubject(Subject *s)
 
     if(s->isSurface()) {
         this->addLight();
-        float specular = 0.1;
-        if(this->oMaterial == NULL) {
-            // create a new surface material with some specular highlighting
-            this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
-            float Ks[] = {specular, specular, specular};
-            float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
-            ospSet3fv(this->oMaterial, "Kd", Kd);
-            ospSet3fv(this->oMaterial, "Ks", Ks);
-            ospSet1f(this->oMaterial, "Ns", 10);
-            ospCommit(this->oMaterial);
-        }
+        this->setupMaterial();
         ospAddGeometry(this->oModel, (OSPGeometry)s->asOSPRayObject());
     }
     else {
         ospAddVolume(this->oModel, (OSPVolume)s->asOSPRayObject());
     }
 
-    if(this->bboxBounds.empty()) {
-        this->bboxBounds = s->getBounds();
-    }
-    else {
-        std::vector<long unsigned int> sBounds = s->getBounds();
-        for(int bIndex = 0; bIndex < sBounds.size(); bIndex++) {
-            if(sBounds[bIndex] < this->bboxBounds[bIndex]) {
-                this->bboxBounds[bIndex] = sBounds[bIndex];
-            }
-        }
-    }
+    this->updateBounds(s->getBounds());
 
     this->lastSubjectID = s->ID;
     this->lastRenderType = s->getRenderType();
     ospCommit(this->oModel);
+}
+
+void Renderer::updateBounds(std::vector<long unsigned int> bounds)
+{
+    if(this->bboxBounds.empty()) {
+        this->bboxBounds = bounds;
+    }
+    else {
+        std::transform(bounds.begin(), bounds.end(),
+                this->bboxBounds.begin(), this->bboxBounds.begin(),
+                [](long unsigned int a, long unsigned int b) ->
+                long unsigned int { return std::max(a, b); });
+    }
+}
+
+void Renderer::setupMaterial()
+{
+    float specular = 0.1;
+    if(this->oMaterial == NULL) {
+        // create a new surface material with some specular highlighting
+        this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
+        float Ks[] = {specular, specular, specular};
+        float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
+        ospSet3fv(this->oMaterial, "Kd", Kd);
+        ospSet3fv(this->oMaterial, "Ks", Ks);
+        ospSet1f(this->oMaterial, "Ns", 10);
+        ospCommit(this->oMaterial);
+    }
 }
 
 void Renderer::setVolume(Volume *v)
