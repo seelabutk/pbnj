@@ -2,6 +2,7 @@
 #define PBNJ_PARTICLES_H
 
 #include <pbnj.h>
+#include <Subject.h>
 #include <ParticleDataFile.h>
 
 #include <string>
@@ -11,7 +12,7 @@
 
 namespace pbnj {
 
-    class Particles {
+    class Particles : public Subject {
 
         public:
             Particles(std::string filename);

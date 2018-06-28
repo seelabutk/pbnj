@@ -18,6 +18,7 @@ namespace pbnj {
     class DataFile;
     class ParticleDataFile;
 
+    class Subject;
     /* abstraction wrapper around OSPRay volumes */
     class Volume;
     class Particles;

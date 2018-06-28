@@ -2,6 +2,7 @@
 #define PBNJ_VOLUME_H
 
 #include <pbnj.h>
+#include <Subject.h>
 #include <DataFile.h>
 
 #include <string>
@@ -11,7 +12,7 @@
 
 namespace pbnj {
     
-    class Volume {
+    class Volume : public Subject {
 
         public:
             //Volume(DataFile *df);

@@ -2,6 +2,7 @@
 #define PBNJ_STREAMLINES_H
 
 #include <pbnj.h>
+#include <Subject.h>
 #include <StreamlinesDataFile.h>
 
 #include <string>
@@ -9,7 +10,7 @@
 #include <ospray/ospray.h>
 
 namespace pbnj {
-    class Streamlines {
+    class Streamlines : public Subject {
         public:
             Streamlines(std::string filename);
             ~Streamlines();
