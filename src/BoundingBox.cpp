@@ -86,4 +86,9 @@ OSPGeometry BoundingBox::asOSPRayObject()
     return this->oCylinders;
 }
 
+bool BoundingBox::isSurface()
+{
+    return true;
+}
+
 }

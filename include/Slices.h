@@ -17,6 +17,7 @@ namespace pbnj {
             ~Slices();
 
             OSPGeometry asOSPRayObject();
+            bool isSurface();
 
         private:
             OSPGeometry oSlices;

@@ -48,4 +48,9 @@ OSPGeometry Particles::asOSPRayObject()
     return this->oSpheres;
 }
 
+bool Particles::isSurface()
+{
+    return true;
+}
+
 }

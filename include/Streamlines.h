@@ -16,6 +16,7 @@ namespace pbnj {
             ~Streamlines();
 
             OSPGeometry asOSPRayObject();
+            bool isSurface();
             std::string ID;
         private:
             OSPGeometry oStreamlines;

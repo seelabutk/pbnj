@@ -15,6 +15,7 @@ namespace pbnj {
             ~BoundingBox();
 
             OSPGeometry asOSPRayObject();
+            bool isSurface();
 
         private:
             OSPGeometry oCylinders;

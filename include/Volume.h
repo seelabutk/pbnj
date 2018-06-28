@@ -27,6 +27,7 @@ namespace pbnj {
             void setOpacityMap(std::vector<float> &map);
             std::vector<long unsigned int> getBounds();
             OSPVolume asOSPRayObject();
+            bool isSurface();
 
             std::string ID;
 

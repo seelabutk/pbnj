@@ -19,6 +19,7 @@ namespace pbnj {
             ~Particles();
 
             OSPGeometry asOSPRayObject();
+            bool isSurface();
             std::vector<float> getParticleCenter();
 
             std::string ID;

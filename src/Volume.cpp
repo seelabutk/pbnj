@@ -115,4 +115,9 @@ void Volume::loadFromFile(std::string filename, std::string var_name,
     //this->dataFile->printStatistics();
 }
 
+bool Volume::isSurface()
+{
+    return false;
+}
+
 }

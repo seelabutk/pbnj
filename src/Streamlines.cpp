@@ -35,4 +35,9 @@ OSPGeometry Streamlines::asOSPRayObject()
     return this->oStreamlines;
 }
 
+bool Streamlines::isSurface()
+{
+    return true;
+}
+
 }

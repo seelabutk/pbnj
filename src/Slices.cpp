@@ -45,4 +45,9 @@ OSPGeometry Slices::asOSPRayObject()
     return this->oSlices;
 }
 
+bool Slices::isSurface()
+{
+    return true;
+}
+
 }
