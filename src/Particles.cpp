@@ -9,7 +9,6 @@ namespace pbnj {
 
 Particles::Particles(std::string filename)
 {
-    this->ID = createID();
     this->dataFile = new ParticleDataFile();
     this->dataFile->loadFromFile(filename);
 

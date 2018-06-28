@@ -7,7 +7,6 @@ namespace pbnj {
 
 Streamlines::Streamlines(std::string filename)
 {
-    this->ID = createID();
     this->dataFile = new StreamlinesDataFile();
     this->dataFile->loadFromFile(filename);
 

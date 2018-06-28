@@ -11,7 +11,6 @@ namespace pbnj {
 Volume::Volume(std::string filename, int x, int y, int z, bool memmap,
         unsigned int components)
 {
-    this->ID = createID();
     //volumes contain a datafile
     //one datafile per volume, one volume per renderer/camera
     this->dataFile = new DataFile(x, y, z, components);
@@ -23,7 +22,6 @@ Volume::Volume(std::string filename, int x, int y, int z, bool memmap,
 Volume::Volume(std::string filename, std::string var_name, int x, int y, int z,
         bool memmap, unsigned int components)
 {
-    this->ID = createID();
     //volumes contain a datafile
     //one datafile per volume, one volume per renderer/camera
     this->dataFile = new DataFile(x, y, z, components);
