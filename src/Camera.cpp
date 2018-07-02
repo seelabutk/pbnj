@@ -66,6 +66,22 @@ void Camera::centerView()
     this->setView(-this->xPos, -this->yPos, -this->zPos);
 }
 
+void Camera::setImageSize(int width, int height)
+{
+    this->imageWidth  = width;
+    this->imageHeight = height;
+}
+
+int Camera::getImageWidth()
+{
+    return this->imageWidth;
+}
+
+int Camera::getImageHeight()
+{
+    return this->imageHeight;
+}
+
 void Camera::updateOSPRayPosition()
 {
     //update OSPRay camera
@@ -78,6 +94,20 @@ void Camera::updateOSPRayPosition()
     float up[] = {this->upX, this->upY, this->upZ};
     ospSet3fv(this->oCamera, "up",  up);
     ospCommit(this->oCamera);
+}
+
+void Camera::setRegion(float top, float right, float bottom, float left)
+{
+    // render only a defined region of the current view (set clip space)
+    // to be used with tiles
+    // bottom left of the full image is [0, 0]
+    // top right of the full image is [1, 1]
+    // e.g. the upper left quadrant of the image would be defined with
+    // setRegion(1, 0.5, 0.5, 0)
+    float upperRight[] = {right, top};
+    float lowerLeft[] = {left, bottom};
+    ospSet2fv(this->oCamera, "imageStart", lowerLeft);
+    ospSet2fv(this->oCamera, "imageEnd", upperRight);
 }
 
 OSPCamera Camera::asOSPRayObject()
