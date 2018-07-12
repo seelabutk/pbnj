@@ -147,117 +147,12 @@ void Renderer::setupMaterial()
     }
 }
 
-void Renderer::setVolume(Volume *v)
-{
-    if(this->lastVolumeID == v->ID && this->lastRenderType == "volume") {
-        // this is the same volume as the current model and we previously
-        // did a volume render
-        return;
-    }
-    if(this->oModel != NULL) {
-        ospRelease(this->oModel);
-        this->oModel = NULL;
-    }
-
-    if(this->bboxBounds.empty()) {
-        this->bboxBounds = v->getBounds();
-    }
-    else {
-        std::vector<long unsigned int> vBounds = v->getBounds();
-        for(int bIndex = 0; bIndex < vBounds.size(); bIndex++) {
-            if(vBounds[bIndex] < this->bboxBounds[bIndex]) {
-                this->bboxBounds[bIndex] = vBounds[bIndex];
-            }
-        }
-    }
-
-    this->lastVolumeID = v->ID;
-    this->lastRenderType = "volume";
-    this->oModel = ospNewModel();
-    ospAddVolume(this->oModel, v->asOSPRayObject());
-    ospCommit(this->oModel);
-}
-
 void Renderer::addBoundingBox()
 {
     this->addLight();
     this->doBoundingBox = true;
 }
 
-void Renderer::addSlices(Slices *s)
-{
-    this->addLight();
-    if(this->oModel == NULL) {
-        this->oModel = ospNewModel();
-    }
-    ospAddGeometry(this->oModel, s->asOSPRayObject());
-    ospCommit(this->oModel);
-}
-
-void Renderer::setStreamlines(Streamlines *s)
-{
-    if(this->lastStreamlinesID == s->ID && this->lastRenderType == "streamlines") {
-        // this is the same streamlines as the current model and we previously
-        // did a streamlines render
-        return;
-    }
-    if(this->oModel != NULL) {
-        ospRelease(this->oModel);
-        this->oModel = NULL;
-    }
-
-    this->addLight();
-    float specular = 0.1;
-    if(this->oMaterial == NULL) {
-        // create a new surface material with some specular highlighting
-        this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
-        float Ks[] = {specular, specular, specular};
-        float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
-        ospSet3fv(this->oMaterial, "Kd", Kd);
-        ospSet3fv(this->oMaterial, "Ks", Ks);
-        ospSet1f(this->oMaterial, "Ns", 10);
-        ospCommit(this->oMaterial);
-    }
-
-    this->lastStreamlinesID = s->ID;
-    this->lastRenderType = "streamlines";
-    this->oModel = ospNewModel();
-    ospAddGeometry(this->oModel, s->asOSPRayObject());
-    ospCommit(this->oModel);
-}
-
-void Renderer::addParticles(Particles *p)
-{
-    if(this->lastVolumeID == p->ID && this->lastRenderType == "particles") {
-        // this is the same particles as the current model and we previously
-        // did a particles render
-        return;
-    }
-    if(this->oModel != NULL) {
-        ospRelease(this->oModel);
-        this->oModel = NULL;
-    }
-    // set up light and material if necessary
-    this->addLight();
-    float specular = 0.1;
-    if(this->oMaterial == NULL) {
-        // create a new surface material with some specular highlighting
-        this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
-        float Ks[] = {specular, specular, specular};
-        float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
-        ospSet3fv(this->oMaterial, "Kd", Kd);
-        ospSet3fv(this->oMaterial, "Ks", Ks);
-        ospSet1f(this->oMaterial, "Ns", 7);
-        ospCommit(this->oMaterial);
-    }
-    this->lastVolumeID = p->ID;
-    this->lastRenderType = "particles";
-    this->oModel = ospNewModel();
-    OSPGeometry particles = p->asOSPRayObject();
-    ospSetMaterial(particles, this->oMaterial);
-    ospAddGeometry(this->oModel, particles);
-    ospCommit(this->oModel);
-}
 
 void Renderer::addLight()
 {

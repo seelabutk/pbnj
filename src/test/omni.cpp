@@ -126,7 +126,7 @@ int main(int argc, const char **argv)
         for (int i = 0; i < timeSeries->getLength(); i++)
         {
             volume = timeSeries->getVolume(i);
-            renderer->setVolume(volume);
+            renderer->addSubject(volume);
             createOmni(volume, renderer, camera, config, confName + std::to_string(i), renderWidth, renderHeight);
         }
 
@@ -145,7 +145,7 @@ int main(int argc, const char **argv)
 
         pbnj::Renderer *renderer = new pbnj::Renderer();
         renderer->setBackgroundColor(config->bgColor);
-        renderer->setVolume(volume);
+        renderer->addSubject(volume);
 
         createOmni(volume, renderer, camera, config, confName, renderWidth, renderHeight);
     }

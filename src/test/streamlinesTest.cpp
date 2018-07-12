@@ -34,7 +34,7 @@ int main(int argc, const char **argv)
     pbnj::Renderer *renderer = new pbnj::Renderer();
     renderer->setBackgroundColor(config->bgColor);
     renderer->setCamera(camera);
-    renderer->setStreamlines(sl);
+    renderer->addSubject(sl);
     renderer->setSamples(config->samples);
 
     renderer->renderImage(config->imageFilename);

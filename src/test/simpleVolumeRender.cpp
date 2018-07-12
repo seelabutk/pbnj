@@ -117,7 +117,7 @@ int main(int argc, const char **argv)
 
         // set up the renderer and get an image
         if(config->isosurfaceValues.size() == 0) {
-            renderer->setVolume(volume);
+            renderer->addSubject(volume);
         }
         else {
             renderer->setIsosurface(volume, config->isosurfaceValues,
@@ -142,7 +142,7 @@ int main(int argc, const char **argv)
 
             // set the current volume as the one to render
             // this erases the last volume in the renderer
-            renderer->setVolume(volume);
+            renderer->addSubject(volume);
             renderer->renderImage(imageFilename);
 
             std::cout << "Rendered image to " << imageFilename << std::endl;

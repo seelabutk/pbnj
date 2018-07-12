@@ -108,7 +108,7 @@ int main(int argc, const char **argv)
                     camera->setUpVector(0, 1, 0);
 
                     // setup a renderer
-                    renderer->setVolume(volume);
+                    renderer->addSubject(volume);
                     renderer->setCamera(camera);
                     renderer->setSamples(current_samples);
                     std::vector<unsigned char> png_data;
