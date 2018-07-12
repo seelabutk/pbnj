@@ -95,6 +95,9 @@ void Renderer::setBackgroundColor(std::vector<unsigned char> bgColor)
 
 void Renderer::addSubject(Subject *s)
 {
+    if(s == NULL) {
+        return;
+    }
     if(this->lastSubjectID == s->ID &&
        this->lastRenderType == s->getRenderType()) {
         return;
