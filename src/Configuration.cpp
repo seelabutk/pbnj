@@ -315,14 +315,14 @@ CONFTYPE Configuration::getConfigType(std::string filename)
     char delim = '.';
     while(std::getline(ss, extension, delim)) {}
 
-    if(extension.compare("raw") || extension.compare("bin") ||
-       extension.compare("dat")) {
+    if(extension.compare("raw") == 0 || extension.compare("bin") == 0 ||
+       extension.compare("dat") == 0) {
         return PBNJ_VOLUME;
     }
-    if(extension.compare("osx") || extension.compare("xml")) {
+    if(extension.compare("osx") == 0 || extension.compare("xml") == 0) {
         return PBNJ_STREAMLINES;
     }
-    if(extension.compare("xyz")) {
+    if(extension.compare("xyz") == 0) {
         return PBNJ_PARTICLES;
     }
 }
