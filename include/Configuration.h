@@ -12,11 +12,15 @@ namespace pbnj {
     enum CONFSTATE {ERROR_NODATA, ERROR_MULTISET, SINGLE_NOVAR, SINGLE_VAR,
         MULTI_NOVAR, MULTI_VAR};
 
+    enum CONFTYPE {PBNJ_VOLUME, PBNJ_PARTICLES, PBNJ_STREAMLINES,
+        PBNJ_ISOSURFACE, PBNJ_SLICES};
+
     class Configuration {
 
         public:
             Configuration(rapidjson::Document& json);
             CONFSTATE getConfigState();
+            CONFTYPE getConfigType(std::string filename);
 
             std::string dataFilename;
             std::vector<std::string> globbedFilenames;

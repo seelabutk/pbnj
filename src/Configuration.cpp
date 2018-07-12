@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include <sstream>
 
 namespace pbnj {
 
@@ -303,6 +304,26 @@ CONFSTATE Configuration::getConfigState()
             return SINGLE_NOVAR;
         else
             return SINGLE_VAR;
+    }
+}
+
+CONFTYPE Configuration::getConfigType(std::string filename)
+{
+    std::stringstream ss;
+    ss.str(filename);
+    std::string extension;
+    char delim = '.';
+    while(std::getline(ss, extension, delim)) {}
+
+    if(extension.compare("raw") || extension.compare("bin") ||
+       extension.compare("dat")) {
+        return PBNJ_VOLUME;
+    }
+    if(extension.compare("osx") || extension.compare("xml")) {
+        return PBNJ_STREAMLINES;
+    }
+    if(extension.compare("xyz")) {
+        return PBNJ_PARTICLES;
     }
 }
 
