@@ -6,6 +6,9 @@
 #include "TransferFunction.h"
 #include "Volume.h"
 
+#include <chrono>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <string>
 
@@ -122,9 +125,18 @@ int main(int argc, const char **argv)
             renderer->setIsosurface(volume, config->isosurfaceValues,
                     config->specularity);
         }
+        auto begin = std::chrono::high_resolution_clock::now();
         renderer->renderImage(config->imageFilename);
+        auto end = std::chrono::high_resolution_clock::now();
+        unsigned long int duration = std::chrono::duration_cast
+            <std::chrono::nanoseconds>(end - begin).count();
 
-        std::cout << "Rendered image to " << config->imageFilename << std::endl;
+        //std::cout << "Rendered image to " << config->imageFilename << std::endl;
+        std::cout << config->imageWidth << " ";
+        std::cout << config->opacityAttenuation << " ";
+        std::cout << config->samples << " ";
+        std::cout << std::setprecision(6)  << duration/1e9 << " s";
+        std::cout << std::endl;
     }
     else {
         // we have a series of volumes
