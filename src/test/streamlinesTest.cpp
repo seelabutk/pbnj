@@ -29,12 +29,13 @@ int main(int argc, const char **argv)
     camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
     camera->setUpVector(config->cameraUpX, config->cameraUpY,
             config->cameraUpZ);
-    camera->centerView();
+    //camera->centerView();
+    camera->setView(-config->cameraX, -config->cameraY, -50);
 
     pbnj::Renderer *renderer = new pbnj::Renderer();
     renderer->setBackgroundColor(config->bgColor);
     renderer->setCamera(camera);
-    renderer->addSubject(sl);
+    renderer->addSubject(sl, 0.8);
     renderer->setSamples(config->samples);
 
     renderer->renderImage(config->imageFilename);

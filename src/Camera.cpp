@@ -59,6 +59,14 @@ void Camera::setView(float x, float y, float z)
     this->updateOSPRayPosition();
 }
 
+void Camera::setView(std::vector<float> view)
+{
+    this->viewX = view[0];
+    this->viewY = view[1];
+    this->viewZ = view[2];
+    this->updateOSPRayPosition();
+}
+
 void Camera::centerView()
 {
     //center the camera's viewpoint on the center of a volume

@@ -2,6 +2,7 @@
 #include "ParticleDataFile.h"
 
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -67,6 +68,12 @@ void ParticleDataFile::loadFromFile(std::string filename)
                 char particleType[512];
                 char particleColor[512];
                 float curX, curY, curZ;
+                float xMin = std::numeric_limits<float>::max(),
+                      xMax = std::numeric_limits<float>::min(),
+                      yMin = std::numeric_limits<float>::max(),
+                      yMax = std::numeric_limits<float>::min(),
+                      zMin = std::numeric_limits<float>::max(),
+                      zMax = std::numeric_limits<float>::min();
                 int numRead = 0;
                 for(int lineIndex = 0; lineIndex < this->numParticles;
                         lineIndex++) {
@@ -94,6 +101,10 @@ void ParticleDataFile::loadFromFile(std::string filename)
                     this->particleData[lineIndex*3 + 2] = curZ;
 
                     totalX += curX; totalY += curY; totalZ += curZ;
+
+                    this->checkBounds(xMin, xMax, curX);
+                    this->checkBounds(yMin, yMax, curY);
+                    this->checkBounds(zMin, zMax, curZ);
 
                     // check if the file supplied a color
                     float *rgb;
@@ -125,16 +136,21 @@ void ParticleDataFile::loadFromFile(std::string filename)
                 this->averageXPos = totalX / this->numParticles;
                 this->averageYPos = totalY / this->numParticles;
                 this->averageZPos = totalZ / this->numParticles;
+                this->bounds = std::vector<float> {xMin, xMax, yMin, yMax, zMin, zMax};
+                this->extents = std::vector<float> {xMax-xMin, yMax-yMin, zMax-zMin};
+                this->dataXDim = this->extents[0];
+                this->dataYDim = this->extents[1];
+                this->dataZDim = this->extents[2];
 
-                //std::cerr << "DEBUG: read " << numRead << " particles";
-                //std::cerr << std::endl;
+                std::cerr << "DEBUG: read " << numRead << " particles";
+                std::cerr << std::endl;
                 // sanity check
                 //if(this->numParticles != numRead)
                     //std::cerr << "DEBUG: HEY THIS IS BAD" << std::endl;
-                //std::cerr << "DEBUG: average position: ";
-                //std::cerr << this->averageXPos << " ";
-                //std::cerr << this->averageYPos << " ";
-                //std::cerr << this->averageZPos << std::endl;
+                std::cerr << "DEBUG: average position: ";
+                std::cerr << this->averageXPos << " ";
+                std::cerr << this->averageYPos << " ";
+                std::cerr << this->averageZPos << std::endl;
             }
             fclose(dataFile);
         }
@@ -142,6 +158,12 @@ void ParticleDataFile::loadFromFile(std::string filename)
     else {
         std::cerr << "Invalid filetype for particle data!" << std::endl;
     }
+}
+
+void ParticleDataFile::checkBounds(float &minVal, float &maxVal, float &value)
+{
+    minVal = std::min(minVal, value);
+    maxVal = std::max(minVal, value);
 }
 
 // TODO this should be a pbnj namespace function

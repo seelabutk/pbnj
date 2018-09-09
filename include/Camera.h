@@ -7,6 +7,7 @@
 #include <ospray/ospray.h>
 
 #include <string>
+#include <vector>
 
 namespace pbnj {
 
@@ -19,6 +20,7 @@ namespace pbnj {
             void setUpVector(float x, float y, float z);
             void setOrbitRadius(float radius);
             void setView(float x, float y, float z);
+            void setView(std::vector<float> view);
             void setImageSize(int width, int height);
             int getImageWidth();
             int getImageHeight();

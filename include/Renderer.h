@@ -28,7 +28,7 @@ namespace pbnj {
             void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
             void setBackgroundColor(std::vector<unsigned char> bgColor);
 
-            void addSubject(Subject *s);
+            void addSubject(Subject *s, float specular=0.1);
             void addLight();
             void setIsosurface(Volume *v, std::vector<float> &isoValues);
             void setIsosurface(Volume *v, std::vector<float> &isoValues, float specular);
@@ -54,7 +54,7 @@ namespace pbnj {
             std::vector<long unsigned int> bboxBounds;
             bool doBoundingBox;
             Camera *pbnjCamera;
-            void setupMaterial();
+            void setupMaterial(float specular=0.1);
             void updateBounds(std::vector<long unsigned int> bounds);
 
             int cameraWidth;

@@ -2,7 +2,9 @@
 
 #include "pugixml/pugixml.hpp"
 
+#include <algorithm>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -62,18 +64,38 @@ void StreamlinesDataFile::loadFromFile(std::string filename)
         // split vertices
         const char *delims = " \n";
         char *token = strtok(vstring, delims);
+        float xMin = std::numeric_limits<float>::max(),
+              xMax = std::numeric_limits<float>::min(),
+              yMin = std::numeric_limits<float>::max(),
+              yMax = std::numeric_limits<float>::min(),
+              zMin = std::numeric_limits<float>::max(),
+              zMax = std::numeric_limits<float>::min();
         while(token != NULL) {
             osp::vec3fa vert;
             vert.x = atof(token);
+            this->checkBounds(xMin, xMax, vert.x);
+
             token = strtok(NULL, delims);
             vert.y = atof(token);
+            this->checkBounds(yMin, yMax, vert.y);
+
             token = strtok(NULL, delims);
             vert.z = atof(token);
+            this->checkBounds(zMin, zMax, vert.z);
+
             token = strtok(NULL, delims);
             this->vertexData.push_back(vert);
         }
 
         this->numVertices = this->vertexData.size();
+        this->bounds = std::vector<float> {xMin, xMax, yMin, yMax, zMin, zMax};
+        this->extents = std::vector<float> {xMax-xMin, yMax-yMin, zMax-zMin};
+        this->dataXDim = this->extents[0];
+        this->dataYDim = this->extents[1];
+        this->dataZDim = this->extents[2];
+        this->centerX = this->extents[0]/2 + xMin;
+        this->centerY = this->extents[1]/2 + yMin;
+        this->centerZ = this->extents[2]/2 + zMin;
 
         const char *cistring = inode.child_value();
         char *istring = (char *)malloc(strlen(cistring)+1);
@@ -89,6 +111,12 @@ void StreamlinesDataFile::loadFromFile(std::string filename)
     else {
         std::cerr << "Not a PBNJ streamlines capable file!" << std::endl;
     }
+}
+
+void StreamlinesDataFile::checkBounds(float &minVal, float &maxVal, float &value)
+{
+    minVal = std::min(minVal, value);
+    maxVal = std::max(minVal, value);
 }
 
 pugi::xml_node StreamlinesDataFile::searchForStreamlineNode(pugi::xml_node node)

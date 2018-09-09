@@ -6,6 +6,7 @@
 #include <StreamlinesDataFile.h>
 
 #include <string>
+#include <vector>
 
 #include <ospray/ospray.h>
 
@@ -19,6 +20,7 @@ namespace pbnj {
             bool isSurface();
             std::string getRenderType();
             std::string ID;
+            std::vector<float> getCenter();
         private:
             OSPGeometry oStreamlines;
             StreamlinesDataFile *dataFile;

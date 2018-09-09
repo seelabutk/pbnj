@@ -29,11 +29,18 @@ namespace pbnj {
             float averageXPos;
             float averageYPos;
             float averageZPos;
+            std::vector<float> bounds;
+            std::vector<float> extents;
+            float dataXDim;
+            float dataYDim;
+            float dataZDim;
 
         private:
             FILETYPE getFiletype();
             FILETYPE filetype;
             std::string filename;
+
+            void checkBounds(float &xMin, float &xMax, float &value);
     };
 }
 

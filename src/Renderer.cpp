@@ -93,22 +93,30 @@ void Renderer::setBackgroundColor(std::vector<unsigned char> bgColor)
         this->setBackgroundColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 }
 
-void Renderer::addSubject(Subject *s)
+void Renderer::addSubject(Subject *s, float specular)
 {
     if(s == NULL) {
         return;
     }
+    /*
     if(this->lastSubjectID == s->ID &&
        this->lastRenderType == s->getRenderType()) {
         return;
     }
+    */
+
     if(this->oModel == NULL) {
+        this->oModel = ospNewModel();
+    }
+    else {
+        ospRelease(this->oModel);
         this->oModel = ospNewModel();
     }
 
     if(s->isSurface()) {
         this->addLight();
-        this->setupMaterial();
+        this->setupMaterial(specular);
+        ospSetMaterial((OSPGeometry)s->asOSPRayObject(), this->oMaterial);
         ospAddGeometry(this->oModel, (OSPGeometry)s->asOSPRayObject());
     }
     else {
@@ -135,14 +143,22 @@ void Renderer::updateBounds(std::vector<long unsigned int> bounds)
     }
 }
 
-void Renderer::setupMaterial()
+void Renderer::setupMaterial(float specular)
 {
-    float specular = 0.1;
-    if(this->oMaterial == NULL) {
+    //float specular = 0.1;
+    if(this->oMaterial != NULL) {
+        ospRemoveParam(this->oMaterial, "Kd");
+        ospRemoveParam(this->oMaterial, "Ks");
+        ospRemoveParam(this->oMaterial, "Ns");
+        ospRelease(this->oMaterial);
+    }
+    //if(this->oMaterial == NULL)
+    {
         // create a new surface material with some specular highlighting
         this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
         float Ks[] = {specular, specular, specular};
-        float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
+        //float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
+        float Kd[] = {.8f, .8f, .8f};
         ospSet3fv(this->oMaterial, "Kd", Kd);
         ospSet3fv(this->oMaterial, "Ks", Ks);
         ospSet1f(this->oMaterial, "Ns", 10);
@@ -163,6 +179,7 @@ void Renderer::addLight()
     if(this->lights.size() == 0) {
         // create a new directional light
         OSPLight light = ospNewLight(this->oRenderer, "ambient");
+        ospSet1f(light, "intensity", 0.5);
         //float direction[] = {0, -1, 1};
         //ospSet3fv(light, "direction", direction);
         // set the apparent size of the light in degrees
@@ -378,7 +395,7 @@ void Renderer::render()
             ospSet1i(this->oRenderer, "aoSamples", 4);
         else
             ospSet1i(this->oRenderer, "aoSamples", 1);
-        ospSet1i(this->oRenderer, "shadowsEnabled", 0);
+        ospSet1i(this->oRenderer, "shadowsEnabled", 1);
         ospSet1i(this->oRenderer, "oneSidedLighting", 0);
     }
     ospSetObject(this->oRenderer, "model", this->oModel);

@@ -24,6 +24,16 @@ namespace pbnj {
 
             unsigned int numVertices;
             unsigned int numIndices;
+
+            std::vector<float> bounds;
+            std::vector<float> extents;
+            float dataXDim;
+            float dataYDim;
+            float dataZDim;
+            float centerX;
+            float centerY;
+            float centerZ;
+
         private:
             std::vector<osp::vec3fa> vertexData;
             std::vector<unsigned int> indexData;
@@ -31,6 +41,8 @@ namespace pbnj {
             FILETYPE getFiletype();
             FILETYPE filetype;
             std::string filename;
+
+            void checkBounds(float &minVal, float &maxVal, float &value);
 
             pugi::xml_node searchForStreamlineNode(pugi::xml_node node);
 
