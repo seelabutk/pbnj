@@ -34,6 +34,10 @@ namespace pbnj {
             FILETYPE getFiletype();
             FILETYPE filetype;
             std::string filename;
+
+            bool firstLineHasNumParticles(FILE *dataFile);
+            void readAsMolecule(FILE *dataFile);
+            void readAsGenericParticles(FILE *dataFile);
     };
 }
 
