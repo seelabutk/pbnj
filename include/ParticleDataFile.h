@@ -20,15 +20,13 @@ namespace pbnj {
             ParticleDataFile();
             ~ParticleDataFile();
 
-            void loadFromFile(std::string filename);
+            void loadFromFile(std::string filename, bool center=false);
 
             float *particleData;
             float *particleColorData;
             unsigned int numParticles;
 
-            float averageXPos;
-            float averageYPos;
-            float averageZPos;
+            float midX, midY, midZ;
 
         private:
             FILETYPE getFiletype();

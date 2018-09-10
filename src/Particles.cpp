@@ -8,10 +8,10 @@
 
 namespace pbnj {
 
-Particles::Particles(std::string filename)
+Particles::Particles(std::string filename, bool center)
 {
     this->dataFile = new ParticleDataFile();
-    this->dataFile->loadFromFile(filename);
+    this->dataFile->loadFromFile(filename, center);
 
     this->oSpheres = ospNewGeometry("spheres");
     OSPData sphereDataArray = ospNewData(this->dataFile->numParticles,
