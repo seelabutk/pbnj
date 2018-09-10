@@ -38,9 +38,9 @@ Particles::~Particles()
 std::vector<float> Particles::getParticleCenter()
 {
     return std::vector<float>({
-            this->dataFile->averageXPos,
-            this->dataFile->averageYPos,
-            this->dataFile->averageZPos,
+            this->dataFile->midX,
+            this->dataFile->midY,
+            this->dataFile->midZ,
     });
 }
 

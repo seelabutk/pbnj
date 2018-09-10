@@ -19,8 +19,8 @@ int main(int argc, const char **argv)
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth,
             config->imageHeight);
     camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
-    camera->setUpVector(0, 1, 0);
     camera->centerView();
+    camera->setUpVector(config->cameraUpX, config->cameraUpY, config->cameraUpZ);
 
     pbnj::Renderer *renderer = new pbnj::Renderer();
     renderer->setBackgroundColor(config->bgColor);

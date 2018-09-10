@@ -21,8 +21,7 @@ void checkMinMax(float &minVal, float &maxVal, float &val)
 namespace pbnj {
 
 ParticleDataFile::ParticleDataFile()
-    : numParticles(0), averageXPos(0), averageYPos(0), averageZPos(0),
-      midX(0), midY(0), midZ(0)
+    : numParticles(0), midX(0), midY(0), midZ(0)
 {
 }
 
@@ -116,7 +115,7 @@ bool ParticleDataFile::firstLineHasNumParticles(FILE *dataFile)
     char c;
     int read = sscanf(numParticlesLine, "%u%c", &(this->numParticles), &c);
 
-    return (read == 1);
+    return (read == 2 && isspace(c));
 }
 
 void ParticleDataFile::readAsMolecule(FILE *dataFile)
@@ -188,10 +187,6 @@ void ParticleDataFile::readAsMolecule(FILE *dataFile)
         this->particleColorData[lineIndex*3 + 2] = rgb[2];
         numRead++;
     }
-
-    this->averageXPos = totalX / this->numParticles;
-    this->averageYPos = totalY / this->numParticles;
-    this->averageZPos = totalZ / this->numParticles;
 
     this->midX = minX + (maxX - minX) / 2;
     this->midY = minY + (maxY - minY) / 2;
