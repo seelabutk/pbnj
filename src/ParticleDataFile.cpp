@@ -30,7 +30,7 @@ ParticleDataFile::~ParticleDataFile()
 {
 }
 
-void ParticleDataFile::loadFromFile(std::string filename, bool center)
+void ParticleDataFile::loadFromFile(std::string filename, bool center, bool autocolor)
 {
     this->filename = filename;
     this->filetype = getFiletype();
@@ -51,7 +51,7 @@ void ParticleDataFile::loadFromFile(std::string filename, bool center)
                 char *res = fgets(commentLine, 1024, dataFile);
 
                 // read the rest of the file as if it was a molecule
-                this->readAsMolecule(dataFile);
+                this->readAsMolecule(dataFile, autocolor);
             }
             else {
                 // no line stating num particles
@@ -59,7 +59,7 @@ void ParticleDataFile::loadFromFile(std::string filename, bool center)
                 // read the file as if it's just particle data (e.g. lidar)
 
                 rewind(dataFile);
-                this->readAsGenericParticles(dataFile);
+                this->readAsGenericParticles(dataFile, autocolor);
             }
             fclose(dataFile);
 
@@ -78,6 +78,10 @@ void ParticleDataFile::loadFromFile(std::string filename, bool center)
                 this->midY = this->minY + (this->maxY - this->minY) / 2;
                 this->midZ = this->minZ + (this->maxZ - this->minZ) / 2;
             }
+
+            fprintf(stderr, "DEBUG: min %f %f %f\n", this->minX, this->minY, this->minZ);
+            fprintf(stderr, "DEBUG: mid %f %f %f\n", this->midX, this->midY, this->midZ);
+            fprintf(stderr, "DEBUG: max %f %f %f\n", this->maxX, this->maxY, this->maxZ);
         }
     }
     else {
@@ -117,7 +121,7 @@ bool ParticleDataFile::firstLineHasNumParticles(FILE *dataFile)
     return (read == 2 && isspace(c));
 }
 
-void ParticleDataFile::readAsMolecule(FILE *dataFile)
+void ParticleDataFile::readAsMolecule(FILE *dataFile, bool autocolor)
 {
     std::cerr << "DEBUG: reading as molecule" << std::endl;
     this->particleData = 
@@ -167,6 +171,7 @@ void ParticleDataFile::readAsMolecule(FILE *dataFile)
             else {
                 rgb = (float *)malloc(3 * sizeof(float));
                 rgb[0] = r; rgb[1] = g; rgb[2] = b;
+                autocolor = false; // disable autocoloring if colors provided
             }
         }
         // check if the particle type is a known type
@@ -187,9 +192,11 @@ void ParticleDataFile::readAsMolecule(FILE *dataFile)
     this->midX = this->minX + (this->maxX - this->minX) / 2;
     this->midY = this->minY + (this->maxY - this->minY) / 2;
     this->midZ = this->minZ + (this->maxZ - this->minZ) / 2;
+
+    if(autocolor) { this->doAutocolor(); }
 }
 
-void ParticleDataFile::readAsGenericParticles(FILE *dataFile)
+void ParticleDataFile::readAsGenericParticles(FILE *dataFile, bool autocolor)
 {
     std::cerr << "DEBUG: reading as generic data" << std::endl;
     char particleLine[1024];
@@ -245,11 +252,16 @@ void ParticleDataFile::readAsGenericParticles(FILE *dataFile)
             float r, g, b;
             read = sscanf(particleColor, "%f %f %f ", &r, &g, &b);
             if(read != 3) {
-                r = g = b = 1.f;
+                this->particleColorData[lineIndex*3 + 0] = 1.f;
+                this->particleColorData[lineIndex*3 + 1] = 1.f;
+                this->particleColorData[lineIndex*3 + 2] = 1.f;
             }
-            this->particleColorData[lineIndex*3 + 0] = r;
-            this->particleColorData[lineIndex*3 + 1] = g;
-            this->particleColorData[lineIndex*3 + 2] = b;
+            else {
+                this->particleColorData[lineIndex*3 + 0] = r;
+                this->particleColorData[lineIndex*3 + 1] = g;
+                this->particleColorData[lineIndex*3 + 2] = b;
+                autocolor = false; // disable autocolor if color provided
+            }
         }
         else {
             this->particleColorData[lineIndex*3 + 0] = 1.f;
@@ -261,12 +273,26 @@ void ParticleDataFile::readAsGenericParticles(FILE *dataFile)
     this->midX = this->minX + (this->maxX - this->minX) / 2;
     this->midY = this->minY + (this->maxY - this->minY) / 2;
     this->midZ = this->minZ + (this->maxZ - this->minZ) / 2;
+
+    if(autocolor) { this->doAutocolor(); }
 }
 
 void ParticleDataFile::resetMinMax()
 {
     this->minX = this->minY = this->minZ = std::numeric_limits<float>::max();
     this->maxX = this->maxY = this->maxZ = std::numeric_limits<float>::min();
+}
+
+void ParticleDataFile::doAutocolor()
+{
+    // assume z axis
+    float rangeZ = this->maxZ - this->minZ;
+    for(int pIndex = 0; pIndex < this->numParticles; pIndex++) {
+        float gray = (this->particleData[pIndex*3 + 2] - this->minZ) / rangeZ;
+        this->particleColorData[pIndex*3 + 0] = gray;
+        this->particleColorData[pIndex*3 + 1] = gray;
+        this->particleColorData[pIndex*3 + 2] = gray;
+    }
 }
 
 }

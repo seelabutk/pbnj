@@ -15,7 +15,7 @@ namespace pbnj {
     class Particles : public Subject {
 
         public:
-            Particles(std::string filename, bool center=false);
+            Particles(std::string filename, bool center=false, bool autocolor=false, float radius=1.0);
             ~Particles();
 
             OSPGeometry asOSPRayObject();

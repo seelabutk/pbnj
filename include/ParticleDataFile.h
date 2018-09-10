@@ -20,7 +20,7 @@ namespace pbnj {
             ParticleDataFile();
             ~ParticleDataFile();
 
-            void loadFromFile(std::string filename, bool center=false);
+            void loadFromFile(std::string filename, bool center=false, bool autocolor=false);
 
             float *particleData;
             float *particleColorData;
@@ -36,9 +36,10 @@ namespace pbnj {
             std::string filename;
 
             bool firstLineHasNumParticles(FILE *dataFile);
-            void readAsMolecule(FILE *dataFile);
-            void readAsGenericParticles(FILE *dataFile);
+            void readAsMolecule(FILE *dataFile, bool autocolor);
+            void readAsGenericParticles(FILE *dataFile, bool autocolor);
             void resetMinMax();
+            void doAutocolor();
     };
 }
 

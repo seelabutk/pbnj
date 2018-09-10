@@ -14,7 +14,7 @@ int main(int argc, const char **argv)
     pbnj::Configuration *config = new pbnj::Configuration(json);
 
     pbnj::pbnjInit(&argc, argv);
-    pbnj::Particles *particles = new pbnj::Particles(config->dataFilename, true);
+    pbnj::Particles *particles = new pbnj::Particles(config->dataFilename, true, true, 0.1);
 
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth,
             config->imageHeight);
