@@ -26,7 +26,9 @@ namespace pbnj {
             float *particleColorData;
             unsigned int numParticles;
 
+            float minX, minY, minZ;
             float midX, midY, midZ;
+            float maxX, maxY, maxZ;
 
         private:
             FILETYPE getFiletype();
@@ -36,6 +38,7 @@ namespace pbnj {
             bool firstLineHasNumParticles(FILE *dataFile);
             void readAsMolecule(FILE *dataFile);
             void readAsGenericParticles(FILE *dataFile);
+            void resetMinMax();
     };
 }
 

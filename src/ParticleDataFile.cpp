@@ -23,6 +23,7 @@ namespace pbnj {
 ParticleDataFile::ParticleDataFile()
     : numParticles(0), midX(0), midY(0), midZ(0)
 {
+    resetMinMax();
 }
 
 ParticleDataFile::~ParticleDataFile()
@@ -64,20 +65,18 @@ void ParticleDataFile::loadFromFile(std::string filename, bool center)
 
             if(center) {
                 float totalX = 0, totalY = 0, totalZ = 0;
-                float minX = std::numeric_limits<float>::max(), maxX = std::numeric_limits<float>::min();
-                float minY = std::numeric_limits<float>::max(), maxY = std::numeric_limits<float>::min();
-                float minZ = std::numeric_limits<float>::max(), maxZ = std::numeric_limits<float>::min();
+                this->resetMinMax();
                 for(int pIndex = 0; pIndex < this->numParticles; pIndex++) {
                     this->particleData[pIndex*3 + 0] -= this->midX;
-                    checkMinMax(minX, maxX, this->particleData[pIndex*3 + 0]);
+                    checkMinMax(this->minX, this->maxX, this->particleData[pIndex*3 + 0]);
                     this->particleData[pIndex*3 + 1] -= this->midY;
-                    checkMinMax(minY, maxY, this->particleData[pIndex*3 + 1]);
+                    checkMinMax(this->minY, this->maxY, this->particleData[pIndex*3 + 1]);
                     this->particleData[pIndex*3 + 2] -= this->midZ;
-                    checkMinMax(minZ, maxZ, this->particleData[pIndex*3 + 2]);
+                    checkMinMax(this->minZ, this->maxZ, this->particleData[pIndex*3 + 2]);
                 }
-                this->midX = minX + (maxX - minX) / 2;
-                this->midY = minY + (maxY - minY) / 2;
-                this->midZ = minZ + (maxZ - minZ) / 2;
+                this->midX = this->minX + (this->maxX - this->minX) / 2;
+                this->midY = this->minY + (this->maxY - this->minY) / 2;
+                this->midZ = this->minZ + (this->maxZ - this->minZ) / 2;
             }
         }
     }
@@ -132,9 +131,6 @@ void ParticleDataFile::readAsMolecule(FILE *dataFile)
     char particleType[512];
     char particleColor[512];
     float curX, curY, curZ;
-    float minX = std::numeric_limits<float>::max(), maxX = std::numeric_limits<float>::min();
-    float minY = std::numeric_limits<float>::max(), maxY = std::numeric_limits<float>::min();
-    float minZ = std::numeric_limits<float>::max(), maxZ = std::numeric_limits<float>::min();
     int numRead = 0;
 
 
@@ -156,9 +152,9 @@ void ParticleDataFile::readAsMolecule(FILE *dataFile)
 
         totalX += curX; totalY += curY; totalZ += curZ;
 
-        checkMinMax(minX, maxX, curX);
-        checkMinMax(minY, maxY, curY);
-        checkMinMax(minZ, maxZ, curZ);
+        checkMinMax(this->minX, this->maxX, curX);
+        checkMinMax(this->minY, this->maxY, curY);
+        checkMinMax(this->minZ, this->maxZ, curZ);
 
         // check if the file supplied a color
         float *rgb;
@@ -188,9 +184,9 @@ void ParticleDataFile::readAsMolecule(FILE *dataFile)
         numRead++;
     }
 
-    this->midX = minX + (maxX - minX) / 2;
-    this->midY = minY + (maxY - minY) / 2;
-    this->midZ = minZ + (maxZ - minZ) / 2;
+    this->midX = this->minX + (this->maxX - this->minX) / 2;
+    this->midY = this->minY + (this->maxY - this->minY) / 2;
+    this->midZ = this->minZ + (this->maxZ - this->minZ) / 2;
 }
 
 void ParticleDataFile::readAsGenericParticles(FILE *dataFile)
@@ -203,9 +199,6 @@ void ParticleDataFile::readAsGenericParticles(FILE *dataFile)
     float curX = 0;
     float curY = 0;
     float curZ = 0;
-    float minX = std::numeric_limits<float>::max(), maxX = std::numeric_limits<float>::min();
-    float minY = std::numeric_limits<float>::max(), maxY = std::numeric_limits<float>::min();
-    float minZ = std::numeric_limits<float>::max(), maxZ = std::numeric_limits<float>::min();
 
     this->numParticles = 0;
     while(fgets(particleLine, 1024, dataFile) != NULL) {
@@ -239,9 +232,9 @@ void ParticleDataFile::readAsGenericParticles(FILE *dataFile)
         totalY += curY;
         totalZ += curZ;
 
-        checkMinMax(minX, maxX, curX);
-        checkMinMax(minY, maxY, curY);
-        checkMinMax(minZ, maxZ, curZ);
+        checkMinMax(this->minX, this->maxX, curX);
+        checkMinMax(this->minY, this->maxY, curY);
+        checkMinMax(this->minZ, this->maxZ, curZ);
 
         this->particleData[lineIndex*3 + 0] = curX;
         this->particleData[lineIndex*3 + 1] = curY;
@@ -265,9 +258,15 @@ void ParticleDataFile::readAsGenericParticles(FILE *dataFile)
         }
     }
 
-    this->midX = minX + (maxX - minX) / 2;
-    this->midY = minY + (maxY - minY) / 2;
-    this->midZ = minZ + (maxZ - minZ) / 2;
+    this->midX = this->minX + (this->maxX - this->minX) / 2;
+    this->midY = this->minY + (this->maxY - this->minY) / 2;
+    this->midZ = this->minZ + (this->maxZ - this->minZ) / 2;
+}
+
+void ParticleDataFile::resetMinMax()
+{
+    this->minX = this->minY = this->minZ = std::numeric_limits<float>::max();
+    this->maxX = this->maxY = this->maxZ = std::numeric_limits<float>::min();
 }
 
 }
