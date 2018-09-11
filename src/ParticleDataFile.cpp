@@ -1,5 +1,6 @@
 #include "DataFile.h" // only for FILETYPE enum
 #include "ParticleDataFile.h"
+#include "TransferFunction.h"
 
 #include <algorithm>
 #include <iostream>
@@ -289,9 +290,10 @@ void ParticleDataFile::doAutocolor()
     float rangeZ = this->maxZ - this->minZ;
     for(int pIndex = 0; pIndex < this->numParticles; pIndex++) {
         float gray = (this->particleData[pIndex*3 + 2] - this->minZ) / rangeZ;
-        this->particleColorData[pIndex*3 + 0] = gray;
-        this->particleColorData[pIndex*3 + 1] = gray;
-        this->particleColorData[pIndex*3 + 2] = gray;
+        int cmIndex = (int)(gray * colormaps["gist_earth"].size()/3);
+        this->particleColorData[pIndex*3 + 0] = colormaps["gist_earth"][cmIndex*3 + 0];
+        this->particleColorData[pIndex*3 + 1] = colormaps["gist_earth"][cmIndex*3 + 1];
+        this->particleColorData[pIndex*3 + 2] = colormaps["gist_earth"][cmIndex*3 + 2];
     }
 }
 
