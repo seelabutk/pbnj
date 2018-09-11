@@ -368,7 +368,9 @@ void Renderer::render()
     if(this->lights.size() >= 1) {
         //if there was a light, set its direction based on the camera
         //and add it to the renderer
-        float camdir[3] = {*(this->lightDirection[0]), *(this->lightDirection[1]), *(this->lightDirection[2])};
+        float camdir[3] = {-*(this->lightDirection[0]),
+                           -*(this->lightDirection[1]),
+                           -*(this->lightDirection[2])};
         ospSet3fv(this->lights[1], "direction", camdir);
         ospCommit(this->lights[1]);
         OSPData lightDataArray = ospNewData(this->lights.size(), OSP_LIGHT, this->lights.data());
