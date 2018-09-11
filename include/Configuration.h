@@ -55,6 +55,7 @@ namespace pbnj {
 
             std::vector<float> isosurfaceValues;
             float specularity;
+            float particleRadius;
 
         private:
             ConfigReader *reader;

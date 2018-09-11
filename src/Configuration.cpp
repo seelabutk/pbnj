@@ -211,6 +211,18 @@ Configuration::Configuration(rapidjson::Document& json)
     else {
         this->dataNumComponents = 1;
     }
+
+    // radius of particles
+    // defaults to 1
+    if(json.HasMember("particleRadius")) {
+        this->particleRadius = json["particleRadius"].GetFloat();
+    }
+    else if(json.HasMember("atomicRadius")) {
+        this->particleRadius = json["atomicRadius"].GetFloat();
+    }
+    else{
+        this->particleRadius = 1.f;
+    }
 }
 
 void Configuration::selectColorMap(std::string userInput)
