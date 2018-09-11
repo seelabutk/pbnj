@@ -14,12 +14,13 @@ int main(int argc, const char **argv)
     pbnj::Configuration *config = new pbnj::Configuration(json);
 
     pbnj::pbnjInit(&argc, argv);
-    pbnj::Particles *particles = new pbnj::Particles(config->dataFilename, true, true, 0.1);
+    pbnj::Particles *particles = new pbnj::Particles(config->dataFilename, false, true, 0.5);
 
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth,
             config->imageHeight);
     camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
-    camera->centerView();
+    //camera->centerView();
+    camera->setView(config->cameraViewX, config->cameraViewY, config->cameraViewZ);
     camera->setUpVector(config->cameraUpX, config->cameraUpY, config->cameraUpZ);
 
     pbnj::Renderer *renderer = new pbnj::Renderer();

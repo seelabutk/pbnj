@@ -49,6 +49,10 @@ namespace pbnj {
             float cameraUpY;
             float cameraUpZ;
 
+            float cameraViewX;
+            float cameraViewY;
+            float cameraViewZ;
+
             std::vector<float> isosurfaceValues;
             float specularity;
 
