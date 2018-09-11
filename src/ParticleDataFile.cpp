@@ -291,6 +291,7 @@ void ParticleDataFile::doAutocolor()
     for(int pIndex = 0; pIndex < this->numParticles; pIndex++) {
         float gray = (this->particleData[pIndex*3 + 2] - this->minZ) / rangeZ;
         int cmIndex = (int)(gray * colormaps["gist_earth"].size()/3);
+        cmIndex = std::max(0, std::min(cmIndex, (int)colormaps["gist_earth"].size()/3));
         this->particleColorData[pIndex*3 + 0] = colormaps["gist_earth"][cmIndex*3 + 0];
         this->particleColorData[pIndex*3 + 1] = colormaps["gist_earth"][cmIndex*3 + 1];
         this->particleColorData[pIndex*3 + 2] = colormaps["gist_earth"][cmIndex*3 + 2];

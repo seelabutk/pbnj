@@ -108,7 +108,8 @@ void Renderer::addSubject(Subject *s)
 
     if(s->isSurface()) {
         this->addLight();
-        this->setupMaterial();
+        this->setupMaterial(s->specular);
+        ospSetMaterial((OSPGeometry)s->asOSPRayObject(), this->oMaterial);
         ospAddGeometry(this->oModel, (OSPGeometry)s->asOSPRayObject());
     }
     else {
@@ -135,9 +136,9 @@ void Renderer::updateBounds(std::vector<long unsigned int> bounds)
     }
 }
 
-void Renderer::setupMaterial()
+void Renderer::setupMaterial(float specular)
 {
-    float specular = 0.1;
+    std::cerr << "DEBUG: setupMaterial(" << specular << ")" << std::endl;
     if(this->oMaterial == NULL) {
         // create a new surface material with some specular highlighting
         this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
@@ -251,9 +252,9 @@ void Renderer::setCamera(Camera *c)
     this->cameraWidth = c->getImageWidth();
     this->cameraHeight = c->getImageHeight();
     // grab the light direction while we have the pbnj Camera
-    this->lightDirection[0] = &(c->viewX);
-    this->lightDirection[1] = &(c->viewY);
-    this->lightDirection[2] = &(c->viewZ);
+    this->lightDirection[0] = &(c->xPos);
+    this->lightDirection[1] = &(c->yPos);
+    this->lightDirection[2] = &(c->zPos);
     this->oCamera = c->asOSPRayObject();
     this->pbnjCamera = c;
 }
