@@ -16,7 +16,7 @@ int main(int argc, const char **argv)
     pbnj::pbnjInit(&argc, argv);
     pbnj::Particles *particles = new pbnj::Particles(config->dataFilename,
             false, false, config->particleRadius);
-    particles->setSpecular(0.4);
+    particles->setSpecular(config->specularity);
 
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth,
             config->imageHeight);
