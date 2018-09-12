@@ -24,6 +24,9 @@ namespace pbnj {
 
             unsigned int numVertices;
             unsigned int numIndices;
+
+            bool hasData;
+            std::vector<float> extraData;
         private:
             std::vector<osp::vec3fa> vertexData;
             std::vector<unsigned int> indexData;

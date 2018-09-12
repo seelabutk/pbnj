@@ -13,6 +13,7 @@
 namespace pbnj {
 
 StreamlinesDataFile::StreamlinesDataFile()
+    : hasData(false)
 {
 }
 
@@ -56,6 +57,12 @@ void StreamlinesDataFile::loadFromFile(std::string filename)
             return;
         }
 
+        pugi::xml_node datanode = sl.child("data");
+        if(strcmp(datanode.name(), "") != 0) {
+            this->hasData = true;
+            std::cerr << "DEBUG: found a data tag!" << std::endl;
+        }
+
         const char *cvstring = vnode.child_value();
         char *vstring = (char *)malloc(strlen(cvstring)+1);
         strcpy(vstring, cvstring); // to un-const
@@ -85,6 +92,22 @@ void StreamlinesDataFile::loadFromFile(std::string filename)
         }
 
         this->numIndices = this->indexData.size();
+
+        if(this->hasData) {
+            const char *dataName = datanode.first_attribute().value();
+            std::cerr << "DEBUG: data node name: " << dataName << std::endl;
+
+            const char *cdatastring = datanode.child_value();
+            char *datastring = (char *)malloc(strlen(cdatastring)+1);
+            strcpy(datastring, cdatastring); // to un-const
+            token = strtok(datastring, delims);
+            while(token != NULL) {
+                this->extraData.push_back(atof(token));
+                token = strtok(NULL, delims);
+            }
+
+            std::cerr << "DEBUG: read " << this->extraData.size() << " data values" << std::endl;
+        }
     }
     else {
         std::cerr << "Not a PBNJ streamlines capable file!" << std::endl;
