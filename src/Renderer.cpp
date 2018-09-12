@@ -381,7 +381,7 @@ void Renderer::render()
             ospSet1i(this->oRenderer, "aoSamples", 1);
         else
             ospSet1i(this->oRenderer, "aoSamples", 0);
-        ospSet1i(this->oRenderer, "shadowsEnabled", 0);
+        ospSet1i(this->oRenderer, "shadowsEnabled", 1);
         ospSet1i(this->oRenderer, "oneSidedLighting", 0);
     }
     ospSetObject(this->oRenderer, "model", this->oModel);

@@ -223,6 +223,15 @@ Configuration::Configuration(rapidjson::Document& json)
     else{
         this->particleRadius = 1.f;
     }
+
+    // radius of streamline
+    // defaults to 0.5
+    if(json.HasMember("streamlinesRadius")) {
+        this->streamlinesRadius = json["streamlinesRadius"].GetFloat();
+    }
+    else {
+        this->streamlinesRadius = 0.5;
+    }
 }
 
 void Configuration::selectColorMap(std::string userInput)
