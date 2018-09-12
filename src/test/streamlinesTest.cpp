@@ -23,6 +23,7 @@ int main(int argc, const char **argv)
 
     pbnj::pbnjInit(&argc, argv);
     pbnj::Streamlines *sl = new pbnj::Streamlines(config->dataFilename);
+    sl->setSpecular(config->specularity);
 
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth,
             config->imageHeight);

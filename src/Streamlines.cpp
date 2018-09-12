@@ -7,7 +7,7 @@
 
 namespace pbnj {
 
-Streamlines::Streamlines(std::string filename)
+Streamlines::Streamlines(std::string filename, float radius)
 {
     this->dataFile = new StreamlinesDataFile();
     this->dataFile->loadFromFile(filename);
@@ -21,7 +21,7 @@ Streamlines::Streamlines(std::string filename)
     ospSetData(this->oStreamlines, "vertex", vertexDataArray);
     ospSetData(this->oStreamlines, "index", indexDataArray);
     ospSet1i(this->oStreamlines, "smooth", 1);
-    ospSet1f(this->oStreamlines, "radius", 0.001);
+    ospSet1f(this->oStreamlines, "radius", radius);
     ospCommit(this->oStreamlines);
 }
 
