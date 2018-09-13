@@ -8,12 +8,19 @@
 
 int main(int argc, const char **argv)
 {
+    pbnj::pbnjInit(&argc, argv);
+
+    if(argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <configuration file>";
+        std::cerr << std::endl;
+        return 1;
+    }
+
     pbnj::ConfigReader *reader = new pbnj::ConfigReader();
     rapidjson::Document json;
     reader->parseConfigFile(argv[1], json);
     pbnj::Configuration *config = new pbnj::Configuration(json);
 
-    pbnj::pbnjInit(&argc, argv);
     pbnj::Particles *particles = new pbnj::Particles(config->dataFilename,
             false, false, config->particleRadius);
     particles->setSpecular(config->specularity);
