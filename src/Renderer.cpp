@@ -141,7 +141,7 @@ void Renderer::setupMaterial(float specular)
     std::cerr << "DEBUG: setupMaterial(" << specular << ")" << std::endl;
     if(this->oMaterial == NULL) {
         // create a new surface material with some specular highlighting
-        this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
+        this->oMaterial = ospNewMaterial2("scivis", "OBJMaterial");
         float Ks[] = {specular, specular, specular};
         float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
         ospSet3fv(this->oMaterial, "Kd", Kd);
@@ -163,7 +163,7 @@ void Renderer::addLight()
     // currently the renderer will hold only one light
     if(this->lights.size() == 0) {
         // create a new directional light
-        OSPLight light = ospNewLight(this->oRenderer, "ambient");
+        OSPLight light = ospNewLight2("scivis", "ambient");
         //float direction[] = {0, -1, 1};
         //ospSet3fv(light, "direction", direction);
         // set the apparent size of the light in degrees
@@ -172,7 +172,7 @@ void Renderer::addLight()
         ospCommit(light);
         this->lights.push_back(light);
 
-        OSPLight light2 = ospNewLight(this->oRenderer, "distant");
+        OSPLight light2 = ospNewLight2("scivis", "distant");
         ospSet1f(light2, "angularDiameter", 0.53);
         ospCommit(light2);
         this->lights.push_back(light2);
@@ -205,7 +205,7 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues,
     this->addLight();
     if(this->oMaterial == NULL) {
         // create a new surface material with some specular highlighting
-        this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
+        this->oMaterial = ospNewMaterial2("scivis", "OBJMaterial");
         float Ks[] = {specular, specular, specular};
         float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
         ospSet3fv(this->oMaterial, "Kd", Kd);
@@ -222,6 +222,7 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues,
     this->oSurface = ospNewGeometry("isosurfaces");
     OSPData isoValuesDataArray = ospNewData(isoValues.size(), OSP_FLOAT,
             isoValues.data());
+    ospCommit(isoValuesDataArray);
     ospSetData(this->oSurface, "isovalues", isoValuesDataArray);
     ospSetObject(this->oSurface, "volume", v->asOSPRayObject());
     ospSetMaterial(this->oSurface, this->oMaterial);
@@ -397,6 +398,7 @@ void Renderer::render()
     //this framebuffer will be released after a single frame
     this->oFrameBuffer = ospNewFrameBuffer(imageSize, OSP_FB_SRGBA,
                                            OSP_FB_COLOR | OSP_FB_ACCUM);
+    ospCommit(this->oFrameBuffer);
     ospRenderFrame(this->oFrameBuffer, this->oRenderer,
             OSP_FB_COLOR | OSP_FB_ACCUM);
 
