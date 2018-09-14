@@ -380,10 +380,10 @@ void Renderer::render()
         ospSetObject(this->oRenderer, "lights", lightDataArray);
         unsigned int aoSamples = std::max(this->samples/8, (unsigned int) 1);
         if(this->cameraWidth > 64)
-            ospSet1i(this->oRenderer, "aoSamples", 4);
+            ospSet1i(this->oRenderer, "aoSamples", 0);
         else
             ospSet1i(this->oRenderer, "aoSamples", 0);
-        ospSet1i(this->oRenderer, "shadowsEnabled", 1);
+        ospSet1i(this->oRenderer, "shadowsEnabled", 0);
         ospSet1i(this->oRenderer, "oneSidedLighting", 0);
     }
     ospSetObject(this->oRenderer, "model", this->oModel);

@@ -237,6 +237,8 @@ void ParticleDataFile::readAsGenericParticles(FILE *dataFile, bool autocolor)
         }
         numRead++;
 
+        curZ *= 5.0;
+
         totalX += curX;
         totalY += curY;
         totalZ += curZ;
@@ -296,9 +298,10 @@ void ParticleDataFile::doAutocolor()
         float gray = (this->particleData[pIndex*3 + 2] - this->minZ) / rangeZ;
         int cmIndex = (int)(gray * colormaps["gist_earth"].size()/3);
         cmIndex = std::max(0, std::min(cmIndex, (int)colormaps["gist_earth"].size()/3));
-        this->particleColorData[pIndex*3 + 0] = colormaps["gist_earth"][cmIndex*3 + 0];
-        this->particleColorData[pIndex*3 + 1] = colormaps["gist_earth"][cmIndex*3 + 1];
-        this->particleColorData[pIndex*3 + 2] = colormaps["gist_earth"][cmIndex*3 + 2];
+        this->particleColorData[pIndex*4 + 0] = colormaps["gist_earth"][cmIndex*3 + 0];
+        this->particleColorData[pIndex*4 + 1] = colormaps["gist_earth"][cmIndex*3 + 1];
+        this->particleColorData[pIndex*4 + 2] = colormaps["gist_earth"][cmIndex*3 + 2];
+        this->particleColorData[pIndex*4 + 3] = 1.f;
     }
 }
 
