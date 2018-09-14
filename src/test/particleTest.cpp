@@ -22,7 +22,7 @@ int main(int argc, const char **argv)
     pbnj::Configuration *config = new pbnj::Configuration(json);
 
     pbnj::Particles *particles = new pbnj::Particles(config->dataFilename,
-            false, false, config->particleRadius);
+            true, false, config->particleRadius);
     particles->setSpecular(config->specularity);
 
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth,

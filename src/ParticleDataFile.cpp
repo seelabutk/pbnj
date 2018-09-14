@@ -128,7 +128,7 @@ void ParticleDataFile::readAsMolecule(FILE *dataFile, bool autocolor)
     this->particleData = 
         (float *)malloc(this->numParticles * 3 * sizeof(float));
     this->particleColorData =
-        (float *)malloc(this->numParticles * 3 * sizeof(float));
+        (float *)malloc(this->numParticles * 4 * sizeof(float));
     float totalX = 0, totalY = 0, totalZ = 0;
 
     // start reading particles
@@ -184,9 +184,10 @@ void ParticleDataFile::readAsMolecule(FILE *dataFile, bool autocolor)
         else {
             rgb = CPKcolors["default"].data();
         }
-        this->particleColorData[lineIndex*3 + 0] = rgb[0];
-        this->particleColorData[lineIndex*3 + 1] = rgb[1];
-        this->particleColorData[lineIndex*3 + 2] = rgb[2];
+        this->particleColorData[lineIndex*4 + 0] = rgb[0];
+        this->particleColorData[lineIndex*4 + 1] = rgb[1];
+        this->particleColorData[lineIndex*4 + 2] = rgb[2];
+        this->particleColorData[lineIndex*4 + 3] = 1.f;
         numRead++;
     }
 
@@ -220,7 +221,7 @@ void ParticleDataFile::readAsGenericParticles(FILE *dataFile, bool autocolor)
     this->particleData =
         (float *)malloc(this->numParticles * 3 * sizeof(float));
     this->particleColorData =
-        (float *)malloc(this->numParticles * 3 * sizeof(float));
+        (float *)malloc(this->numParticles * 4 * sizeof(float));
 
     for(int lineIndex = 0; lineIndex < this->numParticles; lineIndex++) {
         char *res = fgets(particleLine, 1024, dataFile);
@@ -253,21 +254,24 @@ void ParticleDataFile::readAsGenericParticles(FILE *dataFile, bool autocolor)
             float r, g, b;
             read = sscanf(particleColor, "%f %f %f ", &r, &g, &b);
             if(read != 3) {
-                this->particleColorData[lineIndex*3 + 0] = 1.f;
-                this->particleColorData[lineIndex*3 + 1] = 1.f;
-                this->particleColorData[lineIndex*3 + 2] = 1.f;
+                this->particleColorData[lineIndex*4 + 0] = 1.f;
+                this->particleColorData[lineIndex*4 + 1] = 1.f;
+                this->particleColorData[lineIndex*4 + 2] = 1.f;
+                this->particleColorData[lineIndex*4 + 3] = 1.f;
             }
             else {
-                this->particleColorData[lineIndex*3 + 0] = r;
-                this->particleColorData[lineIndex*3 + 1] = g;
-                this->particleColorData[lineIndex*3 + 2] = b;
+                this->particleColorData[lineIndex*4 + 0] = r;
+                this->particleColorData[lineIndex*4 + 1] = g;
+                this->particleColorData[lineIndex*4 + 2] = b;
+                this->particleColorData[lineIndex*4 + 3] = 1.f;
                 autocolor = false; // disable autocolor if color provided
             }
         }
         else {
-            this->particleColorData[lineIndex*3 + 0] = 1.f;
-            this->particleColorData[lineIndex*3 + 1] = 1.f;
-            this->particleColorData[lineIndex*3 + 2] = 1.f;
+            this->particleColorData[lineIndex*4 + 0] = 1.f;
+            this->particleColorData[lineIndex*4 + 1] = 1.f;
+            this->particleColorData[lineIndex*4 + 2] = 1.f;
+            this->particleColorData[lineIndex*4 + 3] = 1.f;
         }
     }
 

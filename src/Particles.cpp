@@ -17,7 +17,9 @@ Particles::Particles(std::string filename, bool center, bool autocolor, float ra
     OSPData sphereDataArray = ospNewData(this->dataFile->numParticles,
             OSP_FLOAT3, this->dataFile->particleData);
     OSPData sphereColorDataArray = ospNewData(this->dataFile->numParticles,
-            OSP_FLOAT3, this->dataFile->particleColorData);
+            OSP_FLOAT3A, this->dataFile->particleColorData);
+    ospCommit(sphereDataArray);
+    ospCommit(sphereColorDataArray);
 
     ospSet1i(this->oSpheres, "bytes_per_sphere", 12);
     ospSetData(this->oSpheres, "spheres", sphereDataArray);

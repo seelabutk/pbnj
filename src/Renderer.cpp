@@ -169,6 +169,7 @@ void Renderer::addLight()
         // set the apparent size of the light in degrees
         // 0.53 approximates the Sun
         //ospSet1f(light, "angularDiameter", 0.53);
+        ospSet1f(light, "intensity", 0.5);
         ospCommit(light);
         this->lights.push_back(light);
 
@@ -379,7 +380,7 @@ void Renderer::render()
         ospSetObject(this->oRenderer, "lights", lightDataArray);
         unsigned int aoSamples = std::max(this->samples/8, (unsigned int) 1);
         if(this->cameraWidth > 64)
-            ospSet1i(this->oRenderer, "aoSamples", 1);
+            ospSet1i(this->oRenderer, "aoSamples", 4);
         else
             ospSet1i(this->oRenderer, "aoSamples", 0);
         ospSet1i(this->oRenderer, "shadowsEnabled", 1);
