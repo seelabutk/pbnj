@@ -10,7 +10,6 @@ SET(embree_DIR ""
 SET(ospray_DIR ""
     CACHE FILEPATH "Directory containing an osprayConfig.cmake file")
 FIND_PACKAGE(ospray REQUIRED)
-FIND_PACKAGE(embree "2.15.0" REQUIRED)
 
 OPTION(USE_NETCDF "Enable NetCDF file reading" ON)
 OPTION(BUILD_EXAMPLES "Build example applications" ON)
