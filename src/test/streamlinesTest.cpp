@@ -10,6 +10,8 @@
 
 int main(int argc, const char **argv)
 {
+    pbnj::pbnjInit(&argc, argv);
+
     if(argc != 2) {
         std::cerr << "Usage: " << argv[0] << " <configuration file>";
         std::cerr << std::endl;
@@ -21,8 +23,9 @@ int main(int argc, const char **argv)
     reader->parseConfigFile(argv[1], json);
     pbnj::Configuration *config = new pbnj::Configuration(json);
 
-    pbnj::pbnjInit(&argc, argv);
-    pbnj::Streamlines *sl = new pbnj::Streamlines(config->dataFilename);
+    pbnj::Streamlines *sl = new pbnj::Streamlines(config->dataFilename,
+            config->streamlinesRadius);
+    sl->setSpecular(config->specularity);
 
     pbnj::Camera *camera = new pbnj::Camera(config->imageWidth,
             config->imageHeight);

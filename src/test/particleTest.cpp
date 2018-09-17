@@ -8,18 +8,29 @@
 
 int main(int argc, const char **argv)
 {
+    pbnj::pbnjInit(&argc, argv);
+
+    if(argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <configuration file>";
+        std::cerr << std::endl;
+        return 1;
+    }
+
     pbnj::ConfigReader *reader = new pbnj::ConfigReader();
     rapidjson::Document json;
     reader->parseConfigFile(argv[1], json);
     pbnj::Configuration *config = new pbnj::Configuration(json);
 
-    pbnj::pbnjInit(&argc, argv);
-    pbnj::Particles *particles = new pbnj::Particles(config->dataFilename);
+    pbnj::Particles *particles = new pbnj::Particles(config->dataFilename,
+            true, true, config->particleRadius);
+    particles->setSpecular(config->specularity);
 
-    pbnj::Camera *camera = new pbnj::Camera(config->imageWidth, config->imageHeight);
+    pbnj::Camera *camera = new pbnj::Camera(config->imageWidth,
+            config->imageHeight);
     camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
-    camera->setUpVector(0, 1, 0);
-    camera->centerView();
+    //camera->centerView();
+    camera->setView(config->cameraViewX, config->cameraViewY, config->cameraViewZ);
+    camera->setUpVector(config->cameraUpX, config->cameraUpY, config->cameraUpZ);
 
     pbnj::Renderer *renderer = new pbnj::Renderer();
     renderer->setBackgroundColor(config->bgColor);
@@ -28,6 +39,7 @@ int main(int argc, const char **argv)
     renderer->setSamples(config->samples);
 
     renderer->renderImage(config->imageFilename);
+    std::cout << "Rendered image to " << config->imageFilename << std::endl;
 
     return 0;
 }

@@ -1,16 +1,17 @@
 #include "Streamlines.h"
 #include "StreamlinesDataFile.h"
+#include "TransferFunction.h"
 
 #include <algorithm>
 #include <iostream>
 #include <string>
-#include <vector>
+#include <utility>
 
 #include <ospray/ospray.h>
 
 namespace pbnj {
 
-Streamlines::Streamlines(std::string filename)
+Streamlines::Streamlines(std::string filename, float radius)
 {
     this->dataFile = new StreamlinesDataFile();
     this->dataFile->loadFromFile(filename);
@@ -19,26 +20,34 @@ Streamlines::Streamlines(std::string filename)
     OSPData vertexDataArray = ospNewData(this->dataFile->numVertices,
             OSP_FLOAT3A, this->dataFile->getVertexData());
     OSPData indexDataArray = ospNewData(this->dataFile->numIndices,
-            OSP_FLOAT, this->dataFile->getIndexData());
-
-    /*
-    osp::vec4f color;
-    color.x = 0.5; color.y = 0.5; color.z = 0.5; color.w = 1.0;
-    std::vector<osp::vec4f> colorData;
-    for(int i = 0; i < this->dataFile->numVertices; i++) {
-        colorData.push_back(color);
-    }
-
-    OSPData colorDataArray = ospNewData(this->dataFile->numVertices,
-            OSP_FLOAT4, colorData.data());
-    */
-
-    float radius = 0.0015 * *std::max_element(this->dataFile->extents.begin(),
-            this->dataFile->extents.end());
-
+            OSP_INT, this->dataFile->getIndexData());
+    ospCommit(vertexDataArray);
+    ospCommit(indexDataArray);
     ospSetData(this->oStreamlines, "vertex", vertexDataArray);
     ospSetData(this->oStreamlines, "index", indexDataArray);
-    //ospSetData(this->oStreamlines, "vertex.color", colorDataArray);
+
+    if(this->dataFile->hasData) {
+        // handle extra data
+        float *colorData = (float *)malloc(this->dataFile->extraData.size()*4*sizeof(float));
+        auto range = std::minmax_element(this->dataFile->extraData.begin(),
+                this->dataFile->extraData.end());
+        float minData = *range.first, maxData = *range.second;
+        std::cerr << "DEBUG: extra data min: " << minData << " max: " << maxData << std::endl;
+        for(int dIndex = 0; dIndex < this->dataFile->extraData.size(); dIndex++) {
+            float value = this->dataFile->extraData[dIndex];
+            float gray = (value - minData) / (maxData - minData);
+            int cmapIndex = (int)(gray * colormaps["inferno"].size()/3);
+            colorData[dIndex*4 + 0] = colormaps["inferno"][cmapIndex*3 + 0];
+            colorData[dIndex*4 + 1] = colormaps["inferno"][cmapIndex*3 + 1];
+            colorData[dIndex*4 + 2] = colormaps["inferno"][cmapIndex*3 + 2];
+            colorData[dIndex*4 + 3] = 1.f;
+        }
+        OSPData colorDataArray = ospNewData(this->dataFile->numIndices,
+            OSP_FLOAT4, colorData);
+        ospCommit(colorDataArray);
+        ospSetData(this->oStreamlines, "vertex.color", colorDataArray);
+    }
+
     ospSet1i(this->oStreamlines, "smooth", 1);
     ospSet1f(this->oStreamlines, "radius", radius);
     ospCommit(this->oStreamlines);

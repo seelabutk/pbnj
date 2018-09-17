@@ -163,6 +163,19 @@ Configuration::Configuration(rapidjson::Document& json)
         this->cameraUpZ = 0.0;
     }
 
+    // allow a camera view vector, else use the camera's default of 0, 0, 0
+    if(json.HasMember("cameraViewVector")) {
+        const rapidjson::Value& cameraViewVector = json["cameraViewVector"];
+        this->cameraViewX = cameraViewVector[0].GetFloat();
+        this->cameraViewY = cameraViewVector[1].GetFloat();
+        this->cameraViewZ = cameraViewVector[2].GetFloat();
+    }
+    else {
+        this->cameraViewX = 0.0;
+        this->cameraViewY = 0.0;
+        this->cameraViewZ = 0.0;
+    }
+
     // isosurface values for rendering surfaces instead of volume rendering
     // if this is not present, the vector is empty and a volume is rendered
     if(json.HasMember("isosurfaceValues")) {
@@ -197,6 +210,27 @@ Configuration::Configuration(rapidjson::Document& json)
     }
     else {
         this->dataNumComponents = 1;
+    }
+
+    // radius of particles
+    // defaults to 1
+    if(json.HasMember("particleRadius")) {
+        this->particleRadius = json["particleRadius"].GetFloat();
+    }
+    else if(json.HasMember("atomicRadius")) {
+        this->particleRadius = json["atomicRadius"].GetFloat();
+    }
+    else{
+        this->particleRadius = 1.f;
+    }
+
+    // radius of streamline
+    // defaults to 0.5
+    if(json.HasMember("streamlinesRadius")) {
+        this->streamlinesRadius = json["streamlinesRadius"].GetFloat();
+    }
+    else {
+        this->streamlinesRadius = 0.5;
     }
 }
 

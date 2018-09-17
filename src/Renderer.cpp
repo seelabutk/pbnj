@@ -115,7 +115,7 @@ void Renderer::addSubject(Subject *s, float specular)
 
     if(s->isSurface()) {
         this->addLight();
-        this->setupMaterial(specular);
+        this->setupMaterial(s->specular);
         ospSetMaterial((OSPGeometry)s->asOSPRayObject(), this->oMaterial);
         ospAddGeometry(this->oModel, (OSPGeometry)s->asOSPRayObject());
     }
@@ -145,17 +145,10 @@ void Renderer::updateBounds(std::vector<long unsigned int> bounds)
 
 void Renderer::setupMaterial(float specular)
 {
-    //float specular = 0.1;
-    if(this->oMaterial != NULL) {
-        ospRemoveParam(this->oMaterial, "Kd");
-        ospRemoveParam(this->oMaterial, "Ks");
-        ospRemoveParam(this->oMaterial, "Ns");
-        ospRelease(this->oMaterial);
-    }
-    //if(this->oMaterial == NULL)
-    {
+    std::cerr << "DEBUG: setupMaterial(" << specular << ")" << std::endl;
+    if(this->oMaterial == NULL) {
         // create a new surface material with some specular highlighting
-        this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
+        this->oMaterial = ospNewMaterial2("scivis", "OBJMaterial");
         float Ks[] = {specular, specular, specular};
         //float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
         float Kd[] = {.8f, .8f, .8f};
@@ -178,17 +171,17 @@ void Renderer::addLight()
     // currently the renderer will hold only one light
     if(this->lights.size() == 0) {
         // create a new directional light
-        OSPLight light = ospNewLight(this->oRenderer, "ambient");
-        ospSet1f(light, "intensity", 0.5);
+        OSPLight light = ospNewLight2("scivis", "ambient");
         //float direction[] = {0, -1, 1};
         //ospSet3fv(light, "direction", direction);
         // set the apparent size of the light in degrees
         // 0.53 approximates the Sun
         //ospSet1f(light, "angularDiameter", 0.53);
+        ospSet1f(light, "intensity", 0.5);
         ospCommit(light);
         this->lights.push_back(light);
 
-        OSPLight light2 = ospNewLight(this->oRenderer, "distant");
+        OSPLight light2 = ospNewLight2("scivis", "distant");
         ospSet1f(light2, "angularDiameter", 0.53);
         ospCommit(light2);
         this->lights.push_back(light2);
@@ -221,7 +214,7 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues,
     this->addLight();
     if(this->oMaterial == NULL) {
         // create a new surface material with some specular highlighting
-        this->oMaterial = ospNewMaterial(this->oRenderer, "OBJMaterial");
+        this->oMaterial = ospNewMaterial2("scivis", "OBJMaterial");
         float Ks[] = {specular, specular, specular};
         float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
         ospSet3fv(this->oMaterial, "Kd", Kd);
@@ -238,6 +231,7 @@ void Renderer::setIsosurface(Volume *v, std::vector<float> &isoValues,
     this->oSurface = ospNewGeometry("isosurfaces");
     OSPData isoValuesDataArray = ospNewData(isoValues.size(), OSP_FLOAT,
             isoValues.data());
+    ospCommit(isoValuesDataArray);
     ospSetData(this->oSurface, "isovalues", isoValuesDataArray);
     ospSetObject(this->oSurface, "volume", v->asOSPRayObject());
     ospSetMaterial(this->oSurface, this->oMaterial);
@@ -268,9 +262,9 @@ void Renderer::setCamera(Camera *c)
     this->cameraWidth = c->getImageWidth();
     this->cameraHeight = c->getImageHeight();
     // grab the light direction while we have the pbnj Camera
-    this->lightDirection[0] = &(c->viewX);
-    this->lightDirection[1] = &(c->viewY);
-    this->lightDirection[2] = &(c->viewZ);
+    this->lightDirection[0] = &(c->xPos);
+    this->lightDirection[1] = &(c->yPos);
+    this->lightDirection[2] = &(c->zPos);
     this->oCamera = c->asOSPRayObject();
     this->pbnjCamera = c;
 }
@@ -384,7 +378,9 @@ void Renderer::render()
     if(this->lights.size() >= 1) {
         //if there was a light, set its direction based on the camera
         //and add it to the renderer
-        float camdir[3] = {*(this->lightDirection[0]), *(this->lightDirection[1]), *(this->lightDirection[2])};
+        float camdir[3] = {-*(this->lightDirection[0]),
+                           -*(this->lightDirection[1]),
+                           -*(this->lightDirection[2])};
         ospSet3fv(this->lights[1], "direction", camdir);
         ospCommit(this->lights[1]);
         OSPData lightDataArray = ospNewData(this->lights.size(), OSP_LIGHT, this->lights.data());
@@ -392,7 +388,7 @@ void Renderer::render()
         ospSetObject(this->oRenderer, "lights", lightDataArray);
         unsigned int aoSamples = std::max(this->samples/8, (unsigned int) 1);
         if(this->cameraWidth > 64)
-            ospSet1i(this->oRenderer, "aoSamples", 4);
+            ospSet1i(this->oRenderer, "aoSamples", 0);
         else
             ospSet1i(this->oRenderer, "aoSamples", 1);
         ospSet1i(this->oRenderer, "shadowsEnabled", 1);
@@ -411,6 +407,7 @@ void Renderer::render()
     //this framebuffer will be released after a single frame
     this->oFrameBuffer = ospNewFrameBuffer(imageSize, OSP_FB_SRGBA,
                                            OSP_FB_COLOR | OSP_FB_ACCUM);
+    ospCommit(this->oFrameBuffer);
     ospRenderFrame(this->oFrameBuffer, this->oRenderer,
             OSP_FB_COLOR | OSP_FB_ACCUM);
 

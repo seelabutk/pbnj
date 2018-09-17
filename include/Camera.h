@@ -37,13 +37,13 @@ namespace pbnj {
             float viewX;
             float viewY;
             float viewZ;
+            float xPos;
+            float yPos;
+            float zPos;
 
             std::string ID;
 
         private:
-            float xPos;
-            float yPos;
-            float zPos;
             float upX;
             float upY;
             float upZ;

@@ -53,9 +53,17 @@ void Camera::setPosition(float x, float y, float z)
 
 void Camera::setView(float x, float y, float z)
 {
-    this->viewX = x;
-    this->viewY = y;
-    this->viewZ = z;
+    if(x == y && y == z && z == 0) {
+        std::cerr << "DEBUG: looking into the void" << std::endl;
+        this->viewX = -this->xPos;
+        this->viewY = -this->yPos;
+        this->viewZ = -this->zPos;
+    }
+    else {
+        this->viewX = x;
+        this->viewY = y;
+        this->viewZ = z;
+    }
     this->updateOSPRayPosition();
 }
 

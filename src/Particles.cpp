@@ -8,21 +8,23 @@
 
 namespace pbnj {
 
-Particles::Particles(std::string filename)
+Particles::Particles(std::string filename, bool center, bool autocolor, float radius)
 {
     this->dataFile = new ParticleDataFile();
-    this->dataFile->loadFromFile(filename);
+    this->dataFile->loadFromFile(filename, center, autocolor);
 
     this->oSpheres = ospNewGeometry("spheres");
     OSPData sphereDataArray = ospNewData(this->dataFile->numParticles,
             OSP_FLOAT3, this->dataFile->particleData);
     OSPData sphereColorDataArray = ospNewData(this->dataFile->numParticles,
-            OSP_FLOAT3, this->dataFile->particleColorData);
+            OSP_FLOAT3A, this->dataFile->particleColorData);
+    ospCommit(sphereDataArray);
+    ospCommit(sphereColorDataArray);
 
     ospSet1i(this->oSpheres, "bytes_per_sphere", 12);
     ospSetData(this->oSpheres, "spheres", sphereDataArray);
     ospSetData(this->oSpheres, "color", sphereColorDataArray);
-    ospSet1f(this->oSpheres, "radius", 1.0);
+    ospSet1f(this->oSpheres, "radius", radius);
     ospCommit(this->oSpheres);
 }
 
@@ -38,9 +40,9 @@ Particles::~Particles()
 std::vector<float> Particles::getParticleCenter()
 {
     return std::vector<float>({
-            this->dataFile->averageXPos,
-            this->dataFile->averageYPos,
-            this->dataFile->averageZPos,
+            this->dataFile->midX,
+            this->dataFile->midY,
+            this->dataFile->midZ,
     });
 }
 

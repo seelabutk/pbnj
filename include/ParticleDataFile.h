@@ -20,27 +20,26 @@ namespace pbnj {
             ParticleDataFile();
             ~ParticleDataFile();
 
-            void loadFromFile(std::string filename);
+            void loadFromFile(std::string filename, bool center=false, bool autocolor=false);
 
             float *particleData;
             float *particleColorData;
             unsigned int numParticles;
 
-            float averageXPos;
-            float averageYPos;
-            float averageZPos;
-            std::vector<float> bounds;
-            std::vector<float> extents;
-            float dataXDim;
-            float dataYDim;
-            float dataZDim;
+            float minX, minY, minZ;
+            float midX, midY, midZ;
+            float maxX, maxY, maxZ;
 
         private:
             FILETYPE getFiletype();
             FILETYPE filetype;
             std::string filename;
 
-            void checkBounds(float &xMin, float &xMax, float &value);
+            bool firstLineHasNumParticles(FILE *dataFile);
+            void readAsMolecule(FILE *dataFile, bool autocolor);
+            void readAsGenericParticles(FILE *dataFile, bool autocolor);
+            void resetMinMax();
+            void doAutocolor();
     };
 }
 

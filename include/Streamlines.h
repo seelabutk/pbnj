@@ -13,14 +13,14 @@
 namespace pbnj {
     class Streamlines : public Subject {
         public:
-            Streamlines(std::string filename);
+            Streamlines(std::string filename, float radius=0.5);
             ~Streamlines();
 
             OSPGeometry asOSPRayObject();
             bool isSurface();
             std::string getRenderType();
             std::string ID;
-            std::vector<float> getCenter();
+            void setRadius(float radius);
         private:
             OSPGeometry oStreamlines;
             StreamlinesDataFile *dataFile;
