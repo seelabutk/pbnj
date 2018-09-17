@@ -172,7 +172,6 @@ void ParticleDataFile::readAsMolecule(FILE *dataFile, bool autocolor)
             else {
                 rgb = (float *)malloc(3 * sizeof(float));
                 rgb[0] = r; rgb[1] = g; rgb[2] = b;
-                autocolor = false; // disable autocoloring if colors provided
             }
         }
         // check if the particle type is a known type
@@ -194,8 +193,6 @@ void ParticleDataFile::readAsMolecule(FILE *dataFile, bool autocolor)
     this->midX = this->minX + (this->maxX - this->minX) / 2;
     this->midY = this->minY + (this->maxY - this->minY) / 2;
     this->midZ = this->minZ + (this->maxZ - this->minZ) / 2;
-
-    if(autocolor) { this->doAutocolor(); }
 }
 
 void ParticleDataFile::readAsGenericParticles(FILE *dataFile, bool autocolor)
@@ -237,7 +234,7 @@ void ParticleDataFile::readAsGenericParticles(FILE *dataFile, bool autocolor)
         }
         numRead++;
 
-        curZ *= 5.0;
+        curZ *= 2.0;
 
         totalX += curX;
         totalY += curY;
