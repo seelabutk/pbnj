@@ -32,8 +32,8 @@ int main(int argc, const char **argv)
     camera->setPosition(config->cameraX, config->cameraY, config->cameraZ);
     camera->setUpVector(config->cameraUpX, config->cameraUpY,
             config->cameraUpZ);
-    //camera->centerView();
-    camera->setView(-config->cameraX, -config->cameraY, -50);
+    camera->centerView();
+    //camera->setView(-config->cameraX, -config->cameraY, -50);
 
     pbnj::Renderer *renderer = new pbnj::Renderer();
     renderer->setBackgroundColor(config->bgColor);

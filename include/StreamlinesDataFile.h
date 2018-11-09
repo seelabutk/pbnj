@@ -27,6 +27,11 @@ namespace pbnj {
 
             bool hasData;
             std::vector<float> extraData;
+            float centerX, dataXDim;
+            float centerY, dataYDim;
+            float centerZ, dataZDim;
+            std::vector<float> bounds;
+            std::vector<float> extents;
         private:
             std::vector<osp::vec3fa> vertexData;
             std::vector<unsigned int> indexData;

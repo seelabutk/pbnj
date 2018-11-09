@@ -90,12 +90,6 @@ void ParticleDataFile::loadFromFile(std::string filename, bool center, bool auto
     }
 }
 
-void ParticleDataFile::checkBounds(float &minVal, float &maxVal, float &value)
-{
-    minVal = std::min(minVal, value);
-    maxVal = std::max(minVal, value);
-}
-
 // TODO this should be a pbnj namespace function
 // not a per-data-type function
 FILETYPE ParticleDataFile::getFiletype()
@@ -230,7 +224,7 @@ void ParticleDataFile::readAsGenericParticles(FILE *dataFile, bool autocolor)
         char *res = fgets(particleLine, 1024, dataFile);
         // check for three valid coordinates in each line
         int read = sscanf(particleLine, "%f %f %f %[^\n]",
-                &curX, &curY, &curZ, particleColor);
+                &curX, &curZ, &curY, particleColor);
         bool useCustomColor = (read == 4);
         if(read > 4 || read < 3) {
             std::cerr << "Error reading line " << lineIndex;

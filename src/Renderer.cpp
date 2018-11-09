@@ -98,12 +98,11 @@ void Renderer::addSubject(Subject *s, float specular)
     if(s == NULL) {
         return;
     }
-    /*
     if(this->lastSubjectID == s->ID &&
        this->lastRenderType == s->getRenderType()) {
-        return;
+        //std::cerr << "DEBUG: hack for makeRandomRenders! not exiting with same subject!" << std::endl;
+        //return;
     }
-    */
 
     if(this->oModel == NULL) {
         this->oModel = ospNewModel();
@@ -145,13 +144,21 @@ void Renderer::updateBounds(std::vector<long unsigned int> bounds)
 
 void Renderer::setupMaterial(float specular)
 {
-    std::cerr << "DEBUG: setupMaterial(" << specular << ")" << std::endl;
+    //std::cerr << "DEBUG: setupMaterial(" << specular << ")" << std::endl;
+    if(this->oMaterial != NULL) {
+        //std::cerr << "DEBUG: hack for makeRandomRenders! removing old material!" << std::endl;
+        ospRemoveParam(this->oMaterial, "Kd");
+        ospRemoveParam(this->oMaterial, "Ks");
+        ospRemoveParam(this->oMaterial, "Ns");
+        ospRelease(this->oMaterial);
+        this->oMaterial = NULL;
+    }
     if(this->oMaterial == NULL) {
         // create a new surface material with some specular highlighting
         this->oMaterial = ospNewMaterial2("scivis", "OBJMaterial");
         float Ks[] = {specular, specular, specular};
-        //float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
-        float Kd[] = {.8f, .8f, .8f};
+        float Kd[] = {1.f-specular, 1.f-specular, 1.f-specular};
+        //float Kd[] = {.8f, .8f, .8f};
         ospSet3fv(this->oMaterial, "Kd", Kd);
         ospSet3fv(this->oMaterial, "Ks", Ks);
         ospSet1f(this->oMaterial, "Ns", 10);
@@ -388,7 +395,7 @@ void Renderer::render()
         ospSetObject(this->oRenderer, "lights", lightDataArray);
         unsigned int aoSamples = std::max(this->samples/8, (unsigned int) 1);
         if(this->cameraWidth > 64)
-            ospSet1i(this->oRenderer, "aoSamples", 0);
+            ospSet1i(this->oRenderer, "aoSamples", 32);
         else
             ospSet1i(this->oRenderer, "aoSamples", 1);
         ospSet1i(this->oRenderer, "shadowsEnabled", 1);

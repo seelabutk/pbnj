@@ -78,9 +78,11 @@ int main(int argc, const char **argv)
 
     // iterate over all benchmarking parameters
     for(int image_index = 0; image_index < 6; image_index++) {
+        /*
         if(png_benchmark && image_sizes[image_index][0] != 64 && 
                 image_sizes[image_index][0] != 1024)
             continue;
+        */
         int *current_image_size = image_sizes[image_index];
         for(int att_index = 0; att_index < 4; att_index++) {
             float current_attenuation = attenuations[att_index];

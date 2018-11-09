@@ -21,6 +21,8 @@ namespace pbnj {
             std::string getRenderType();
             std::string ID;
             void setRadius(float radius);
+
+            std::vector<float> getCenter();
         private:
             OSPGeometry oStreamlines;
             StreamlinesDataFile *dataFile;
