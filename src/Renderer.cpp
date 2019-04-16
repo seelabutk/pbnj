@@ -267,20 +267,19 @@ void Renderer::renderToBuffer(unsigned char **buffer)
         for(int i = 0; i < width; i++) {
             int index = j * width + i;
             // composite rowIn RGB with background color
-            unsigned char r = rowIn[4*i + 0],
-                          g = rowIn[4*i + 1],
-                          b = rowIn[4*i + 2],
-                          a = rowIn[4*i + 3];
-            float w = rowIn[4*i + 3] / 255.0;
-            bool doComposite = (this->backgroundColor[3] != 0);
-            (*buffer)[4*index + 0] = (unsigned char) r * w +
-                (doComposite ? this->backgroundColor[0] * (1.0-w) : 0);
-            (*buffer)[4*index + 1] = (unsigned char) g * w +
-                (doComposite ? this->backgroundColor[1] * (1.0-w) : 0);
-            (*buffer)[4*index + 2] = (unsigned char) b * w +
-                (doComposite ? this->backgroundColor[2] * (1.0-w) : 0);
-            (*buffer)[4*index + 3] = (unsigned char) a * w +
-                (doComposite ? this->backgroundColor[3] * (1.0-w) : 0);
+            float a = rowIn[4*i + 3] / 255.0;
+            float r = rowIn[4*i + 0] * a,
+                  g = rowIn[4*i + 1] * a,
+                  b = rowIn[4*i + 2] * a;
+            float abg = this->backgroundColor[3] / 255.0;
+            float rbg = this->backgroundColor[0] * abg,
+                  gbg = this->backgroundColor[1] * abg,
+                  bbg = this->backgroundColor[2] * abg;
+
+            (*buffer)[4*index + 0] = (unsigned char) (r + rbg * (1 - a));
+            (*buffer)[4*index + 1] = (unsigned char) (g + gbg * (1 - a));
+            (*buffer)[4*index + 2] = (unsigned char) (b + bbg * (1 - a));
+            (*buffer)[4*index + 3] = (unsigned char) 255 * (a + abg * (1 - a));
         }
     }
 
