@@ -188,6 +188,15 @@ Configuration::Configuration(rapidjson::Document& json)
     else {
         this->specularity = 0.1;
     }
+
+    // number of data components
+    // defaults to 1 in DataFile if not used
+    if(json.HasMember("components")) {
+        this->dataNumComponents = json["components"].GetUint();
+    }
+    else {
+        this->dataNumComponents = 1;
+    }
 }
 
 void Configuration::selectColorMap(std::string userInput)

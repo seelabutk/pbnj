@@ -13,9 +13,9 @@ namespace pbnj {
     class TimeSeries {
 
         public:
-            TimeSeries(std::vector<std::string> filenames, int x, int y, int z);
+            TimeSeries(std::vector<std::string> filenames, int x, int y, int z, unsigned int components=1);
             TimeSeries(std::vector<std::string> filenames, std::string varname,
-                    int x, int y, int z);
+                    int x, int y, int z, unsigned int components=1);
             ~TimeSeries();
 
             Volume *getVolume(unsigned int index);
@@ -38,6 +38,7 @@ namespace pbnj {
             int xDim;
             int yDim;
             int zDim;
+            unsigned int numComponents;
             unsigned int dataSize;
             unsigned int maxVolumes;
             unsigned int currentVolumes;
